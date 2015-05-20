@@ -14,6 +14,7 @@ module.exports = function() {
 
     require('../app/routes/processed.server.routes.js')(app);
     require('../app/routes/deferred.server.routes.js')(app);
+    require('../app/routes/delivered.server.routes.js')(app);
 
     app.use(express.static('./public'));
 
