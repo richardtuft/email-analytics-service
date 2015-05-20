@@ -1,0 +1,14 @@
+{
+  "name": "email-analytics",
+  "version": "0.0.1",
+  "description": "FT email analytics service",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniele Zanni",
+  "dependencies": {
+    "body-parser": "^1.12.4",
+    "express": "^4.12.4"
+  }
+}
