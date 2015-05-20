@@ -3,7 +3,7 @@
 var hooks = require('../controllers/hooks.server.controller.js');
 
 module.exports = function(app) {
-    app.route('/delivered')
+    app.route('/hooks')
         .post(hooks.handlePost);
 
 };
