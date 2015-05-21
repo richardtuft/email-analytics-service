@@ -21,7 +21,7 @@ gulp.task('lint', () => {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('istanbul', (cb) => {
+gulp.task('istanbul', () => {
     gulp.src(files.appSrc.concat(files.server))
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
@@ -32,7 +32,12 @@ gulp.task('istanbul', (cb) => {
                         reporters: [ 'lcov', 'json', 'text', 'text-summary']
                 })) // Creating the reports after tests
                 .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } })) // Enforce a coverage of at least 90%
-                .on('end', cb);
+                .once('error', function () {
+                     process.exit(1);
+                 })
+                .once('end', function () {
+                    process.exit();
+                });
         });
 });
 
