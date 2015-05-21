@@ -1,10 +1,11 @@
 'use strict';
 
-var express = require('express'),
+let express = require('express'),
     bodyParser = require('body-parser');
 
 module.exports = function() {
-    var app = express();
+
+    let app = express();
 
     app.use(bodyParser.urlencoded({
         extended: true

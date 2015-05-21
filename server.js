@@ -2,12 +2,10 @@
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-var config = require('./config/config'),
-    express = require('./config/express');
+let config = require('./config/config');
+let express = require('./config/express');
 
-
-
-var app = express();
+let app = express();
 
 app.listen(config.port);
 

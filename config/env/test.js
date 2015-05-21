@@ -1,6 +1,6 @@
 'use strict';
 
-var port = 1338;
+let port = process.env.PORT || 1338;
 
 module.exports = {
     port: port
