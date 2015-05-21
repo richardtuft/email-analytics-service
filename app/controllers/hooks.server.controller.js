@@ -1,7 +1,10 @@
 'use strict';
 
 exports.handlePost = function(req, res) {
-    console.log('POST received:');
-    console.log(req.body);
+
+    let eventType = req.body.event;
+
+    console.log('Received ' + eventType + ' event.');
+
     res.status(200).send('OK');
 };
