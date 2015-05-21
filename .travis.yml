@@ -8,4 +8,4 @@ before_install:
 install:
   - npm install
 after_script:
-  - npm test && codeclimate < coverage/lcov.info
+  - codeclimate < coverage/lcov.info
