@@ -4,7 +4,7 @@
 let gulp = require('gulp');
 let mocha = require('gulp-mocha');
 let jshint = require('gulp-jshint');
-var istanbul = require('gulp-istanbul');
+let istanbul = require('gulp-istanbul');
 
 
 // Paths
@@ -14,18 +14,18 @@ let files =  {
     appSrc: ['./app/**/*.js']
 };
 
-gulp.task('lint', function() {
+gulp.task('lint', () => {
 
     return gulp.src(files.appSrc.concat(files.mochaTests))
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('istanbul', function (cb) {
+gulp.task('istanbul', (cb) => {
     gulp.src(files.appSrc.concat(files.server))
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
-        .on('finish', function () {
+        .on('finish', () => {
             gulp.src(files.mochaTests)
                 .pipe(mocha())
                 .pipe(istanbul.writeReports({
