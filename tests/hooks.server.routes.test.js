@@ -6,14 +6,23 @@ let should = require('should'),
     agent = request.agent(app);
 
 /* One of the available event examples */
-let event = require('./events/bounce.json');
+let events = [];
+
+
 
 describe('Hooks tests:', () => {
+
+    beforeEach((done) => {
+        let bounceExample = require('./events/bounce.json');
+        let deliveredExample = require('./events/delivered.json');
+        events = events.concat([bounceExample, deliveredExample]);
+        done();
+    });
 
     it('responds with OK when a POST is received', (done) => {
         // Save a new example
         agent.post('/hooks')
-            .send(event)
+            .send(events)
             .expect(200)
             .end((hooksPostErr, hooksPostRes) => {
                 if (hooksPostErr) {
@@ -22,6 +31,11 @@ describe('Hooks tests:', () => {
                 hooksPostRes.text.should.match('OK');
                 done();
             });
+    });
+
+    afterEach((done) => {
+        events.length = 0;
+        done();
     });
 
 });
