@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.12"
+  - "iojs"
+before_install:
+  - npm install --global gulp
+install:
+  - npm install
+after_script:
+  - npm test
+env:
+  - NODE_ENV=travis
