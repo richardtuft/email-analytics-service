@@ -4,7 +4,8 @@ node_js:
   - "0.12"
 before_install:
   - npm install --global gulp
+  - npm install -g codeclimate-test-reporter
 install:
   - npm install
 after_script:
-  - npm test
+  - npm test && codeclimate < coverage/reports/lcov.info
