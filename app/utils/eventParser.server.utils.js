@@ -11,6 +11,7 @@ exports.parse = function(rawEvent) {
 
     switch (rawEvent.event) {
         //TODO: deal with the different event types
+        //TODO: what to if we get an invalid event type
         default:
             parsedEvent.type = rawEvent.event;
             parsedEvent.email = rawEvent.email;
