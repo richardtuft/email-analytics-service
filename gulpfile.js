@@ -30,7 +30,7 @@ gulp.task('istanbul', (cb) => {
                 .pipe(mocha())
                 .pipe(istanbul.writeReports({
                         reporters: [ 'lcov', 'json', 'text', 'text-summary']
-                })) // Creating the reports after tests runned
+                })) // Creating the reports after tests
                 .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } })) // Enforce a coverage of at least 90%
                 .on('end', cb);
         });
