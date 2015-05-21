@@ -2,9 +2,11 @@
 
 exports.handlePost = function(req, res) {
 
-    let eventType = req.body.event;
+    let parseEvent = require('../utils/eventParser.server.utils');
 
-    console.log('Received ' + eventType + ' event.');
+    let emailEvent = parseEvent.parse(req.body);
+
+    console.log('Received ' + emailEvent.type + ' event.');
 
     res.status(200).send('OK');
 };
