@@ -7,9 +7,9 @@
     "start": "node --harmony server.js",
     "test": "gulp --harmony test"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/Financial-Times/email-analytics-service.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Financial-Times/email-analytics-service.git"
   },
   "engines": {
     "node": "0.12.x"
@@ -17,7 +17,8 @@
   "author": "Daniele Zanni",
   "dependencies": {
     "body-parser": "^1.12.4",
-    "express": "^4.12.4"
+    "express": "^4.12.4",
+    "winston": "^1.0.0"
   },
   "devDependencies": {
     "gulp": "^3.8.11",

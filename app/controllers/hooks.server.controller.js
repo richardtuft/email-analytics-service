@@ -1,5 +1,7 @@
 'use strict';
 
+var logger = require('winston');
+
 exports.handlePost = function(req, res) {
 
     let eventParser = require('../utils/eventParser.server.utils');
@@ -7,7 +9,7 @@ exports.handlePost = function(req, res) {
     let eventsArray = req.body;
     eventsArray.map((rawEvent) => {
         let emailEvent = eventParser.parse(rawEvent);
-        console.log('Received ' + emailEvent.type + ' event.');
+        logger.debug('Received ' + emailEvent.type + ' event.');
     });
 
     res.status(200).send('OK');
