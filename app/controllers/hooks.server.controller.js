@@ -9,7 +9,7 @@ exports.handlePost = function(req, res) {
     let eventsArray = req.body;
     eventsArray.map((rawEvent) => {
         let emailEvent = eventParser.parse(rawEvent);
-        logger.debug('Received ' + emailEvent.type + ' event.');
+        logger.info('Received ' + emailEvent.type + ' event.');
     });
 
     res.status(200).send('OK');
