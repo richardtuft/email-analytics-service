@@ -9,3 +9,5 @@ install:
   - npm install
 after_script:
   - codeclimate < coverage/lcov.info
+after_success:
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && make deploy
