@@ -13,4 +13,4 @@ app.listen(config.port);
 
 module.exports = app;
 
-logger.info('Server running at http://localhost:' + config.port);
+logger.info(process.env.NODE_ENV + ' server running at http://localhost:' + config.port);
