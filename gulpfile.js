@@ -10,6 +10,7 @@ let istanbul = require('gulp-istanbul');
 // Paths
 let files =  {
     server: ['server.js'],
+    worker: ['worker.js'],
     mochaTests: ['./tests/**/*.js'],
     appSrc: ['./app/**/*.js']
 };
@@ -22,7 +23,7 @@ gulp.task('lint', () => {
 });
 
 gulp.task('istanbul', () => {
-    gulp.src(files.appSrc.concat(files.server))
+    gulp.src(files.appSrc.concat(files.server).concat(files.worker))
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
         .on('finish', () => {
