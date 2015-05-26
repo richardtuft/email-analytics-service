@@ -1,6 +1,6 @@
 {
   "name": "email-analytics",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "FT email analytics service",
   "main": "server.js",
   "scripts": {
