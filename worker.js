@@ -8,12 +8,12 @@ throng(start, { workers: 2 }); //TODO: use config or ENV
 
 function start () {
 
-    logger.info(process.env.NODE_ENV  + ' worker started');
+    logger.info('Worker started');
 
     process.on('SIGTERM', shutdown);
 
     function shutdown() {
-        logger.log({ type: 'info', msg: 'shutting down' });
+        logger.info('shutting down');
         process.exit();
     }
 
