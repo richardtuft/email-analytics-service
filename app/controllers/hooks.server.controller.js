@@ -2,7 +2,7 @@
 
 var logger = require('winston');
 
-exports.handlePost = function(req, res) {
+exports.handlePost = (req, res) => {
 
     let eventParser = require('../utils/eventParser.server.utils');
 
