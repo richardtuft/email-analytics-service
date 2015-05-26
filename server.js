@@ -1,6 +1,6 @@
 'use strict';
 
-var logger = require('winston');
+let logger = require('winston');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
