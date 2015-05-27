@@ -28,7 +28,6 @@
     "gulp-istanbul": "^0.9.0",
     "gulp-jshint": "^1.10.0",
     "gulp-mocha": "^2.0.1",
-    "haikro": "^1.14.1",
     "should": "^6.0.3",
     "supertest": "^1.0.1"
   }

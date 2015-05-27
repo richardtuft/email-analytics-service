@@ -9,4 +9,3 @@ install:
 
 after_success:
   - codeclimate < coverage/lcov.info
-  - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && make deploy
