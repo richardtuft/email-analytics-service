@@ -1,11 +1,11 @@
 'use strict';
 
-let logger = require('winston');
+const logger = require('winston');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-let config = require('./config/config');
-let express = require('./config/express');
+const config = require('./config/config');
+const express = require('./config/express');
 
 let app = express();
 
