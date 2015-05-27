@@ -1,7 +1,7 @@
 'use strict';
 
-let port = process.env.PORT || 1338;
-let logLevel = 'warn';
+const port = process.env.PORT || 1338;
+const logLevel = 'warn';
 
 module.exports = {
     port: port,

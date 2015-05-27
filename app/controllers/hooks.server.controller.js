@@ -1,6 +1,7 @@
 'use strict';
 
-var logger = require('winston');
+const logger = require('winston');
+const eventParser = require('../utils/eventParser.server.utils');
 
 const config = require('../../config/config');
 
@@ -10,9 +11,8 @@ console.log(logger.level);
 
 exports.handlePost = (req, res) => {
 
-    let eventParser = require('../utils/eventParser.server.utils');
-
     let eventsArray = req.body;
+
     eventsArray.map((rawEvent) => {
 
         logger.debug('Raw Event: ', rawEvent);

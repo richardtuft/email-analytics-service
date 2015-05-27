@@ -1,10 +1,10 @@
 'use strict';
 
-// Dependencies
-let should = require('should');
+// External Dependencies
+const should = require('should');
 
-// Modules
-let eventParser = require('../app/utils/eventParser.server.utils');
+// Our Modules
+const eventParser = require('../app/utils/eventParser.server.utils');
 
 describe('Event Parser Unit tests:', () => {
 

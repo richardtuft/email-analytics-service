@@ -15,9 +15,18 @@ let files =  {
     appSrc: ['./app/**/*.js']
 };
 
+gulp.task('setTestEnv', function () {
+    process.env.NODE_ENV = 'test';
+});
+
 gulp.task('lint', () => {
 
-    return gulp.src(files.appSrc.concat(files.mochaTests))
+    let allFiles = files.appSrc
+       .concat(files.mochaTests)
+       .concat(files.worker)
+       .concat(files.server);
+
+    return gulp.src(allFiles)
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
@@ -42,4 +51,4 @@ gulp.task('istanbul', () => {
         });
 });
 
-gulp.task('test', ['istanbul', 'lint']);
+gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);

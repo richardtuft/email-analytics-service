@@ -1,10 +1,11 @@
-/**
-    parseEvent.server.utils.js receives a JSON object and returns a valid EmailEvent Object
- **/
-
 'use strict';
 
-exports.parse = function(rawEvent) {
+/**
+ * parse() receives a JSON object and returns a valid EmailEvent Object
+ * @param rawEvent Object The raw event received
+ * @returns Object A formatted event object
+ */
+exports.parse = (rawEvent) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {};
