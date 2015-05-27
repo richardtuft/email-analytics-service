@@ -1,0 +1,10 @@
+{
+  "name":"email-analytics-service",
+  "scripts":{},
+  "env":{
+    "TZ":"Europe/London"
+  },
+  "addons":[
+    "papertrail"
+  ]
+}
