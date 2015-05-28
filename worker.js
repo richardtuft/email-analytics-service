@@ -3,6 +3,7 @@
 let throng = require('throng');
 let logger = require('winston');
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const config = require('./config/config');
 
 logger.level = process.env.LOG_LEVEL || config.logLevel;
