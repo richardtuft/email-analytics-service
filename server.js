@@ -1,9 +1,6 @@
 'use strict';
 
-
-
 // External modules
-require('dotenv').load();
 const logger = require('winston');
 
 /* istanbul ignore next */
