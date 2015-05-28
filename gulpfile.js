@@ -15,20 +15,34 @@ let files =  {
     appSrc: ['./app/**/*.js']
 };
 
+gulp.task('setTestEnv', function () {
+    process.env.NODE_ENV = 'test';
+});
+
 gulp.task('lint', () => {
 
-    return gulp.src(files.appSrc.concat(files.mochaTests))
+    let allFiles = files.appSrc
+       .concat(files.mochaTests)
+       .concat(files.worker)
+       .concat(files.server);
+
+    return gulp.src(allFiles)
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
 gulp.task('istanbul', () => {
-    gulp.src(files.appSrc.concat(files.server).concat(files.worker))
+
+    let allFiles = files.appSrc
+        .concat(files.worker)
+        .concat(files.server);
+
+    gulp.src(allFiles)
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
         .on('finish', () => {
             gulp.src(files.mochaTests)
-                .pipe(mocha())
+                .pipe(mocha({ timeout: 10000 }))
                 .pipe(istanbul.writeReports({
                         reporters: [ 'lcov', 'json', 'text', 'text-summary']
                 })) // Creating the reports after tests
@@ -42,4 +56,4 @@ gulp.task('istanbul', () => {
         });
 });
 
-gulp.task('test', ['istanbul', 'lint']);
+gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);

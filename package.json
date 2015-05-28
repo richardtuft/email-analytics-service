@@ -16,9 +16,11 @@
   },
   "author": "Daniele Zanni",
   "dependencies": {
+    "aws-sdk": "^2.1.30",
     "body-parser": "^1.12.4",
     "dotenv": "^1.1.0",
     "express": "^4.12.4",
+    "q": "^1.4.1",
     "throng": "^1.0.0",
     "winston": "^1.0.0"
   },

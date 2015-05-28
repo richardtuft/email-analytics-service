@@ -1,24 +1,26 @@
 'use strict';
 
-let throng = require('throng');
-let logger = require('winston');
+require('dotenv').load();
+const throng = require('throng');
+const logger = require('winston');
 
+/* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 const config = require('./config/config');
 
-logger.level = process.env.LOG_LEVEL || config.logLevel;
+logger.level = config.logLevel;
 
-
-throng(start, { workers: 2 }); //TODO: use config or ENV
+throng(start);
 
 function start () {
 
-    logger.info('Worker started');
+    logger.info(process.env.NODE_ENV + ' worker started');
 
     process.on('SIGTERM', shutdown);
 
     function shutdown() {
-        logger.info('shutting down');
+        logger.info(process.env.NODE_ENV + ' worker shutting down');
         process.exit();
     }
 

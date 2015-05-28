@@ -1,0 +1,22 @@
+'use strict';
+
+const aws = require('aws-sdk');
+
+const WaitTimeSeconds = 3;
+const VisibilityTimeout = 10;
+const region = process.env.SQS_REGION || 'eu-west-1';
+const accessKeyId = process.env.SQS_ACCESS_KEY;
+const secretAccessKey =  process.env.SQS_SECRET_KEY;
+
+module.exports = new aws.SQS({
+
+    region: region,
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+
+    params: {
+        WaitTimeSeconds: WaitTimeSeconds,
+        VisibilityTimeout: VisibilityTimeout
+    }
+
+});
