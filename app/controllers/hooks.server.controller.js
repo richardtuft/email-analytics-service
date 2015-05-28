@@ -5,9 +5,7 @@ const eventParser = require('../utils/eventParser.server.utils');
 
 const config = require('../../config/config');
 
-logger.level = process.env.LOG_LEVEL || config.logLevel;
-
-console.log(logger.level);
+logger.level = config.logLevel;
 
 exports.handlePost = (req, res) => {
 

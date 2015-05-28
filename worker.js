@@ -8,7 +8,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const config = require('./config/config');
 
-logger.level = process.env.LOG_LEVEL || config.logLevel;
+logger.level = config.logLevel;
 
 throng(start);
 

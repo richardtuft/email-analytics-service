@@ -1,7 +1,7 @@
 'use strict';
 
 const port = process.env.PORT || 1337;
-const logLevel = 'info';
+const logLevel = process.env.LOG_LEVEL || 'info';
 const sqsQueueUrl =  process.env.SQS_QUEUE_URL || '';  //TODO Add default queue
 
 module.exports = {
