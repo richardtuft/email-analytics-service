@@ -32,7 +32,13 @@ gulp.task('lint', () => {
 });
 
 gulp.task('istanbul', () => {
-    gulp.src(files.appSrc.concat(files.server).concat(files.worker))
+
+    let allFiles = files.appSrc
+        .concat(files.mochaTests)
+        .concat(files.worker)
+        .concat(files.server);
+
+    gulp.src(allFiles)
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
         .on('finish', () => {
