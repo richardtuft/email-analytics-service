@@ -3,13 +3,14 @@
 let throng = require('throng');
 let logger = require('winston');
 
+/* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const config = require('./config/config');
 
 logger.level = process.env.LOG_LEVEL || config.logLevel;
 
-throng(start, { workers: 2 }); //TODO: use config
+throng(start);
 
 function start () {
 
@@ -18,7 +19,7 @@ function start () {
     process.on('SIGTERM', shutdown);
 
     function shutdown() {
-        logger.info('shutting down');
+        logger.info(process.env.NODE_ENV + ' worker shutting down');
         process.exit();
     }
 
