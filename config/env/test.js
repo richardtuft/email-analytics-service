@@ -2,7 +2,7 @@
 
 const port = process.env.PORT || 1338;
 const logLevel = process.env.LOG_LEVEL || 'warn';
-const sqsQueueUrl =  process.env.SQS_QUEUE_URL || '';  //TODO Add default queue
+const sqsQueueUrl =  process.env.SQS_QUEUE_URL || 'https://sqs.eu-west-1.amazonaws.com/371548805176/email-platform-analytics-test';
 
 
 module.exports = {

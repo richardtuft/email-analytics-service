@@ -34,7 +34,6 @@ gulp.task('lint', () => {
 gulp.task('istanbul', () => {
 
     let allFiles = files.appSrc
-        .concat(files.mochaTests)
         .concat(files.worker)
         .concat(files.server);
 
@@ -43,7 +42,7 @@ gulp.task('istanbul', () => {
         .pipe(istanbul.hookRequire())
         .on('finish', () => {
             gulp.src(files.mochaTests)
-                .pipe(mocha())
+                .pipe(mocha({ timeout: 10000 }))
                 .pipe(istanbul.writeReports({
                         reporters: [ 'lcov', 'json', 'text', 'text-summary']
                 })) // Creating the reports after tests

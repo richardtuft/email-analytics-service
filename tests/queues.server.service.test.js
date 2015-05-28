@@ -17,17 +17,6 @@ let receiptHandle;
 
 describe('Queues service tests:', () => {
 
-    beforeEach(function(done){
-
-        // Purge test queue to make sure that each test is independent
-        sqs.purgeQueue({ QueueUrl: sqsQueueUrl }, (purgeErr) => {
-            if (purgeErr) {
-                done(purgeErr);
-            }
-            done();
-        });
-    });
-
     describe('The addToQueue() method:', () => {
 
         it('should add a message to the queue', (done) => {
@@ -53,6 +42,19 @@ describe('Queues service tests:', () => {
                     done();
 
                 });
+
+            });
+        });
+
+        it('should throw an error if the message is not a string', (done) => {
+
+            let wrongMsg = {
+                msg: 'A message'
+            };
+
+            queues.addToQueue(wrongMsg, (addErr) => {
+                addErr.should.be.an.Error;
+                done();
 
             });
         });
@@ -92,6 +94,7 @@ describe('Queues service tests:', () => {
         });
 
         it('should retrieve a message from the queue', (done) => {
+
             queues.pullFromQueue((pullErr, message) => {
                 if (pullErr) {
                     done(pullErr);
@@ -100,7 +103,24 @@ describe('Queues service tests:', () => {
                 receiptHandle = message.receiptHandle;
 
                 message.body.should.match(msg);
-                message.receiptHandle.should.exist();
+                message.receiptHandle.should.be.ok;
+
+                done();
+
+            });
+        });
+
+        it('should throw an error if the wrong queue is specified', (done) => {
+
+            queues.pullFromQueue((pullErr, message) => {
+                if (pullErr) {
+                    done(pullErr);
+                }
+
+                receiptHandle = message.receiptHandle;
+
+                message.body.should.match(msg);
+                message.receiptHandle.should.be.ok;
 
                 done();
 
@@ -128,7 +148,7 @@ describe('Queues service tests:', () => {
 
     describe('The deleteFromQueue() method:', () => {
 
-        before((done) => {
+        beforeEach((done) => {
 
             // Add a message to the queue
             sqs.sendMessage({
@@ -157,29 +177,32 @@ describe('Queues service tests:', () => {
 
         });
 
-        it('should delete message which is in the queue', (done) => {
+        it('should delete a message which is in the queue', (done) => {
 
             queues.deleteFromQueue(receiptHandle, (delErr) => {
                 if (delErr) {
                     done(delErr);
                 }
+                // No error was thrown
+                done();
 
-                // Retrieve the messages
-                sqs.receiveMessage({ QueueUrl: sqsQueueUrl }, (receiveErr, data) => {
-
-                    if (receiveErr) {
-                        done(receiveErr);
-                    }
-
-                    //There should not be any message in the queue
-                    data.Messages.should.not.exist();
-                    done();
-
-                });
 
             });
 
         });
+
+        it('should throw an error if the wrong receiptHandle is provided', (done) => {
+
+            let wrongReceiptHandle = 'wrong';
+
+            queues.deleteFromQueue(wrongReceiptHandle, (delErr) => {
+                delErr.should.be.an.Error;
+                done();
+            });
+
+        });
+
+
 
     });
 

@@ -1,7 +1,8 @@
 'use strict';
 
-let throng = require('throng');
-let logger = require('winston');
+require('dotenv').load();
+const throng = require('throng');
+const logger = require('winston');
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
