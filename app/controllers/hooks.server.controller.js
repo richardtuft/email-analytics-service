@@ -2,7 +2,11 @@
 
 var logger = require('winston');
 
-logger.level = 'debug'; //TODO: Use env/config
+const config = require('../../config/config');
+
+logger.level = process.env.LOG_LEVEL || config.logLevel;
+
+console.log(logger.level);
 
 exports.handlePost = (req, res) => {
 
@@ -10,6 +14,7 @@ exports.handlePost = (req, res) => {
 
     let eventsArray = req.body;
     eventsArray.map((rawEvent) => {
+
         logger.debug('Raw Event: ', rawEvent);
 
         let emailEvent = eventParser.parse(rawEvent);
