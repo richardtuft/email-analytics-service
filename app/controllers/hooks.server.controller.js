@@ -20,6 +20,7 @@ exports.handlePost = (req, res) => {
 
         logger.info('Batch of messages sent to the queue');
 
+        /* istanbul ignore next */
         if (eachErr) {
             logger.error(eachErr);
         }

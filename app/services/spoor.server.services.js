@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 // Our modules
 const config = require('../../config/config');
 
-logger.level = process.env.LOG_LEVEL || config.logLevel;
+logger.level = config.logLevel;
 
 exports.send = (event) => {
 
