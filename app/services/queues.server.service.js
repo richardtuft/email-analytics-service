@@ -27,8 +27,6 @@ exports.addToQueue = (message, next) => {
 
         let messageId = data.MessageId;
 
-        logger.debug('Message sent: ', messageId);
-
         /* istanbul ignore else  */
         if (next) {
             next(null, messageId);
@@ -62,12 +60,9 @@ exports.pullFromQueue = (next) => {
 
         /* istanbul ignore next  */
         if (!data.Messages) {
-            logger.info( 'There are no messages to process.' );
             next();
         }
         else {
-            logger.debug('Retrieved ' + data.Messages[0].Body  + ' from the queue.');
-
             /* istanbul ignore else  */
             if (next) {
                 next(null, {
@@ -102,7 +97,6 @@ exports.deleteFromQueue = (receiptHandle, next) => {
         ReceiptHandle: receiptHandle
     })
     .then(() => {
-            logger.debug(( "Message " + receiptHandle + " deleted from queue!" ));
 
         /* istanbul ignore else  */
         if (next) {

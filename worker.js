@@ -21,24 +21,26 @@ throng(start);
 
 function start () {
 
-    logger.info(process.env.NODE_ENV + ' worker started');
+    logger.info('WORKER.JS:',  process.env.NODE_ENV + ' worker started');
 
     process.on('SIGTERM', shutdown);
 
     async.forever(moveToSpoor, (err) => {
-        logger.error(err);
+        logger.error('WORKER.JS:', err);
     });
 
     function moveToSpoor (next) {
 
-        logger.info('Looking for new messages to move');
+        logger.info('WORKER.JS:',  'Looking for new messages to move');
+        logger.profile('WORKER.JS:',  'moveToSpoor()');
 
         queue.pullFromQueue((pullErr, data) => {
             if (pullErr) {
                 next(pullErr);
             }
             if (data) {
-                // We have an event
+
+                logger.debug('WORKER.JS:',  'Message retrieved from the queue');
                 let emailEvent = data.body;
                 let receiptHandle = data.receiptHandle;
 
@@ -48,7 +50,7 @@ function start () {
                             if (delErr) {
                                 next(delErr);
                             }
-                            logger.debug('Moved message from SQS to Spoor');
+                            logger.profile('WORKER.JS:',  'moveToSpoor()');
                             next();
 
                         });
@@ -56,7 +58,8 @@ function start () {
                     .catch(next);
             }
             else {
-                logger.info('No message. Let\'s try again');
+                logger.info('WORKER.JS:',  'No message. Let\'s try again');
+                logger.profile('WORKER.JS:',  'moveToSpoor()');
                 next();
             }
         });
@@ -64,7 +67,7 @@ function start () {
     }
 
     function shutdown() {
-        logger.info(process.env.NODE_ENV + ' worker shutting down');
+        logger.info('WORKER.JS:',  process.env.NODE_ENV + ' worker shutting down');
         process.exit();
     }
 
