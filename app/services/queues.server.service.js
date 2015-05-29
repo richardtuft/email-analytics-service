@@ -24,11 +24,14 @@ exports.addToQueue = (message, next) => {
         MessageBody: message
     })
     .then((data) => {
-        logger.info('Message sent: ', data.MessageId);
+
+        let messageId = data.MessageId;
+
+        logger.debug('Message sent: ', messageId);
 
         /* istanbul ignore else  */
         if (next) {
-            next();
+            next(null, messageId);
         }
 
     })
@@ -62,7 +65,7 @@ exports.pullFromQueue = (next) => {
             throw(new Error( 'There are no messages to process.' ));
         }
 
-        logger.info('Retrieved ' + data.Messages[0].Body  + ' from the queue.');
+        logger.debug('Retrieved ' + data.Messages[0].Body  + ' from the queue.');
 
         /* istanbul ignore else  */
         if (next) {
@@ -97,7 +100,7 @@ exports.deleteFromQueue = (receiptHandle, next) => {
         ReceiptHandle: receiptHandle
     })
     .then(() => {
-            logger.info(( "Message " + receiptHandle + " deleted from queue!" ));
+            logger.debug(( "Message " + receiptHandle + " deleted from queue!" ));
 
         /* istanbul ignore else  */
         if (next) {
