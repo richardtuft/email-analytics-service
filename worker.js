@@ -38,6 +38,7 @@ function start () {
                 next(pullErr);
             }
             if (data) {
+                // We have an event
                 let emailEvent = data.body;
                 let receiptHandle = data.receiptHandle;
 
@@ -53,6 +54,10 @@ function start () {
                         });
                     })
                     .catch(next);
+            }
+            else {
+                logger.info('No message. Let\'s try again');
+                next();
             }
         });
 
