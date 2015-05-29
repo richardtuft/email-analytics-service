@@ -32,7 +32,6 @@ function start () {
     function moveToSpoor (next) {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
-        logger.profile('WORKER.JS:',  'moveToSpoor()');
 
         queue.pullFromQueue((pullErr, data) => {
             if (pullErr) {
@@ -50,7 +49,7 @@ function start () {
                             if (delErr) {
                                 next(delErr);
                             }
-                            logger.profile('WORKER.JS:',  'moveToSpoor()');
+                            logger.verbose('WORKER.JS:',  'Message moved to Spoor');
                             next();
 
                         });
@@ -59,7 +58,6 @@ function start () {
             }
             else {
                 logger.verbose('WORKER.JS:',  'No message. Let\'s try again');
-                logger.profile('WORKER.JS:',  'moveToSpoor()');
                 next();
             }
         });
