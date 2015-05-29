@@ -41,7 +41,7 @@ exports.handlePost = (req, res) => {
 
             //TODO?: deal with error
 
-            logger.info('HOOKS:', 'Message added to the queue');
+            logger.verbose('HOOKS:', 'Message added to the queue');
             next();
         });
 
