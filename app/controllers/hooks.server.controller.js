@@ -16,13 +16,16 @@ exports.handlePost = (req, res) => {
 
     let eventsArray = req.body;
 
+    logger.info('HOOKS:', 'Batch of messages received', {SIZE: eventsArray.length});
+
+    logger.profile('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
-        logger.info('Batch of messages sent to the queue');
+        logger.profile('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
 
         /* istanbul ignore next */
         if (eachErr) {
-            logger.error(eachErr);
+            logger.error('HOOKS:',eachErr);
         }
     });
 
@@ -33,14 +36,12 @@ exports.handlePost = (req, res) => {
         let jEmailEvent = eventParser.parse(rawEvent);
         let emailEvent = JSON.stringify(jEmailEvent);
 
-        logger.debug('Raw Event: ', rawEvent);
-        logger.info('Received ' + jEmailEvent.type + ' event.');
-
+        logger.debug('HOOKS:', 'Raw Event: %j', rawEvent);
         queue.addToQueue(emailEvent, (addErr, messageId) => {
 
             //TODO?: deal with error
 
-            logger.debug('Message added to the queue: ', messageId);
+            logger.info('HOOKS:', 'Message added to the queue');
             next();
         });
 
