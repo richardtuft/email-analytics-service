@@ -31,7 +31,7 @@ function start () {
 
     function moveToSpoor (next) {
 
-        logger.info('WORKER.JS:',  'Looking for new messages to move');
+        logger.verbose('WORKER.JS:',  'Looking for new messages to move');
         logger.profile('WORKER.JS:',  'moveToSpoor()');
 
         queue.pullFromQueue((pullErr, data) => {
@@ -40,7 +40,7 @@ function start () {
             }
             if (data) {
 
-                logger.debug('WORKER.JS:',  'Message retrieved from the queue');
+                logger.verbose('WORKER.JS:',  'Message retrieved from the queue');
                 let emailEvent = data.body;
                 let receiptHandle = data.receiptHandle;
 
@@ -58,7 +58,7 @@ function start () {
                     .catch(next);
             }
             else {
-                logger.info('WORKER.JS:',  'No message. Let\'s try again');
+                logger.verbose('WORKER.JS:',  'No message. Let\'s try again');
                 logger.profile('WORKER.JS:',  'moveToSpoor()');
                 next();
             }
