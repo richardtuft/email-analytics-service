@@ -30,7 +30,7 @@ function dealWithEvent (rawEvent, next) {
 
 exports.handlePost = (req, res) => {
 
-    const concurrentConnections = 10;
+    const concurrentConnections = 100; //Use config/env
 
     let eventsArray = req.body;
 
