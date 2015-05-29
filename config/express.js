@@ -8,12 +8,13 @@ module.exports = () => {
     let app = express();
 
     app.use(bodyParser.urlencoded({
-        extended: true
+        extended: true,
+        limit:'10mb'
     }));
 
 
     app.use(bodyParser.json({
-        limit: 1024 * 1024 * 2 //2MB
+        limit:'10mb'
     }));
 
     require('../app/routes/hooks.server.routes.js')(app);
