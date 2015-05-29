@@ -1,8 +1,16 @@
 'use strict';
 
-require('dotenv').load();
+const dotEnv = require('dotenv');
 const throng = require('throng');
 const logger = require('winston');
+
+try {
+    // If we are on a hosted environment we won't probably have a .env file
+    dotEnv.load();
+}
+catch (e) {
+    // Do nothing
+}
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';

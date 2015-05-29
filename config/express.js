@@ -11,7 +11,10 @@ module.exports = () => {
         extended: true
     }));
 
-    app.use(bodyParser.json());
+
+    app.use(bodyParser.json({
+        limit: 1024 * 1024 * 2 //2MB
+    }));
 
     require('../app/routes/hooks.server.routes.js')(app);
 
