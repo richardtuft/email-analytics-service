@@ -62,17 +62,19 @@ exports.pullFromQueue = (next) => {
 
         /* istanbul ignore next  */
         if (!data.Messages) {
-            throw(new Error( 'There are no messages to process.' ));
+            logger.info( 'There are no messages to process.' );
+            next();
         }
+        else {
+            logger.debug('Retrieved ' + data.Messages[0].Body  + ' from the queue.');
 
-        logger.debug('Retrieved ' + data.Messages[0].Body  + ' from the queue.');
-
-        /* istanbul ignore else  */
-        if (next) {
-            next(null, {
-                body: data.Messages[0].Body,
-                receiptHandle: data.Messages[0].ReceiptHandle
-            });
+            /* istanbul ignore else  */
+            if (next) {
+                next(null, {
+                    body: data.Messages[0].Body,
+                    receiptHandle: data.Messages[0].ReceiptHandle
+                });
+            }
         }
 
     })
