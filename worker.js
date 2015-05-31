@@ -29,7 +29,7 @@ function start () {
         logger.error('WORKER.JS:', err);
     });
 
-    function moveToSpoor (next) {
+    function moveToSpoor(next) {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
 
@@ -51,14 +51,13 @@ function start () {
                             }
                             logger.verbose('WORKER.JS:',  'Message moved to Spoor');
                             next();
-
                         });
                     })
                     .catch(next);
             }
             else {
-                logger.verbose('WORKER.JS:',  'No message. Let\'s try again');
-                next();
+                logger.verbose('WORKER.JS:',  'No message. Let\'s try again in 10 seconds');
+                setTimeout(next, 10000); //Use config/env for delay
             }
         });
 
