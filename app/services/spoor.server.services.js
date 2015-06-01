@@ -9,8 +9,6 @@ const config = require('../../config/config');
 
 logger.level = config.logLevel;
 
-//TODO: Remove when spoor is up again
-/* istanbul ignore next */
 exports.send = (event) => {
 
     const postUrl = config.spoorPostUrl;
@@ -26,8 +24,10 @@ exports.send = (event) => {
             body: JSON.stringify(event)
         })
         .then((res) => {
+
+            /* istanbul ignore else */
             if (res.status === 200) {
-                fulfill(res.json());
+                fulfill(res);
             }
             else {
                 //TODO? what do we do if Spoor is down?
