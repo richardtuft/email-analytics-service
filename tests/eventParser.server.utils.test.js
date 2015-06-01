@@ -155,5 +155,22 @@ describe('Event Parser Unit tests:', () => {
 
     });
 
+    it('correctly throws an exception if the event type is not recognised', (done) => {
+        let rawEvent = require ('./events/unsubscribe.json');
+        rawEvent.event = 'wrongType';
+        let parsedEvent;
+
+        try {
+            parsedEvent = eventParser.parse(rawEvent);
+        }
+        catch (parseErr) {
+            parseErr.should.be.an.Error;
+            done();
+            return;
+        }
+        done('We shouldn\'t be here');
+
+    });
+
 
 });
