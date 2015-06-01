@@ -11,12 +11,32 @@ exports.parse = (rawEvent) => {
     let parsedEvent = {};
 
     switch (rawEvent.event) {
-        //TODO: deal with the different event types
-        //TODO: what to if we get an invalid event type
+
+        //TODO: Specific type-based event handling
+        case 'bounce':
+        case 'click':
+        case 'deferred':
+        case 'delivered':
+        case 'dropped':
+        case 'group_resubscribe':
+        case 'group_unsubscribe':
+        case 'open':
+        case 'processed':
+        case 'spamreport':
+        case 'unsubscribe':
+            break;
         default:
-            parsedEvent.type = rawEvent.event;
-            parsedEvent.email = rawEvent.email;
+            // TODO: what do we want to do if we get the wrong event?
+            throw(new Error('EVENTPARSER: unrecognised event type: ' + rawEvent.type));
+
     }
+
+    // Common to every type event handling
+    parsedEvent.event = rawEvent.event;
+    parsedEvent.source = 'email' + '.' + 'something'; //TODO: add source
+    parsedEvent.meta = {
+        eventTimestamp: rawEvent.timestamp
+    };
 
     return parsedEvent;
 

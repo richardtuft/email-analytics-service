@@ -8,8 +8,7 @@ const should = require('should');
 // Our Modules
 const spoor = require('../app/services/spoor.server.services');
 
-describe.skip('Spoor tests:', () => { //TODO: Remove SKIP when spoor is up again
-
+describe('Spoor tests:', () => {
     describe('The send() method:', () => {
 
         it('can send an event', (done) => {
