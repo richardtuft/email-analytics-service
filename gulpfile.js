@@ -1,43 +1,46 @@
 'use strict';
 
 // Third party modules/dependencies
-let gulp = require('gulp');
-let mocha = require('gulp-mocha');
-let jshint = require('gulp-jshint');
-let istanbul = require('gulp-istanbul');
-
+const gulp = require('gulp');
+const mocha = require('gulp-mocha');
+const jshint = require('gulp-jshint');
+const istanbul = require('gulp-istanbul');
+const todo = require('gulp-todo');
 
 // Paths
-let files =  {
+const files =  {
     server: ['server.js'],
     worker: ['worker.js'],
     mochaTests: ['./tests/**/*.js'],
     appSrc: ['./app/**/*.js']
 };
 
+const allJSFiles = files.appSrc
+    .concat(files.mochaTests)
+    .concat(files.worker)
+    .concat(files.server);
+
+// Set Test environment
 gulp.task('setTestEnv', function () {
     process.env.NODE_ENV = 'test';
 });
 
+// JSHint linting
 gulp.task('lint', () => {
 
-    let allFiles = files.appSrc
-       .concat(files.mochaTests)
-       .concat(files.worker)
-       .concat(files.server);
-
-    return gulp.src(allFiles)
+    return gulp.src(allJSFiles)
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
+// Mocha tests with coverage
 gulp.task('istanbul', () => {
 
-    let allFiles = files.appSrc
+    let instFiles = files.appSrc
         .concat(files.worker)
         .concat(files.server);
 
-    gulp.src(allFiles)
+    gulp.src(instFiles)
         .pipe(istanbul())
         .pipe(istanbul.hookRequire())
         .on('finish', () => {
@@ -54,6 +57,13 @@ gulp.task('istanbul', () => {
                     process.exit();
                 });
         });
+});
+
+// Generate file containing everything to do
+gulp.task('todo', function() {
+    gulp.src(allJSFiles)
+        .pipe(todo())
+        .pipe(gulp.dest('./'));
 });
 
 gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);

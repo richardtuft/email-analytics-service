@@ -3,113 +3,76 @@
 // Our modules
 const sqs = require('../../config/sqs');
 const config = require('../../config/config');
+const NoMessageInQueue = require('../errors/noMessageInQueue.server.error');
 
 // External modules
 const Q = require( 'q' );
 const logger = require('winston');
 
-// Constants
-const queueUrl = config.sqsQueueUrl;
+exports.addToQueue = (message) => {
 
-/**
- * addToQueue()
- * @param message String the message to add to the queue
- * @param next function callback(onErr, onSuccess)
- */
-exports.addToQueue = (message, next) => {
-    let sendMessage = Q.nbind( sqs.sendMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+    return new Promise((fulfill, reject) => {
 
-    sendMessage({
-        QueueUrl: queueUrl,
-        MessageBody: message
-    })
-    .then((data) => {
+        let sendMessage = Q.nbind( sqs.sendMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
 
-        let messageId = data.MessageId;
+        sendMessage({
+            QueueUrl: config.sqsQueueUrl,
+            MessageBody: message
+        })
+        .then((data) => {
+            let messageId = data.MessageId;
+            fulfill(messageId);
 
-        /* istanbul ignore else  */
-        if (next) {
-            next(null, messageId);
-        }
+        })
+        .catch(reject);
 
-    })
-    .catch ((error) => {
-
-        /* istanbul ignore else  */
-        if (next) {
-            next(error);
-        }
     });
 
 };
 
+exports.pullFromQueue = () => {
 
-/**
- * pullFromQueue()
- * @param next function callback(onErr, onSuccess). OnSuccess will receive a message object with two properties:
- *  - message.body: the body of the message
- *  - message.receiptHandle: an id to be used to delete the message from the queue
- */
-exports.pullFromQueue = (next) => {
-    let receiveMessage = Q.nbind( sqs.receiveMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+    return new Promise((fulfill, reject) => {
+        let receiveMessage = Q.nbind( sqs.receiveMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
 
-    receiveMessage ({
-        QueueUrl: queueUrl
-    })
-    .then((data) => {
+        receiveMessage ({
+            QueueUrl: config.sqsQueueUrl
+        })
+        .then((data) => {
 
-        /* istanbul ignore next  */
-        if (!data.Messages) {
-            next();
-        }
-        else {
-            /* istanbul ignore else  */
-            if (next) {
-                next(null, {
-                    body: data.Messages[0].Body,
-                    receiptHandle: data.Messages[0].ReceiptHandle
+            //There are no messages in the queue
+            /* istanbul ignore if  */
+            if (!data.Messages) {
+                reject(new NoMessageInQueue());
+            }
+            else {
+                let message = data.Messages[0];
+
+                fulfill({
+                    id: message.MessageId,
+                    body: message.Body,
+                    receiptHandle: message.ReceiptHandle
                 });
             }
-        }
 
-    })
-    .catch ((error) => {
-        /* istanbul ignore next  */
-        if (next) {
-            next(error);
-        }
-
+        })
+        .catch (reject);
     });
 
 };
 
-/**
- * deleteFromQueue
- * @param receiptHandle String An identifier for a received message
- * @param next function callback(onErr, onSuccess)
- */
-exports.deleteFromQueue = (receiptHandle, next) => {
+exports.deleteFromQueue = (receiptHandle) => {
 
-    let deleteMessage = Q.nbind( sqs.deleteMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+    return new Promise((fulfill, reject) =>  {
 
-    deleteMessage({
-        QueueUrl: queueUrl,
-        ReceiptHandle: receiptHandle
-    })
-    .then(() => {
+        let deleteMessage = Q.nbind( sqs.deleteMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
 
-        /* istanbul ignore else  */
-        if (next) {
-            next();
-        }
-    })
-    .catch ((error) => {
-
-        /* istanbul ignore else  */
-        if (next) {
-            next(error);
-        }
-
+        deleteMessage({
+            QueueUrl: config.sqsQueueUrl,
+            ReceiptHandle: receiptHandle
+        })
+        .then(fulfill)
+        .catch (reject);
     });
 
 };

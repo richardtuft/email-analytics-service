@@ -14,6 +14,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const config = require('./config/config');
 const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
+const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
 logger.level = config.logLevel;
 
@@ -26,40 +27,46 @@ function start () {
     process.on('SIGTERM', shutdown);
 
     async.forever(moveToSpoor, (err) => {
+
         logger.error('WORKER.JS:', err);
+        shutdown();
+
     });
 
     function moveToSpoor(next) {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
 
-        queue.pullFromQueue((pullErr, data) => {
-            if (pullErr) {
-                next(pullErr);
-            }
-            if (data) {
+        let receiptHandle;
 
-                logger.verbose('WORKER.JS:',  'Message retrieved from the queue');
+        queue.pullFromQueue()
+            .then((data) => {
+                logger.verbose('WORKER.JS:', 'Message retrieved from the queue');
                 let emailEvent = data.body;
-                let receiptHandle = data.receiptHandle;
+                receiptHandle = data.receiptHandle;
+                return spoor.send(emailEvent);
+            })
+            .then(() => {
+                return queue.deleteFromQueue(receiptHandle);
+            })
+            .then(() => {
+                logger.verbose('WORKER.JS:',  'Message moved to Spoor');
+                next();
+            })
+            .catch(function (error) {
+                // If we have no message we want to wait for some time and then try again
+                if (error instanceof NoMessageInQueue) {
+                    let waitWhenEmpty = 1000; //TODO: use config/env
+                    logger.info('WORKER.JS', error.message);
+                    logger.info('WORKER.JS', 'Trying again in ' + waitWhenEmpty + 'ms');
+                    setTimeout(next, waitWhenEmpty);
+                }
+                // If any other error happens, we want the loop to end
+                else {
+                    next(error);
+                }
 
-                spoor.send(emailEvent)
-                    .then(() => {
-                        queue.deleteFromQueue(receiptHandle, (delErr) => {
-                            if (delErr) {
-                                next(delErr);
-                            }
-                            logger.verbose('WORKER.JS:',  'Message moved to Spoor');
-                            next();
-                        });
-                    })
-                    .catch(next);
-            }
-            else {
-                logger.verbose('WORKER.JS:',  'No message. Let\'s try again in 10 seconds');
-                setTimeout(next, 10000); //Use config/env for delay
-            }
-        });
+            });
 
     }
 
