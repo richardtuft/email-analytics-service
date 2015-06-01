@@ -1,7 +1,10 @@
 'use strict';
 
+// TODO: mock endpoints
+
 // External Dependencies
 const should = require('should');
+const Q = require( 'q' );
 
 // Our Modules
 const queues = require('../app/services/queues.server.service');
@@ -12,6 +15,11 @@ const config = require('../config/config');
 const msg = 'A message';
 const sqsQueueUrl = config.sqsQueueUrl;
 
+//Use the Q module to create a promise interface for the sqs methods
+let sendMessage = Q.nbind(sqs.sendMessage, sqs);
+let receiveMessage = Q.nbind(sqs.receiveMessage, sqs);
+let deleteMessage = Q.nbind(sqs.deleteMessage, sqs);
+
 // Test variables
 let receiptHandle;
 
@@ -21,30 +29,23 @@ describe('Queues service tests:', () => {
 
         it('should add a message to the queue', (done) => {
 
-            queues.addToQueue(msg, (addErr) => {
-                if (addErr) {
-                    done(addErr);
-                }
+            queues.addToQueue(msg)
 
-                // Retrieve the message
-                sqs.receiveMessage({ QueueUrl: sqsQueueUrl }, (receiveErr, data) => {
+                .then(() => {
+                    return receiveMessage({ QueueUrl: sqsQueueUrl });
+                })
 
-                    if (receiveErr) {
-                        done(receiveErr);
-                    }
-
+                .then((data) => {
                     let message = data.Messages[0];
-
                     receiptHandle = message.ReceiptHandle;
 
                     // If the queue contains older messages, we are not going to pull the message we have just sent
                     message.Body.should.be.a.string;
 
                     done();
+                })
+                .catch(done);
 
-                });
-
-            });
         });
 
         it('should throw an error if the message is not a string', (done) => {
@@ -53,25 +54,25 @@ describe('Queues service tests:', () => {
                 msg: 'A message'
             };
 
-            queues.addToQueue(wrongMsg, (addErr) => {
-                addErr.should.be.an.Error;
-                done();
+            queues.addToQueue(wrongMsg)
+                .then(() => {
+                    done('We shouldn\'t be here');
+                })
+                .catch((addErr) => {
+                    addErr.should.be.an.Error;
+                    done();
+                });
 
-            });
         });
 
         after((done) => {
 
-            //Delete message in the queue
-            sqs.deleteMessage({ QueueUrl: sqsQueueUrl,  ReceiptHandle: receiptHandle }, (delErr) => {
-
-                if (delErr) {
-                    done(delErr);
-                }
-                done();
-
-            });
-
+            //Delete the message added to the queue
+            deleteMessage({ QueueUrl: sqsQueueUrl,  ReceiptHandle: receiptHandle })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
         });
 
     });
@@ -81,51 +82,37 @@ describe('Queues service tests:', () => {
         // Add a message to the queue
         before((done) => {
 
-            sqs.sendMessage({
-                QueueUrl: sqsQueueUrl,
-                MessageBody: msg
-            }, (sendErr) => {
-
-                if (sendErr) {
-                    done(sendErr);
-                }
-                done();
-
-            });
+            sendMessage({ QueueUrl: sqsQueueUrl, MessageBody: msg })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should retrieve a message from the queue', (done) => {
 
-            queues.pullFromQueue((pullErr, message) => {
-                if (pullErr) {
-                    done(pullErr);
-                }
+            queues.pullFromQueue()
+                .then((message) => {
 
-                receiptHandle = message.receiptHandle;
+                    receiptHandle = message.receiptHandle;
+                    // When testing, we can't be sure that the message we are receiving is the same one we have just sent
+                    message.body.should.be.a.string;
+                    message.receiptHandle.should.be.ok;
 
-                // When testing, we can't be sure that the message we are receiving is the same one we have just sent
-                message.body.should.be.a.string;
-                message.receiptHandle.should.be.ok;
+                    done();
 
-                done();
-
-            });
+                })
+                .catch(done);
         });
 
         after((done) => {
 
-            //Delete message in the queue
-            sqs.deleteMessage({
-                QueueUrl: sqsQueueUrl,
-                ReceiptHandle: receiptHandle
-            }, (delErr) => {
-
-                if (delErr) {
-                    done(delErr);
-                }
-                done();
-
-            });
+            //Delete the message added to the queue
+            deleteMessage({ QueueUrl: sqsQueueUrl,  ReceiptHandle: receiptHandle })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
 
         });
 
@@ -136,43 +123,28 @@ describe('Queues service tests:', () => {
         beforeEach((done) => {
 
             // Add a message to the queue
-            sqs.sendMessage({
-                QueueUrl: sqsQueueUrl,
-                MessageBody: msg
-            }, (sendErr) => {
-
-                if (sendErr) {
-                    done(sendErr);
-                }
-
-                // Retrieve the message
-                sqs.receiveMessage({ QueueUrl: sqsQueueUrl }, (receiveErr, data) => {
-
-                    if (receiveErr) {
-                        done(receiveErr);
-                    }
+            sendMessage({ QueueUrl: sqsQueueUrl, MessageBody: msg })
+                .then(() => {
+                    // Receive the message
+                    return receiveMessage({ QueueUrl: sqsQueueUrl });
+                })
+                .then((data) => {
                     let message = data.Messages[0];
+                    // Set the receiptHandle
                     receiptHandle = message.ReceiptHandle;
-
                     done();
-
-                });
-
-            });
+                })
+                .catch(done);
 
         });
 
         it('should delete a message which is in the queue', (done) => {
 
-            queues.deleteFromQueue(receiptHandle, (delErr) => {
-                if (delErr) {
-                    done(delErr);
-                }
-                // No error was thrown
-                done();
-
-
-            });
+            queues.deleteFromQueue(receiptHandle)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
 
         });
 
@@ -180,10 +152,14 @@ describe('Queues service tests:', () => {
 
             let wrongReceiptHandle = 'wrong';
 
-            queues.deleteFromQueue(wrongReceiptHandle, (delErr) => {
-                delErr.should.be.an.Error;
-                done();
-            });
+            queues.deleteFromQueue(wrongReceiptHandle)
+                .then(() => {
+                    done('We shouldn\'t be here');
+                })
+                .catch((delErr) => {
+                    delErr.should.be.an.Error;
+                    done();
+                });
 
         });
 

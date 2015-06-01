@@ -18,10 +18,9 @@ exports.handlePost = (req, res) => {
 
     logger.info('HOOKS:', 'Batch of messages received', {SIZE: eventsArray.length});
 
-    logger.profile('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
-        logger.profile('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
+        logger.info('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
 
         /* istanbul ignore next */
         if (eachErr) {
@@ -32,18 +31,24 @@ exports.handlePost = (req, res) => {
     // Do not wait for the array to be processed, send the Ack as soon as possible
     res.status(200).send('OK');
 
-    function dealWithEvent (rawEvent, next) {
-        let jEmailEvent = eventParser.parse(rawEvent);
-        let emailEvent = JSON.stringify(jEmailEvent);
+};
 
-        logger.debug('HOOKS:', 'Raw Event: %j', rawEvent);
-        queue.addToQueue(emailEvent, (addErr, messageId) => {
+function dealWithEvent (rawEvent, next) {
 
-            //TODO?: deal with error
+    let jEmailEvent = eventParser.parse(rawEvent);
+    let emailEvent = JSON.stringify(jEmailEvent);
 
+    logger.debug('HOOKS:', 'Raw Event:', rawEvent);
+
+    queue.addToQueue(emailEvent)
+        .then(() => {
             logger.verbose('HOOKS:', 'Message added to the queue');
             next();
+        })
+        .catch((addErr) => {
+            /* istanbul ignore next */
+            logger.error('HOOKS:', addErr);
+            /* istanbul ignore next */
+            next(addErr);
         });
-
-    }
-};
+}
