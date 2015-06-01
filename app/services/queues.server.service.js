@@ -13,7 +13,8 @@ exports.addToQueue = (message) => {
 
     return new Promise((fulfill, reject) => {
 
-        let sendMessage = Q.nbind( sqs.sendMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+        // Use the Q module to create a promise interface for the sqs sendMessage method
+        let sendMessage = Q.nbind( sqs.sendMessage, sqs );
 
         sendMessage({
             QueueUrl: config.sqsQueueUrl,
@@ -33,7 +34,9 @@ exports.addToQueue = (message) => {
 exports.pullFromQueue = () => {
 
     return new Promise((fulfill, reject) => {
-        let receiveMessage = Q.nbind( sqs.receiveMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+
+        // Use the Q module to create a promise interface for the sqs receiveMessage method
+        let receiveMessage = Q.nbind( sqs.receiveMessage, sqs );
 
         receiveMessage ({
             QueueUrl: config.sqsQueueUrl
@@ -65,7 +68,8 @@ exports.deleteFromQueue = (receiptHandle) => {
 
     return new Promise((fulfill, reject) =>  {
 
-        let deleteMessage = Q.nbind( sqs.deleteMessage, sqs ); //Use the Q module to create a promise interface for the sqs methods
+        // Use the Q module to create a promise interface for the sqs deleteMessage method
+        let deleteMessage = Q.nbind( sqs.deleteMessage, sqs );
 
         deleteMessage({
             QueueUrl: config.sqsQueueUrl,

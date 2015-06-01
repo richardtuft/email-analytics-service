@@ -12,10 +12,13 @@ exports.parse = (rawEvent) => {
 
     switch (rawEvent.event) {
         //TODO: deal with the different event types
-        //TODO: what to if we get an invalid event type
+        //TODO: what to if we get an invalid event type?
         default:
-            parsedEvent.type = rawEvent.event;
-            parsedEvent.email = rawEvent.email;
+            parsedEvent.event = rawEvent.event;
+            parsedEvent.source = 'email' + '.' + 'something'; //TODO: add source
+            parsedEvent.meta = {
+                eventTimestamp: rawEvent.timestamp
+            };
     }
 
     return parsedEvent;

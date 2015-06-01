@@ -9,7 +9,8 @@ const config = require('../../config/config');
 
 logger.level = config.logLevel;
 
-/* istanbul ignore next */ //TODO: Remove when spoor is up again
+//TODO: Remove when spoor is up again
+/* istanbul ignore next */
 exports.send = (event) => {
 
     const postUrl = config.spoorPostUrl;
@@ -29,13 +30,12 @@ exports.send = (event) => {
                 fulfill(res.json());
             }
             else {
-                throw('Spoor responded with the wrong status');
+                //TODO? what do we do if Spoor is down?
+                throw('Spoor responded with the wrong status:' + res.status);
             }
 
          })
-        .catch((fetchErr) => {
-            reject(fetchErr);
-        });
+        .catch(reject);
     });
 
 
