@@ -5,8 +5,7 @@ require('dotenv').load({silent: true});
 // External modules
 const throng = require('throng');
 const logger = require('winston');
-const async = require('async');
-const memwatch = require('memwatch-next');
+const memwatch = require('memwatch-next'); //TODO: Remove
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -32,7 +31,6 @@ memwatch.on('leak', function(info) {
 
 logger.level = config.logLevel;
 
-let receiptHandle;
 
 throng(start, {
     workers: config.workers,
@@ -45,43 +43,54 @@ function start () {
 
     process.on('SIGTERM', shutdown);
 
-    async.forever(moveToSpoor, (err) => {
+    forever(moveToSpoor).then(null, (err) => {
 
         logger.error('WORKER.JS:', err);
         shutdown();
 
     });
 
-    function moveToSpoor(next) {
+    function forever (fn) {
+        return fn().then(function () {
+            return forever(fn);  // re-execute if successful
+        })
+    }
+
+    function moveToSpoor() {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
 
-        queue.pullFromQueue()
-            .then((data) => {
-                logger.verbose('WORKER.JS:', 'Message retrieved from the queue');
-                let emailEvent = data.body;
-                receiptHandle = data.receiptHandle;
-                return spoor.send(emailEvent);
-            })
-            .then(() => {
-                return queue.deleteFromQueue(receiptHandle);
-            })
-            .then(() => {
-                logger.verbose('WORKER.JS:',  'Message moved to Spoor');
-                process.nextTick(next);
-            })
-            .catch(function (error) {
-                // If we have no message we want to wait for some time and then try again
-                if (error instanceof NoMessageInQueue) {
-                    logger.info('WORKER.JS', error.message);
-                    process.nextTick(next);
-                }
-                // If any other error happens, we want the loop to end
-                else {
-                    next(error);
-                }
+        let lastMessageFound;
 
-            });
+        return new Promise((fulfill, reject) => {
+
+            queue.pullFromQueue()
+                .then((data) => {
+                    logger.verbose('WORKER.JS:', 'Message retrieved from the queue');
+                    lastMessageFound = data;
+                    return spoor.send(lastMessageFound.body);
+                })
+                .then(() => {
+                    return queue.deleteFromQueue(lastMessageFound.receiptHandle);
+                })
+                .then(() => {
+                    logger.verbose('WORKER.JS:',  'Message moved to Spoor');
+                    fulfill();
+
+                })
+                .catch(function (error) {
+                    // If we have no message we want to wait for some time and then try again
+                    if (error instanceof NoMessageInQueue) {
+                        logger.info('WORKER.JS', error.message);
+                        fulfill();
+                    }
+                    // If any other error happens, we want the loop to end
+                    else {
+                        reject(error);
+                    }
+
+                });
+        });
 
     }
 
