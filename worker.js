@@ -76,6 +76,7 @@ function start () {
                 })
                 .then(() => {
                     logger.verbose(loggerId,  'Message moved to Spoor');
+                    lastMessageFound = null;
                     fulfill();
                 })
                 .catch(function (error) {
