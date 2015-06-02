@@ -31,6 +31,7 @@ memwatch.on('leak', function(info) {
 
 logger.level = config.logLevel;
 
+const loggerId = 'WORKER.JS' + process.pid;
 
 throng(start, {
     workers: config.workers,
@@ -39,26 +40,30 @@ throng(start, {
 
 function start () {
 
-    logger.info('WORKER.JS:',  process.env.NODE_ENV + ' worker started');
+
+    logger.info(loggerId,  process.env.NODE_ENV + ' worker started');
 
     process.on('SIGTERM', shutdown);
 
-    forever(moveToSpoor).then(null, (err) => {
+    forever(moveToSpoor).then(undefined).catch((err) => {
 
-        logger.error('WORKER.JS:', err);
+        logger.error(loggerId, err);
         shutdown();
 
     });
 
+    // TODO: move to app/utils
+    // Helper function to have an infinite loop using Promises
     function forever (fn) {
-        return fn().then(function () {
+        return fn().then(() => {
             return forever(fn);  // re-execute if successful
         })
     }
 
+    // TODO: move to app/utils
     function moveToSpoor() {
 
-        logger.verbose('WORKER.JS:',  'Looking for new messages to move');
+        logger.verbose(loggerId,  'Looking for new messages to move');
 
         let lastMessageFound;
 
@@ -66,7 +71,7 @@ function start () {
 
             queue.pullFromQueue()
                 .then((data) => {
-                    logger.verbose('WORKER.JS:', 'Message retrieved from the queue');
+                    logger.verbose(loggerId, 'Message retrieved from the queue');
                     lastMessageFound = data;
                     return spoor.send(lastMessageFound.body);
                 })
@@ -74,14 +79,13 @@ function start () {
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
-                    logger.verbose('WORKER.JS:',  'Message moved to Spoor');
+                    logger.verbose(loggerId,  'Message moved to Spoor');
                     fulfill();
-
                 })
                 .catch(function (error) {
-                    // If we have no message we want to wait for some time and then try again
+                    // If we have no message we want to try again
                     if (error instanceof NoMessageInQueue) {
-                        logger.info('WORKER.JS', error.message);
+                        logger.info(loggerId, error.message);
                         fulfill();
                     }
                     // If any other error happens, we want the loop to end
@@ -94,8 +98,9 @@ function start () {
 
     }
 
+    // TODO: move to app/utils
     function shutdown() {
-        logger.info('WORKER.JS:',  process.env.NODE_ENV + ' worker shutting down');
+        logger.info(loggerId,  process.env.NODE_ENV + ' worker shutting down');
         process.exit();
     }
 
