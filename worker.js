@@ -42,8 +42,6 @@ function start () {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
 
-        let receiptHandle;
-
         queue.pullFromQueue()
             .then((data) => {
                 logger.verbose('WORKER.JS:', 'Message retrieved from the queue');
