@@ -66,15 +66,13 @@ function start () {
             })
             .then(() => {
                 logger.verbose('WORKER.JS:',  'Message moved to Spoor');
-                next();
+                process.nextTick(next);
             })
             .catch(function (error) {
                 // If we have no message we want to wait for some time and then try again
                 if (error instanceof NoMessageInQueue) {
-                    let waitWhenEmpty = 1000; //TODO: use config/env
                     logger.info('WORKER.JS', error.message);
-                    logger.info('WORKER.JS', 'Trying again in ' + waitWhenEmpty + 'ms');
-                    setTimeout(next, waitWhenEmpty);
+                    process.nextTick(next);
                 }
                 // If any other error happens, we want the loop to end
                 else {
