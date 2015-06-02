@@ -22,16 +22,6 @@ const loggerId = 'WORKER:' + process.pid;
 
 //TODO: Remove in production
 let hd; //HeapDiff
-memwatch.on('leak', function(info) {
-    logger.error(info);
-    if (!hd) {
-        hd = new memwatch.HeapDiff();
-    } else {
-        let diff = hd.end();
-        logger.error(diff);
-        hd = null;
-    }
-});
 
 logger.level = config.logLevel;
 
@@ -41,6 +31,20 @@ throng(start, {
 });
 
 function start () {
+
+    //TODO: Remove in production
+    memwatch.on('stats', function(stats) {
+
+        console.error(stats);
+
+        if (!hd) {
+            hd = new memwatch.HeapDiff();
+        } else {
+            let diff = hd.end();
+            console.error(diff.change.details);
+            hd = null;
+        }
+    });
 
     logger.info(loggerId,  process.env.NODE_ENV + ' worker started');
 
