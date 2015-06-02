@@ -42,7 +42,6 @@ throng(start, {
 
 function start () {
 
-
     logger.info(loggerId,  process.env.NODE_ENV + ' worker started');
 
     process.on('SIGTERM', shutdown);
