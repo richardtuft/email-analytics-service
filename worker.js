@@ -18,7 +18,7 @@ const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
 logger.level = config.logLevel;
 
-const loggerId = 'WORKER.JS' + process.pid;
+const loggerId = 'WORKER:' + process.pid;
 
 //TODO: Remove in production
 let hd; //HeapDiff
