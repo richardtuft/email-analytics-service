@@ -5,7 +5,6 @@ require('dotenv').load({silent: true});
 // External modules
 const throng = require('throng');
 const logger = require('winston');
-const memwatch = require('memwatch-next'); //TODO: Remove in production
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -20,9 +19,6 @@ logger.level = config.logLevel;
 
 const loggerId = 'WORKER:' + process.pid;
 
-//TODO: Remove in production
-let hd; //HeapDiff
-
 logger.level = config.logLevel;
 
 throng(start, {
@@ -31,21 +27,6 @@ throng(start, {
 });
 
 function start () {
-
-    //TODO: Remove in production
-    memwatch.on('stats', function(stats) {
-
-        console.error('Worker GC:');
-        console.error(stats);
-
-        if (!hd) {
-            hd = new memwatch.HeapDiff();
-        } else {
-            let diff = hd.end();
-            console.error(diff.change.details);
-            hd = null;
-        }
-    });
 
     logger.info(loggerId,  process.env.NODE_ENV + ' worker started');
 
