@@ -22,6 +22,7 @@
     "body-parser": "^1.12.4",
     "dotenv": "^1.1.0",
     "express": "^4.12.4",
+    "memwatch-next": "^0.2.6",
     "node-fetch": "^1.2.1",
     "q": "^1.4.1",
     "throng": "^1.0.0",
