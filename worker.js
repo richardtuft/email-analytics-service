@@ -16,15 +16,19 @@ const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
+logger.level = config.logLevel;
 
-let hd;
+const loggerId = 'WORKER.JS' + process.pid;
+
+let hd; //HeapDiff
+
 memwatch.on('leak', function(info) {
-    console.error(info);
+    logger.error(info);
     if (!hd) {
         hd = new memwatch.HeapDiff();
     } else {
         var diff = hd.end();
-        console.error(diff);
+        logger.error(diff);
         hd = null;
     }
 });
