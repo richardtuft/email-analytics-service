@@ -20,9 +20,13 @@ logger.level = config.logLevel;
 
 let receiptHandle;
 
-throng(start);
+throng(start, {
+    workers: config.workers,
+    lifetime: Infinity
+});
 
 function start () {
+
     logger.info('WORKER.JS:',  process.env.NODE_ENV + ' worker started');
 
     process.on('SIGTERM', shutdown);
@@ -38,7 +42,7 @@ function start () {
 
         logger.verbose('WORKER.JS:',  'Looking for new messages to move');
 
-
+        let receiptHandle;
 
         queue.pullFromQueue()
             .then((data) => {
