@@ -6,6 +6,7 @@ require('dotenv').load({silent: true});
 const throng = require('throng');
 const logger = require('winston');
 const async = require('async');
+const memwatch = require('memwatch-next');
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -15,6 +16,19 @@ const config = require('./config/config');
 const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
+
+
+let hd;
+memwatch.on('leak', function(info) {
+    console.error(info);
+    if (!hd) {
+        hd = new memwatch.HeapDiff();
+    } else {
+        var diff = hd.end();
+        console.error(diff);
+        hd = null;
+    }
+});
 
 logger.level = config.logLevel;
 
