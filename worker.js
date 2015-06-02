@@ -35,8 +35,6 @@ memwatch.on('leak', function(info) {
 
 logger.level = config.logLevel;
 
-const loggerId = 'WORKER.JS' + process.pid;
-
 throng(start, {
     workers: config.workers,
     lifetime: Infinity
@@ -61,7 +59,7 @@ function start () {
     function forever (fn) {
         return fn().then(() => {
             return forever(fn);  // re-execute if successful
-        })
+        });
     }
 
     // TODO: move to app/utils
