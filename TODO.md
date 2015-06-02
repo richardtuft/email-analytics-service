@@ -9,6 +9,8 @@
 | spoor.server.services.test.js | 3 | mock endpoints
 | worker.js | 23 | Remove in production
 | worker.js | 35 | Remove in production
-| worker.js | 60 | move to app/utils
-| worker.js | 68 | move to app/utils
-| worker.js | 107 | move to app/utils
+| worker.js | 61 | move to app/utils
+| worker.js | 69 | move to app/utils
+| worker.js | 108 | move to app/utils
+| server.js | 9 | Remove in production
+| server.js | 12 | Remove in production

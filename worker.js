@@ -35,6 +35,7 @@ function start () {
     //TODO: Remove in production
     memwatch.on('stats', function(stats) {
 
+        console.error('Worker GC:');
         console.error(stats);
 
         if (!hd) {
