@@ -5,7 +5,7 @@ require('dotenv').load({silent: true});
 // External modules
 const throng = require('throng');
 const logger = require('winston');
-const memwatch = require('memwatch-next'); //TODO: Remove
+const memwatch = require('memwatch-next'); //TODO: Remove in production
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -20,14 +20,14 @@ logger.level = config.logLevel;
 
 const loggerId = 'WORKER.JS' + process.pid;
 
+//TODO: Remove in production
 let hd; //HeapDiff
-
 memwatch.on('leak', function(info) {
     logger.error(info);
     if (!hd) {
         hd = new memwatch.HeapDiff();
     } else {
-        var diff = hd.end();
+        let diff = hd.end();
         logger.error(diff);
         hd = null;
     }
@@ -85,7 +85,7 @@ function start () {
                     fulfill();
                 })
                 .catch(function (error) {
-                    // If we have no message we want to try again
+                    // If there are no messages queued we want to try again
                     if (error instanceof NoMessageInQueue) {
                         logger.info(loggerId, error.message);
                         fulfill();
