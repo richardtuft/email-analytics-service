@@ -1,8 +1,7 @@
 'use strict';
 
-require('dotenv').load({silent: true});
-
 // External modules
+require('dotenv').load({silent: true});
 const throng = require('throng');
 const logger = require('winston');
 
@@ -13,6 +12,9 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const config = require('./config/config');
 const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
+const shutdown = require('./app/utils/shutdown.server.utils');
+const forever = require('./app/utils/forever.server.utils');
+
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
 logger.level = config.logLevel;
@@ -30,22 +32,17 @@ function start () {
 
     logger.info(loggerId,  process.env.NODE_ENV + ' worker started');
 
-    process.on('SIGTERM', shutdown);
+    /* istanbul ignore next */
+    process.on('SIGTERM', () => {
+        shutdown(loggerId);
+    });
 
-    forever(moveToSpoor).then(undefined).catch((err) => {
+    forever(moveToSpoor).catch((err) => {
 
         logger.error(loggerId, err);
         shutdown();
 
     });
-
-    // TODO: move to app/utils
-    // Helper function to have an infinite loop using Promises
-    function forever (fn) {
-        return fn().then(() => {
-            return forever(fn);  // re-execute if successful
-        });
-    }
 
     // TODO: move to app/utils
     function moveToSpoor() {
@@ -84,12 +81,6 @@ function start () {
                 });
         });
 
-    }
-
-    // TODO: move to app/utils
-    function shutdown() {
-        logger.info(loggerId,  process.env.NODE_ENV + ' worker shutting down');
-        process.exit();
     }
 
 }
