@@ -1,12 +1,7 @@
 'use strict';
 
-// External modules
-const logger = require('winston');
-
 // Internal modules
-const config = require('../../config/config');
-
-logger.level = config.logLevel;
+const logger = require('../../config/logger');
 
 /* istanbul ignore next */
 module.exports = (loggerId) => {
