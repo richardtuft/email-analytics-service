@@ -1,16 +1,15 @@
 'use strict';
 
-const logger = require('winston');
+// External modules
 const eventParser = require('../utils/eventParser.server.utils');
 const async = require ('async');
 
-
+// Internal modules
 const config = require('../../config/config');
+const logger = require('../../config/logger');
 const queue = require('../services/queues.server.service');
 
 const loggerId = 'HOOKS:' + config.processId;
-
-logger.level = config.logLevel;
 
 exports.handlePost = (req, res) => {
 

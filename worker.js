@@ -3,7 +3,6 @@
 // External modules
 require('dotenv').load({silent: true});
 const throng = require('throng');
-const logger = require('winston');
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -14,14 +13,10 @@ const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const forever = require('./app/utils/forever.server.utils');
-
+const logger = require('./config/logger');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
-logger.level = config.logLevel;
-
 const loggerId = 'WORKER:' + config.processId;
-
-logger.level = config.logLevel;
 
 throng(start, {
     workers: config.workers,

@@ -2,7 +2,6 @@
 
 // External modules
 require('dotenv').load({silent: true});
-const logger = require('winston');
 
 /* istanbul ignore next */
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -11,6 +10,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const config = require('./config/config');
 const express = require('./config/express');
 const shutdown = require('./app/utils/shutdown.server.utils');
+const logger = require('./config/logger');
 
 const loggerId = 'SERVER:' + config.processId;
 
@@ -18,8 +18,6 @@ const loggerId = 'SERVER:' + config.processId;
 process.on('SIGTERM', () => {
     shutdown(loggerId);
 });
-
-logger.level = config.logLevel;
 
 let app = express();
 
