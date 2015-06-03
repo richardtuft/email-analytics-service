@@ -7,7 +7,6 @@ const NoMessageInQueue = require('../errors/noMessageInQueue.server.error');
 
 // External modules
 const Q = require( 'q' );
-const logger = require('winston');
 
 exports.addToQueue = (message) => {
 

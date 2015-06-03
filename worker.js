@@ -17,7 +17,7 @@ const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 
 logger.level = config.logLevel;
 
-const loggerId = 'WORKER:' + process.pid;
+const loggerId = 'WORKER:' + config.processId;
 
 logger.level = config.logLevel;
 

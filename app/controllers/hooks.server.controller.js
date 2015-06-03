@@ -8,6 +8,8 @@ const async = require ('async');
 const config = require('../../config/config');
 const queue = require('../services/queues.server.service');
 
+const loggerId = 'HOOKS:' + config.processId;
+
 logger.level = config.logLevel;
 
 exports.handlePost = (req, res) => {
@@ -16,15 +18,15 @@ exports.handlePost = (req, res) => {
 
     let eventsArray = req.body;
 
-    logger.info('HOOKS:', 'Batch of messages received', {SIZE: eventsArray.length});
+    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
 
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
-        logger.info('HOOKS:', 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
+        logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
 
         /* istanbul ignore next */
         if (eachErr) {
-            logger.error('HOOKS:',eachErr);
+            logger.error(loggerId, eachErr);
         }
     });
 
@@ -38,16 +40,16 @@ function dealWithEvent (rawEvent, next) {
     let jEmailEvent = eventParser.parse(rawEvent);
     let emailEvent = JSON.stringify(jEmailEvent);
 
-    logger.debug('HOOKS:', 'Raw Event:', rawEvent);
+    logger.debug(loggerId, 'Raw Event:', rawEvent);
 
     queue.addToQueue(emailEvent)
         .then(() => {
-            logger.verbose('HOOKS:', 'Message added to the queue');
+            logger.verbose(loggerId, 'Message added to the queue');
             next();
         })
         .catch((addErr) => {
             /* istanbul ignore next */
-            logger.error('HOOKS:', addErr);
+            logger.error(loggerId, addErr);
             /* istanbul ignore next */
             next(addErr);
         });

@@ -26,7 +26,6 @@ exports.parse = (rawEvent) => {
         case 'unsubscribe':
             break;
         default:
-            // TODO: what do we want to do if we get the wrong event?
             throw(new Error('EVENTPARSER: unrecognised event type: ' + rawEvent.type));
 
     }
