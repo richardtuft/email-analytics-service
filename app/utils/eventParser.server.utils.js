@@ -62,7 +62,7 @@ exports.parse = (rawEvent) => {
 
     // Common to every type event handling
     parsedEvent.event = rawEvent.event;
-    parsedEvent.source = 'email' + '.' + rawEvent.meta.source;
+    parsedEvent.source = 'email' + '.' + (rawEvent.meta && rawEvent.meta.source ? rawEvent.meta.source : 'unknown');
     parsedEvent.meta.eventTimestamp = rawEvent.timestamp;
 
     // Extend meta property with the incoming meta

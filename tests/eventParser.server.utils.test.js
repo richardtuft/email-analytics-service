@@ -204,5 +204,20 @@ describe('Event Parser Unit tests:', () => {
 
     });
 
+    it('deals with events without source', (done) => {
+        let rawEvent = require ('./events/bounce.json');
+        rawEvent.meta = meta;
+        delete rawEvent.meta.source;
+
+        let timestamp = rawEvent.timestamp;
+        let parsedEvent = eventParser.parse(rawEvent);
+
+        parsedEvent.event.should.match('bounce');
+        parsedEvent.source.should.match('email.unknown');
+        parsedEvent.meta.eventTimestamp.should.be.ok;
+        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+
+        done();
+    });
 
 });

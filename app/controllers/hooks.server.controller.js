@@ -36,6 +36,9 @@ exports.handlePost = (req, res) => {
 
 function dealWithEvent (rawEvent, next) {
 
+    // We do not want to log the email address
+    delete rawEvent.email;
+
     let jEmailEvent = eventParser.parse(rawEvent);
     let emailEvent = JSON.stringify(jEmailEvent);
 
