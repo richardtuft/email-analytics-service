@@ -10,8 +10,14 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 // Our modules
 const config = require('./config/config');
 const express = require('./config/express');
+const shutdown = require('./app/utils/shutdown.server.utils');
 
 const loggerId = 'SERVER:' + config.processId;
+
+/* istanbul ignore next */
+process.on('SIGTERM', () => {
+    shutdown(loggerId);
+});
 
 logger.level = config.logLevel;
 
