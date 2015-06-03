@@ -12,7 +12,10 @@ const agent = request.agent(app);
 
 const bounceExample = require('./events/bounce.json');
 const deliveredExample = require('./events/delivered.json');
+const meta = require('./meta/meta.json');
 
+bounceExample.meta = meta;
+deliveredExample.meta = meta;
 
 describe('Hooks tests:', () => {
 
