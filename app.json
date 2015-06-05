@@ -2,7 +2,15 @@
   "name":"email-analytics-service",
   "scripts":{},
   "env":{
-    "TZ":"Europe/London"
+    "TZ":"Europe/London",
+    "LOG_LEVEL":"debug",
+    "SENSIBLE_DEFAULTS": "enabled",
+    "SQS_ACCESS_KEY": {
+      "required": true
+    },
+    "SQS_SECRET_KEY":  {
+      "required": true
+    }
   },
   "addons":[
     "papertrail"
