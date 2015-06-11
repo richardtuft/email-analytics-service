@@ -11,6 +11,7 @@ const config = require('./config/config');
 const express = require('./config/express');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const logger = require('./config/logger');
+const sentry = require('./config/sentry').init();
 
 const loggerId = 'SERVER:' + config.processId;
 
