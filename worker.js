@@ -15,6 +15,7 @@ const shutdown = require('./app/utils/shutdown.server.utils');
 const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
+const sentry = require('./config/sentry').init();
 
 const loggerId = 'WORKER:' + config.processId;
 
