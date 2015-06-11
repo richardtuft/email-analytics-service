@@ -1,11 +1,21 @@
 'use strict';
 
 // External modules
-const logger = require('winston');
+const winston = require('winston');
 
 // Internal modules
 const config = require('./config');
 
-logger.level = config.logLevel;
+const dsn = process.env.SENTRY_DSN;
 
-module.exports = logger;
+if (dsn) {
+
+    winston.transports.Sentry = require('winston-sentry');
+    winston.add(winston.transports.Sentry, {
+        dsn: dsn
+    });
+}
+
+winston.level = config.logLevel;
+
+module.exports = winston;
