@@ -11,17 +11,17 @@ const app = require('../server');
 const agent = request.agent(app);
 
 const bounceExample = require('./events/sparkpost/injection.json');
-const deliveredExample = require('./events/sparkpost/open.json');
+const openExample = require('./events/sparkpost/open.json');
 const meta = require('./meta/meta.json');
 
-bounceExample.meta = meta;
-deliveredExample.meta = meta;
+bounceExample.msys.message_event.rcpt_meta = meta;
+openExample.msys.track_event.rcpt_meta = meta;
 
 describe('SparkPost Hooks tests:', () => {
 
     it('responds with OK when a POST is received', (done) => {
 
-        let events = [bounceExample, deliveredExample];
+        let events = [bounceExample, openExample];
 
         // Save a new example
         agent.post('/hooks/sparkpost')
