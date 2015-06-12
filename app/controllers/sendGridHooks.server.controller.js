@@ -1,7 +1,7 @@
 'use strict';
 
 // External modules
-const eventParser = require('../utils/eventParser.server.utils');
+const eventParser = require('../utils/sendGridEventParser.server.utils');
 const async = require ('async');
 
 // Internal modules
