@@ -21,9 +21,7 @@ describe('SparkPost Hooks tests:', () => {
 
     it('responds with OK when a POST is received', (done) => {
 
-        let events = {
-            results: [bounceExample, deliveredExample]
-        };
+        let events = [bounceExample, deliveredExample];
 
         // Save a new example
         agent.post('/hooks/sparkpost')

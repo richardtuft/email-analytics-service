@@ -30,7 +30,7 @@ exports.parse = (rawEvent) => {
         rawEventBody = rawEventMsys.unsubscribe_event;
     }
     else {
-        throw(new Error('EVENTPARSER: unrecognised event type: ' + rawEventMsys));
+        throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
 
     switch (rawEventBody.type) {
