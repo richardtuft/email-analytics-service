@@ -1,0 +1,19 @@
+{
+  "msys": {
+    "message_event": {
+      "type": "out_of_band",
+      "bounce_class": "1",
+      "campaign_id": "Example Campaign Name",
+      "customer_id": "1",
+      "error_code": "554",
+      "message_id": "0e0d94b7-9085-4e3c-ab30-e3f2cd9c273e",
+      "msg_from": "sender@example.com",
+      "rcpt_to": "recipient@example.com",
+      "reason": "000 Example Remote MTA Bounce Message",
+      "routing_domain": "example.com",
+      "template_id": "templ-1234",
+      "template_version": "1",
+      "timestamp": 1427736822
+    }
+  }
+}

@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').load({silent: true});
 const aws = require('aws-sdk');
 
 const WaitTimeSeconds = 20;

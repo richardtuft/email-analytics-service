@@ -1,0 +1,23 @@
+{
+  "msys": {
+    "gen_event": {
+      "type": "generation_failure",
+      "campaign_id": "Example Campaign Name",
+      "customer_id": "1",
+      "error_code": "554",
+      "rcpt_meta": {},
+      "rcpt_subs": {},
+      "rcpt_tags": [
+        "male",
+        "US"
+      ],
+      "rcpt_to": "recipient@example.com",
+      "reason": "000 Example Remote MTA Bounce Message",
+      "routing_domain": "example.com",
+      "template_id": "templ-1234",
+      "template_version": "1",
+      "timestamp": 1427736822,
+      "transmission_id": "65832150921904138"
+    }
+  }
+}

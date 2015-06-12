@@ -17,7 +17,9 @@ module.exports = () => {
         limit:'10mb'
     }));
 
-    require('../app/routes/hooks.server.routes.js')(app);
+    require('../app/routes/sendGridHooks.server.routes')(app);
+    require('../app/routes/sparkPostHooks.server.routes')(app);
+
 
     app.use(express.static('./public'));
 
