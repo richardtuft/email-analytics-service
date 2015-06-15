@@ -4,6 +4,7 @@
   "env":{
     "TZ":"Europe/London",
     "LOG_LEVEL":"debug",
+    "NODE_ENV": "development",
     "SENSIBLE_DEFAULTS": "enabled",
     "SQS_ACCESS_KEY": {
       "required": true
