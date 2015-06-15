@@ -6,10 +6,10 @@
     "LOG_LEVEL":"debug",
     "NODE_ENV": "development",
     "SENSIBLE_DEFAULTS": "enabled",
-    "SQS_ACCESS_KEY": {
+    "TEST_SQS_ACCESS_KEY": {
       "required": true
     },
-    "SQS_SECRET_KEY":  {
+    "TEST_SQS_SECRET_KEY":  {
       "required": true
     }
   },
