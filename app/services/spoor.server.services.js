@@ -12,11 +12,14 @@ exports.send = (event) => {
 
     return new Promise((fulfill, reject) => {
 
+        let isProduction = process.env.NODE_ENV === 'production';
+
         fetch(postUrl, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Spoor-Test': !isProduction
             },
             body: JSON.stringify(event)
         })
