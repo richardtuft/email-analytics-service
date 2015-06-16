@@ -18,15 +18,15 @@
   "author": "Daniele Zanni",
   "dependencies": {
     "async": "^1.2.1",
-    "aws-sdk": "^2.1.33",
-    "body-parser": "^1.12.4",
+    "aws-sdk": "^2.1.34",
+    "body-parser": "^1.13.0",
     "dotenv": "^1.1.0",
     "express": "^4.12.4",
     "extend": "^2.0.1",
     "memwatch-next": "^0.2.6",
     "node-fetch": "^1.3.0",
     "q": "^1.4.1",
-    "raven": "^0.7.3",
+    "raven": "^0.8.0",
     "throng": "^1.0.0",
     "winston": "^1.0.0",
     "winston-sentry": "0.0.7"
