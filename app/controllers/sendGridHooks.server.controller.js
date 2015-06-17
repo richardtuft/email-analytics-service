@@ -17,11 +17,6 @@ exports.handlePost = (req, res) => {
 
     let eventsArray = req.body;
 
-    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
-
-    // Do not wait for the array to be processed, send the Ack as soon as possible
-    res.status(200).send('OK');
-
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
         logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
@@ -31,6 +26,11 @@ exports.handlePost = (req, res) => {
             logger.error(loggerId, eachErr);
         }
     });
+
+    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
+
+    // Do not wait for the array to be processed, send the Ack as soon as possible
+    res.status(200).send('OK');
 
 };
 
