@@ -1,11 +1,17 @@
 language: node_js
+
 node_js:
   - "0.12"
+
 before_install:
   - npm install --global gulp
   - npm install -g codeclimate-test-reporter
+
 install:
   - npm install
 
 after_success:
   - codeclimate < coverage/lcov.info
+
+notifications:
+  slack: financialtimes:F7ol60TlTlcG7ZP0DvAZWan5
