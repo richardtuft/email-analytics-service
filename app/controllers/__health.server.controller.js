@@ -3,7 +3,7 @@
 exports.handle = (req, res) => {
 
     let health = {};
-    let now = new Date;
+    let now = new Date();
 
     health.schemaVersion = 1;
     health.name = 'Email Platform Analytics';
