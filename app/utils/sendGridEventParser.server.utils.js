@@ -60,6 +60,11 @@ exports.parse = (rawEvent) => {
         parsedEvent.meta.useragent = rawEvent.useragent;
     }
 
+    // Not evert event type has a "reason" property
+    if (rawEvent.reason) {
+        parsedEvent.meta.reason = rawEvent.reason;
+    }
+
     // Common to every type event handling
     parsedEvent.event = rawEvent.event;
     parsedEvent.source = 'email' + '.' + (rawEvent.meta && rawEvent.meta.source ? rawEvent.meta.source : 'unknown');
