@@ -80,24 +80,33 @@ exports.parse = (rawEvent) => {
 
     }
 
-    // Not every SparkPost event type has the following properties
+    // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent) {
         parsedEvent.meta.useragent = rawEventBody.user_agent;
     }
+
     if (rawEventBody.target_link_name) {
         parsedEvent.meta.targetLinkName = rawEventBody.target_link_name;
     }
+
     if (rawEventBody.target_link_url) {
         parsedEvent.meta.targetLinkUrl = rawEventBody.target_link_url;
     }
+
     if (rawEventBody.geo_ip) {
         parsedEvent.meta.geoIp = rawEventBody.geo_ip;
     }
+
     if (rawEventBody.fbtype) {
         parsedEvent.meta.fbType = rawEventBody.fbtype;
     }
+
     if (rawEventBody.user_str) {
         parsedEvent.meta.userString = rawEventBody.user_str;
+    }
+
+    if (rawEventBody.reason) {
+        parsedEvent.meta.reason = rawEventBody.reason;
     }
 
     // Common to every type event handling
