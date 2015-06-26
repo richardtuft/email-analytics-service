@@ -20,7 +20,7 @@ describe('Spoor tests:', () => {
         };
         spoor.send(eventObj)
             .then((res) => {
-                res.status.should.match(200);
+                res.status.should.be.above(200).and.be.below(299);
                 done();
             })
             .catch((err) =>{
