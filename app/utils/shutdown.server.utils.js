@@ -5,6 +5,6 @@ const logger = require('../../config/logger');
 
 /* istanbul ignore next */
 module.exports = (loggerId) => {
-    logger.info(loggerId,  process.env.NODE_ENV + ' worker shutting down');
+    logger.info(loggerId,  process.env.NODE_ENV + ' shutting down');
     process.exit();
 };

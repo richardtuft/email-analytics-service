@@ -36,7 +36,7 @@ function start () {
     forever(moveToSpoor).catch((err) => {
 
         logger.error(loggerId, err);
-        shutdown();
+        shutdown(loggerId);
 
     });
 
