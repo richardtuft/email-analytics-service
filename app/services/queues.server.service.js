@@ -79,3 +79,17 @@ exports.deleteFromQueue = (receiptHandle) => {
     });
 
 };
+
+exports.countMessages = () => {
+    return new Promise((fulfill, reject) => {
+
+        let getQueueAttributes = Q.nbind( sqs.getQueueAttributes, sqs );
+
+        getQueueAttributes({
+            QueueUrl: config.sqsQueueUrl,
+            AttributeNames: ['ApproximateNumberOfMessages']
+        })
+        .then(fulfill)
+        .catch (reject);
+    });
+};
