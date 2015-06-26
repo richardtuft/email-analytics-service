@@ -26,7 +26,7 @@ exports.send = (event) => {
         .then((res) => {
 
             /* istanbul ignore else */
-            if (res.status === 200) {
+            if (res.status >= 200 && res.status < 300) {
                 fulfill(res);
             }
             else {
