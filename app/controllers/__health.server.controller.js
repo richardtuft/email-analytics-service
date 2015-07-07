@@ -65,7 +65,6 @@ exports.handle = (req, res) => {
             return res.status(200).json(health);
         })
         .catch(err => {
-            console.log(err);
             /* istanbul ignore next */
             return res.status(400).send({
                 message: err.message
