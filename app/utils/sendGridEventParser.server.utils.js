@@ -11,7 +11,12 @@ exports.parse = (rawEvent) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
-        context: {}
+        context: {},
+        system: {
+            source: 'email-analytics',
+            version: '0.6.2',
+            "api_key": ''
+        }
     };
 
     switch (rawEvent.event) {
@@ -67,11 +72,7 @@ exports.parse = (rawEvent) => {
 
     // Common to every type event handling
     parsedEvent.action = rawEvent.event;
-    parsedEvent.system = {
-        source: 'email-analytics',
-        version: '0.6.2',
-        "api_key": ''
-    };
+
     parsedEvent.context.eventTimestamp = rawEvent.timestamp;
 
     // Extend meta property with the incoming meta
