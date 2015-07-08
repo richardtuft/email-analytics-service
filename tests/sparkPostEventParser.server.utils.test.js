@@ -8,8 +8,7 @@ const extend = require('extend');
 const eventParser = require('../app/utils/sparkPostEventParser.server.utils');
 const meta = require('./meta/meta.json');
 
-const metaSource = meta.source;
-const source = 'email.' + metaSource;
+const source = 'email-analytics';
 
 describe('SparkPost Event Parser Unit tests:', () => {
 
@@ -250,29 +249,6 @@ describe('SparkPost Event Parser Unit tests:', () => {
         }
         done('We should not be here');
 
-    });
-
-    it('deals with events without source', (done) => {
-
-        let rawEvent = extend({}, require('./events/sparkpost/delay.json'));
-        rawEvent.msys.message_event.rcpt_meta = meta;
-
-        delete rawEvent.msys.message_event.rcpt_meta.source;
-
-        let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
-
-        parsedEvent.action.should.match('delay');
-        parsedEvent.system.source.should.match('email.unknown');
-        should.exist(parsedEvent.context.eventTimestamp);
-        parsedEvent.context.eventTimestamp.should.match(timestamp);
-
-        done();
-    });
-
-    after((done) => {
-        meta.source = metaSource;
-        done();
     });
 
 });

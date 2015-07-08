@@ -6,8 +6,7 @@ const should = require('should');
 // Our Modules
 const eventParser = require('../app/utils/sendGridEventParser.server.utils');
 const meta = require('./meta/meta.json');
-const metaSource = meta.source;
-const source = 'email.' + metaSource;
+const source = 'email-analytics';
 
 
 describe('SendGrid Event Parser Unit tests:', () => {
@@ -203,27 +202,6 @@ describe('SendGrid Event Parser Unit tests:', () => {
         }
         done('We should not be here');
 
-    });
-
-    it('deals with events without source', (done) => {
-        let rawEvent = require('./events/sendgrid/bounce.json');
-        rawEvent.meta = meta;
-        delete rawEvent.meta.source;
-
-        let timestamp = rawEvent.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
-
-        parsedEvent.action.should.match('bounce');
-        parsedEvent.system.source.should.match('email.unknown');
-        should.exist(parsedEvent.context.eventTimestamp);
-        parsedEvent.context.eventTimestamp.should.match(timestamp);
-
-        done();
-    });
-
-    after((done) => {
-        meta.source = metaSource;
-        done();
     });
 
 });

@@ -113,7 +113,7 @@ exports.parse = (rawEvent) => {
     parsedEvent.action = rawEventBody.type;
 
     parsedEvent.system = {};
-    parsedEvent.system.source = 'email' + '.' + (rawEventBody.rcpt_meta && rawEventBody.rcpt_meta.source ? rawEventBody.rcpt_meta.source : 'unknown');
+    parsedEvent.system.source = 'email-analytics';
 
     parsedEvent.context.eventTimestamp = rawEventBody.timestamp;
 
