@@ -112,8 +112,11 @@ exports.parse = (rawEvent) => {
     // Common to every type event handling
     parsedEvent.action = rawEventBody.type;
 
-    parsedEvent.system = {};
-    parsedEvent.system.source = 'email-analytics';
+    parsedEvent.system = {
+        source: 'email-analytics',
+        version: '0.6.2',
+        "api_key": ''
+    };
 
     parsedEvent.context.eventTimestamp = rawEventBody.timestamp;
 
