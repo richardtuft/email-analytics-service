@@ -11,7 +11,7 @@ exports.parse = (rawEvent) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
-        meta: {}
+        context: {}
     };
 
     switch (rawEvent.event) {
@@ -57,21 +57,22 @@ exports.parse = (rawEvent) => {
 
     // Not evert event type has useragent information
     if (rawEvent.useragent) {
-        parsedEvent.meta.useragent = rawEvent.useragent;
+        parsedEvent.context.useragent = rawEvent.useragent;
     }
 
     // Not evert event type has a "reason" property
     if (rawEvent.reason) {
-        parsedEvent.meta.reason = rawEvent.reason;
+        parsedEvent.context.reason = rawEvent.reason;
     }
 
     // Common to every type event handling
-    parsedEvent.event = rawEvent.event;
-    parsedEvent.source = 'email' + '.' + (rawEvent.meta && rawEvent.meta.source ? rawEvent.meta.source : 'unknown');
-    parsedEvent.meta.eventTimestamp = rawEvent.timestamp;
+    parsedEvent.action = rawEvent.event;
+    parsedEvent.system = {};
+    parsedEvent.system.source = 'email' + '.' + (rawEvent.meta && rawEvent.meta.source ? rawEvent.meta.source : 'unknown');
+    parsedEvent.context.eventTimestamp = rawEvent.timestamp;
 
     // Extend meta property with the incoming meta
-    extend(parsedEvent.meta, rawEvent.meta);
+    extend(parsedEvent.context, rawEvent.meta);
 
     return parsedEvent;
 

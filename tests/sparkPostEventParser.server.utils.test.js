@@ -19,9 +19,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
-        parsedEvent.event.should.match('bounce');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('bounce');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -35,11 +35,11 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let useragent = rawEvent.msys.track_event.user_agent;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('click');
-        parsedEvent.source.should.match(source);
-        should.exist(parsedEvent.meta.useragent);
-        parsedEvent.meta.useragent.should.match(useragent);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('click');
+        parsedEvent.system.source.should.match(source);
+        should.exist(parsedEvent.context.useragent);
+        parsedEvent.context.useragent.should.match(useragent);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -52,9 +52,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('delay');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('delay');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -67,9 +67,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('delivery');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('delivery');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -82,9 +82,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.gen_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('generation_failure');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('generation_failure');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -97,9 +97,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.gen_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('generation_rejection');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('generation_rejection');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -112,9 +112,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('injection');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('injection');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -127,9 +127,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('link_unsubscribe');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('link_unsubscribe');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -142,9 +142,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('list_unsubscribe');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('list_unsubscribe');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -158,12 +158,12 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let useragent = rawEvent.msys.track_event.user_agent;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('open');
-        parsedEvent.source.should.match(source);
-        should.exist(parsedEvent.meta.useragent);
-        parsedEvent.meta.useragent.should.match(useragent);
-        should.exist(parsedEvent.meta.eventTimestamp);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('open');
+        parsedEvent.system.source.should.match(source);
+        should.exist(parsedEvent.context.useragent);
+        parsedEvent.context.useragent.should.match(useragent);
+        should.exist(parsedEvent.context.eventTimestamp);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -176,9 +176,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('out_of_band');
-        parsedEvent.source.should.match(source);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('out_of_band');
+        parsedEvent.system.source.should.match(source);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -191,10 +191,10 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('policy_rejection');
-        parsedEvent.source.should.match(source);
-        should.exist(parsedEvent.meta.eventTimestamp);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('policy_rejection');
+        parsedEvent.system.source.should.match(source);
+        should.exist(parsedEvent.context.eventTimestamp);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -207,10 +207,10 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('spam_complaint');
-        parsedEvent.source.should.match(source);
-        should.exist(parsedEvent.meta.eventTimestamp);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('spam_complaint');
+        parsedEvent.system.source.should.match(source);
+        should.exist(parsedEvent.context.eventTimestamp);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
 
@@ -262,10 +262,10 @@ describe('SparkPost Event Parser Unit tests:', () => {
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
 
-        parsedEvent.event.should.match('delay');
-        parsedEvent.source.should.match('email.unknown');
-        should.exist(parsedEvent.meta.eventTimestamp);
-        parsedEvent.meta.eventTimestamp.should.match(timestamp);
+        parsedEvent.action.should.match('delay');
+        parsedEvent.system.source.should.match('email.unknown');
+        should.exist(parsedEvent.context.eventTimestamp);
+        parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
     });

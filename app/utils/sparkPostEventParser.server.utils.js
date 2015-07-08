@@ -11,7 +11,7 @@ exports.parse = (rawEvent) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
-        meta: {}
+        context: {}
     };
 
     let rawEventMsys = rawEvent.msys;
@@ -82,41 +82,43 @@ exports.parse = (rawEvent) => {
 
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent) {
-        parsedEvent.meta.useragent = rawEventBody.user_agent;
+        parsedEvent.context.useragent = rawEventBody.user_agent;
     }
 
     if (rawEventBody.target_link_name) {
-        parsedEvent.meta.targetLinkName = rawEventBody.target_link_name;
+        parsedEvent.context.targetLinkName = rawEventBody.target_link_name;
     }
 
     if (rawEventBody.target_link_url) {
-        parsedEvent.meta.targetLinkUrl = rawEventBody.target_link_url;
+        parsedEvent.context.targetLinkUrl = rawEventBody.target_link_url;
     }
 
     if (rawEventBody.geo_ip) {
-        parsedEvent.meta.geoIp = rawEventBody.geo_ip;
+        parsedEvent.context.geoIp = rawEventBody.geo_ip;
     }
 
     if (rawEventBody.fbtype) {
-        parsedEvent.meta.fbType = rawEventBody.fbtype;
+        parsedEvent.context.fbType = rawEventBody.fbtype;
     }
 
     if (rawEventBody.user_str) {
-        parsedEvent.meta.userString = rawEventBody.user_str;
+        parsedEvent.context.userString = rawEventBody.user_str;
     }
 
     if (rawEventBody.reason) {
-        parsedEvent.meta.reason = rawEventBody.reason;
+        parsedEvent.context.reason = rawEventBody.reason;
     }
 
     // Common to every type event handling
-    parsedEvent.event = rawEventBody.type;
+    parsedEvent.action = rawEventBody.type;
 
-    parsedEvent.source = 'email' + '.' + (rawEventBody.rcpt_meta && rawEventBody.rcpt_meta.source ? rawEventBody.rcpt_meta.source : 'unknown');
-    parsedEvent.meta.eventTimestamp = rawEventBody.timestamp;
+    parsedEvent.system = {};
+    parsedEvent.system.source = 'email' + '.' + (rawEventBody.rcpt_meta && rawEventBody.rcpt_meta.source ? rawEventBody.rcpt_meta.source : 'unknown');
+
+    parsedEvent.context.eventTimestamp = rawEventBody.timestamp;
 
     // Extend meta property with the incoming meta
-    extend(parsedEvent.meta, rawEventBody.rcpt_meta);
+    extend(parsedEvent.context, rawEventBody.rcpt_meta);
 
     return parsedEvent;
 
