@@ -36,8 +36,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
         parsedEvent.action.should.match('click');
         parsedEvent.system.source.should.match(source);
-        should.exist(parsedEvent.context.useragent);
-        parsedEvent.context.useragent.should.match(useragent);
+        should.exist(parsedEvent.device.user_agent);
+        parsedEvent.device.user_agent.should.match(useragent);
         parsedEvent.context.eventTimestamp.should.match(timestamp);
 
         done();
@@ -159,8 +159,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
         parsedEvent.action.should.match('open');
         parsedEvent.system.source.should.match(source);
-        should.exist(parsedEvent.context.useragent);
-        parsedEvent.context.useragent.should.match(useragent);
+        should.exist(parsedEvent.device.user_agent);
+        parsedEvent.device.user_agent.should.match(useragent);
         should.exist(parsedEvent.context.eventTimestamp);
         parsedEvent.context.eventTimestamp.should.match(timestamp);
 

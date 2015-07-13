@@ -85,9 +85,25 @@ exports.parse = (rawEvent) => {
 
     }
 
+    let ft_guid = rawEventBody.rcpt_meta.userUuid;
+
+    parsedEvent.user = {
+        ft_guid: ft_guid
+    };
+
+    delete rawEventBody.rcpt_meta.userUuid;
+
     // Not every SparkPost event type has the following properties:
+    if (rawEventBody.user_agent || rawEventBody.geo_ip) {
+        parsedEvent.device = {};
+    }
+
     if (rawEventBody.user_agent) {
-        parsedEvent.context.useragent = rawEventBody.user_agent;
+        parsedEvent.device.user_agent = rawEventBody.user_agent;
+    }
+
+    if (rawEventBody.geo_ip) {
+        parsedEvent.device.geo = rawEventBody.geo_ip;
     }
 
     if (rawEventBody.target_link_name) {
