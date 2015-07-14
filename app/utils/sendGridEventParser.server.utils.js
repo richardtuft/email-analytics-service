@@ -12,6 +12,7 @@ exports.parse = (rawEvent) => {
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
         context: {},
+        category: "email",
         system: {
             source: 'email-analytics',
             version: '0.6.2',
