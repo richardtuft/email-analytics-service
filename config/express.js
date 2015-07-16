@@ -19,7 +19,6 @@ module.exports = () => {
 
     require('../app/routes/__health.server.routes')(app);
     require('../app/routes/__gtg.server.routes')(app);
-    require('../app/routes/sendGridHooks.server.routes')(app);
     require('../app/routes/sparkPostHooks.server.routes')(app);
 
 
