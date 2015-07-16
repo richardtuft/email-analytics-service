@@ -53,6 +53,7 @@ function start () {
                 .then((data) => {
                     logger.verbose(loggerId, 'Message retrieved from the queue');
                     lastMessageFound = data;
+                    logger.debug(loggerId, lastMessageFound.body);
                     return spoor.send(lastMessageFound.body);
                 })
                 .then(() => {
