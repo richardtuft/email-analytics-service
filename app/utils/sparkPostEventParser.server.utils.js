@@ -92,8 +92,6 @@ exports.parse = (rawEvent) => {
         ft_guid: ft_guid
     };
 
-    delete rawEventBody.rcpt_meta.userUuid;
-
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent || rawEventBody.geo_ip) {
         parsedEvent.device = {};
