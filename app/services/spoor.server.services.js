@@ -22,7 +22,7 @@ exports.send = (event) => {
                 'Content-Type': 'application/json',
                 'X-Spoor-Test': !isProduction
             },
-            body: JSON.stringify(event)
+            body: event
         })
         .then((res) => {
 
