@@ -9,5 +9,5 @@ const keenClient = Keen.configure({
     writeKey: process.env.KEEN_WRITE_KEY   // String (required for sending data)
 });
 
-exports.keenClient = keenClient;
+module.exports = keenClient;
 
