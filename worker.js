@@ -60,14 +60,14 @@ function start () {
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
-                    logger.verbose(loggerId,  'Message moved to Spoor');
+                    logger.info(loggerId,  'Message moved to Spoor');
                     lastMessageFound = null;
                     fulfill();
                 })
                 .catch(function (error) {
                     // If there are no messages queued we want to try again
                     if (error instanceof NoMessageInQueue) {
-                        logger.info(loggerId, error.message);
+                        logger.debug(loggerId, error.message);
                         fulfill();
                     }
                     // If any other error happens, we want the loop to end
