@@ -10,7 +10,7 @@ const source = 'email-analytics';
 
 let meta = require('./meta/meta.json');
 
-describe('SparkPost Event Parser Unit tests:', () => {
+describe.only('SparkPost Event Parser Unit tests:', () => {
 
     it('correctly parses a BOUNCE event', (done) => {
         let rawEvent = extend({}, require('./events/sparkpost/bounce.json'));
