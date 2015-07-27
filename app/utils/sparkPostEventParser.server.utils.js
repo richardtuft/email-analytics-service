@@ -137,6 +137,13 @@ exports.parse = (rawEvent) => {
     // Extend meta property with the incoming meta
     extend(parsedEvent.context, rawEventBody.rcpt_meta);
 
+    // We only send events that happen in production to keen
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV === 'production') {
+        const keenClient = require('../../config/keen');
+        keenClient.addEvent('events', parsedEvent);
+    }
+
     return parsedEvent;
 
 };
