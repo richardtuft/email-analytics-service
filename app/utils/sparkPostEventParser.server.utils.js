@@ -129,6 +129,18 @@ exports.parse = (rawEvent) => {
         parsedEvent.context.reason = rawEventBody.reason;
     }
 
+    if (rawEventBody.bounce_class) {
+        parsedEvent.context.bounceClass = rawEventBody.bounce_class;
+    }
+
+    if (rawEventBody.error_code) {
+        parsedEvent.context.errorCode = rawEventBody.error_code;
+    }
+
+    if (rawEventBody.bounce_class) {
+        parsedEvent.context.bounceClass = rawEventBody.bounce_class;
+    }
+
     // Common to every type event handling
     parsedEvent.action = rawEventBody.type;
 
