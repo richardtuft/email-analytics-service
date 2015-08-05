@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Analytics Dashboards</title>
+    <link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-grid@^3.0.0,o-ft-icons@^2.3.7"  />
+    <style type="text/css">
+        body {
+            background-color: #fff1e0;
+        }
+        .logo {
+            font-size: 3em;
+        }
+        .chart {
+            height: 450px;
+            border: solid thin black;
+            padding: 5px;
+        }
+        .o-grid-row {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="o-grid-row">
+    <div data-o-grid-colspan="5">
+       <i class="o-ft-icons-icon o-ft-icons-icon--brand-ft logo"></i>
+    </div>
+    <div data-o-grid-colspan="4 ">
+        <h2>Email Analytics Dashboards</h2>
+    </div>
+</div>
+<div class="o-grid-row">
+    <div id="total-24-hours"  data-o-grid-colspan="6" class="chart"></div>
+    <div id="actions-24-hours"  data-o-grid-colspan="6" class="chart"></div>
+</div>
+<div class="o-grid-row">
+    <div id="bounces-24-hours"  data-o-grid-colspan="6" class="chart"></div>
+    <div id="injections-7-days"  data-o-grid-colspan="6" class="chart"></div>
+
+</div>
+
+<script src="//cdn.jsdelivr.net/keen.js/3.2.6/keen.min.js" type="text/javascript"></script>
+
+<script>
+
+    var client = new Keen({
+        projectId: "55b62c5d59949a4aeb59d47b",
+        readKey: "8c6f9302ab688554fd117f3e9af71060aaced3daa2f88e3fee98ff97e0ab7699abbc3235f83e9d61bb27da6dd5c1ba9bcc11561a8d409f3bb11b130e79b78c4e5ecc20e3b6320d373f30a369d60e864becfc33de26d8ccb2ffde0fe22146ab18477e768054556d3ca9761972d630b669"
+    });
+
+    Keen.ready(function(){
+
+        var total24HoursQuery = new Keen.Query("count", {
+            eventCollection: "events",
+            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"}],
+            timeframe: "this_24_hours",
+            timezone: "UTC"
+        });
+
+        var actions24HoursQuery = new Keen.Query("count", {
+            eventCollection: "events",
+            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"}],
+            groupBy: "action",
+            timeframe: "this_24_hours",
+            timezone: "UTC"
+        });
+
+        var bounces7DaysQuery = new Keen.Query("count", {
+                eventCollection: "events",
+                filters: [{"operator":"exists","property_name":"context.bounceClass","property_value":true},
+                    {"operator":"ne","property_name":"context.product","property_value":"test"},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":20},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":21},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":22},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":23},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":24},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":40},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":60},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":70},
+                    {"operator":"ne","property_name":"context.bounceClass","property_value":100}],
+                groupBy: "context.bounceClass",
+                interval: "daily",
+                timeframe: "this_7_days",
+                timezone: "UTC"
+            });
+
+        var injections7DaysQuery = new Keen.Query("count", {
+            eventCollection: "events",
+            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"},
+                {"operator":"eq","property_name":"action","property_value":"injection"}],
+            groupBy: "action",
+            interval: "hourly",
+            timeframe: "this_7_days",
+            timezone: "UTC"
+        });
+
+
+        var total24HoursChart = new Keen.Dataviz()
+                .el(document.getElementById("total-24-hours"))
+                .prepare(); // starts spinner
+
+        var actions24HoursChart = new Keen.Dataviz()
+                .el(document.getElementById("actions-24-hours"))
+                .chartType("columnchart")
+                .prepare(); // starts spinner
+
+        var bounces7DaysChart = new Keen.Dataviz()
+                .el(document.getElementById("bounces-24-hours"))
+                .chartType("columnchart")
+                .prepare(); // starts spinner
+
+        var injections7DaysChart = new Keen.Dataviz()
+                .el(document.getElementById("injections-7-days"))
+                .prepare(); // starts spinner
+
+
+        var total24HoursReq = client.run(total24HoursQuery, function(err, res){
+            if (err) {
+                // Display the API error
+                total24HoursChart.error(err.message);
+            }
+            else {
+                // Handle the response
+                total24HoursChart
+                        .parseRequest(this)
+                        .title("Number of events in past 24 hours")
+                        .render();
+            }
+        });
+
+        var actions24HoursReq = client.run(actions24HoursQuery, function(err, res){
+            if (err) {
+                // Display the API error
+                actions24HoursChart.error(err.message);
+            }
+            else {
+                // Handle the response
+                actions24HoursChart
+                        .parseRequest(this)
+                        .title("Event types in past 24 hours")
+                        .render();
+            }
+        });
+
+        var bounces7DaysReq = client.run(bounces7DaysQuery, function(err, res){
+            if (err) {
+                // Display the API error
+                bounces7DaysChart.error(err.message);
+            }
+            else {
+                // Handle the response
+                bounces7DaysChart
+                        .parseRequest(this)
+                        .title("Not-soft bounce classes in past 7 days")
+                        .render();
+            }
+        });
+
+        var injections7DaysReq = client.run(injections7DaysQuery, function(err, res){
+            if (err) {
+                // Display the API error
+                injections7DaysChart.error(err.message);
+            }
+            else {
+                // Handle the response
+                injections7DaysChart
+                        .parseRequest(this)
+                        .title("Injections per minute in past 7 days")
+                        .render();
+            }
+        });
+
+        // Updates itself every 2 minutes
+        setInterval(total24HoursReq.refresh, 1000 * 60 * 2);
+        setInterval(actions24HoursReq.refresh, 1000 * 60 * 2);
+        setInterval(bounces7DaysReq.refresh, 1000 * 60 * 2);
+        setInterval(injections7DaysReq.refresh, 1000 * 60 * 2);
+
+    });
+
+
+</script>
+
+
+</body>
+</html>
