@@ -4,16 +4,22 @@
     <title>Email Analytics Dashboards</title>
     <link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-grid@^3.0.0,o-ft-icons@^2.3.7"  />
     <style type="text/css">
+        html {
+            height: 100%;
+        }
         body {
             background-color: #fff1e0;
+            height: 100%;
         }
         .logo {
             font-size: 3em;
         }
         .chart {
-            height: 450px;
-            border: solid thin black;
             padding: 5px;
+            height: 100%;
+        }
+        .chart-row {
+            height: 45%;
         }
         .o-grid-row {
             max-width: 100%;
@@ -29,11 +35,11 @@
         <h2>Email Analytics Dashboards</h2>
     </div>
 </div>
-<div class="o-grid-row">
+<div class="o-grid-row chart-row">
     <div id="total-24-hours"  data-o-grid-colspan="6" class="chart"></div>
     <div id="actions-24-hours"  data-o-grid-colspan="6" class="chart"></div>
 </div>
-<div class="o-grid-row">
+<div class="o-grid-row chart-row">
     <div id="bounces-24-hours"  data-o-grid-colspan="6" class="chart"></div>
     <div id="injections-7-days"  data-o-grid-colspan="6" class="chart"></div>
 
