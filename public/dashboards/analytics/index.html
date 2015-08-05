@@ -11,8 +11,11 @@
             background-color: #fff1e0;
             height: 100%;
         }
+        .page-title{
+            text-align: center;
+        }
         .logo {
-            font-size: 3em;
+            font-size: 4em;
         }
         .chart {
             padding: 5px;
@@ -28,20 +31,20 @@
 </head>
 <body>
 <div class="o-grid-row">
-    <div data-o-grid-colspan="5">
+    <div data-o-grid-colspan="2">
        <i class="o-ft-icons-icon o-ft-icons-icon--brand-ft logo"></i>
     </div>
-    <div data-o-grid-colspan="4 ">
+    <div data-o-grid-colspan="8" class="page-title">
         <h2>Email Analytics Dashboards</h2>
     </div>
 </div>
 <div class="o-grid-row chart-row">
-    <div id="total-24-hours"  data-o-grid-colspan="6" class="chart"></div>
-    <div id="actions-24-hours"  data-o-grid-colspan="6" class="chart"></div>
+    <div id="total-24-hours"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
+    <div id="actions-24-hours"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
 </div>
 <div class="o-grid-row chart-row">
-    <div id="bounces-24-hours"  data-o-grid-colspan="6" class="chart"></div>
-    <div id="injections-7-days"  data-o-grid-colspan="6" class="chart"></div>
+    <div id="bounces-24-hours"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
+    <div id="injections-7-days"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
 
 </div>
 
@@ -55,6 +58,8 @@
     });
 
     Keen.ready(function(){
+
+        /** QUERIES **/
 
         var total24HoursQuery = new Keen.Query("count", {
             eventCollection: "events",
@@ -101,6 +106,8 @@
         });
 
 
+        /** PREPARE CHARTS **/
+
         var total24HoursChart = new Keen.Dataviz()
                 .el(document.getElementById("total-24-hours"))
                 .prepare(); // starts spinner
@@ -120,7 +127,9 @@
                 .prepare(); // starts spinner
 
 
-        var total24HoursReq = client.run(total24HoursQuery, function(err, res){
+        /** REQUESTS **/
+
+        var total24HoursReq = client.run(total24HoursQuery, function(err){
             if (err) {
                 // Display the API error
                 total24HoursChart.error(err.message);
@@ -134,7 +143,7 @@
             }
         });
 
-        var actions24HoursReq = client.run(actions24HoursQuery, function(err, res){
+        var actions24HoursReq = client.run(actions24HoursQuery, function(err){
             if (err) {
                 // Display the API error
                 actions24HoursChart.error(err.message);
@@ -148,7 +157,7 @@
             }
         });
 
-        var bounces7DaysReq = client.run(bounces7DaysQuery, function(err, res){
+        var bounces7DaysReq = client.run(bounces7DaysQuery, function(err){
             if (err) {
                 // Display the API error
                 bounces7DaysChart.error(err.message);
@@ -162,7 +171,7 @@
             }
         });
 
-        var injections7DaysReq = client.run(injections7DaysQuery, function(err, res){
+        var injections7DaysReq = client.run(injections7DaysQuery, function(err){
             if (err) {
                 // Display the API error
                 injections7DaysChart.error(err.message);
@@ -175,6 +184,9 @@
                         .render();
             }
         });
+
+
+        /** REFRESHES **/
 
         // Updates itself every 2 minutes
         setInterval(total24HoursReq.refresh, 1000 * 60 * 2);
