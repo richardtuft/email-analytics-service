@@ -20,7 +20,8 @@ exports.send = (event) => {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'X-Spoor-Test': !isProduction
+                'X-Spoor-Test': !isProduction,
+                'Content-Length': new Buffer(event).length
             },
             body: event
         })
