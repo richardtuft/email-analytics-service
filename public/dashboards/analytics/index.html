@@ -80,6 +80,7 @@
                 eventCollection: "events",
                 filters: [{"operator":"exists","property_name":"context.bounceClass","property_value":true},
                     {"operator":"ne","property_name":"context.product","property_value":"test"},
+                    {"operator":"eq","property_name":"action","property_value":"bounce"},
                     {"operator":"ne","property_name":"context.bounceClass","property_value":20},
                     {"operator":"ne","property_name":"context.bounceClass","property_value":21},
                     {"operator":"ne","property_name":"context.bounceClass","property_value":22},
@@ -166,7 +167,7 @@
                 // Handle the response
                 bounces7DaysChart
                         .parseRequest(this)
-                        .title("Not-soft bounce classes in past 7 days")
+                        .title("Not-soft bounce events in past 7 days")
                         .render();
             }
         });
