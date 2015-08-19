@@ -5,7 +5,6 @@ const gulp = require('gulp');
 const mocha = require('gulp-mocha');
 const jshint = require('gulp-jshint');
 const istanbul = require('gulp-istanbul');
-const todo = require('gulp-todo');
 
 // Paths
 const files =  {
@@ -57,13 +56,6 @@ gulp.task('istanbul', () => {
                     process.exit();
                 });
         });
-});
-
-// Generate file containing everything to do
-gulp.task('todo', function() {
-    gulp.src(allJSFiles)
-        .pipe(todo())
-        .pipe(gulp.dest('./'));
 });
 
 gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);
