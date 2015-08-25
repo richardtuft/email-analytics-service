@@ -8,6 +8,7 @@ const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
 const authToken = process.env.AUTH_TOKEN;
 
+const userListsEndpoint = process.env.USER_LISTS_ENDPOINT || 'http://localhost:1337';
 
 module.exports = {
     port: port,
@@ -16,5 +17,6 @@ module.exports = {
     logLevel: logLevel,
     sqsQueueUrl: sqsQueueUrl,
     spoorPostUrl: spoorPostUrl,
+    userListsEndpoint: userListsEndpoint,
     authToken: authToken
 };

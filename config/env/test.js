@@ -6,6 +6,7 @@ const sqsQueueUrl =  process.env.SQS_QUEUE_URL || 'https://sqs.eu-west-1.amazona
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
+const userListsEndpoint = 'https://localhost:1337';
 const authToken = process.env.AUTH_TOKEN || 'test';
 
 module.exports = {
@@ -15,5 +16,6 @@ module.exports = {
     logLevel: logLevel,
     sqsQueueUrl: sqsQueueUrl,
     spoorPostUrl: spoorPostUrl,
+    userListsEndpoint: userListsEndpoint,
     authToken: authToken
 };
