@@ -7,6 +7,7 @@ const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
 
+const userListsEndpoint = 'https://localhost:1337';
 
 module.exports = {
     port: port,
@@ -14,5 +15,6 @@ module.exports = {
     workers: workers,
     logLevel: logLevel,
     sqsQueueUrl: sqsQueueUrl,
-    spoorPostUrl: spoorPostUrl
+    spoorPostUrl: spoorPostUrl,
+    userListsEndpoint: userListsEndpoint
 };

@@ -9,13 +9,14 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Our modules
 const config = require('./config/config');
+const sentry = require('./config/sentry').init();
 const queue = require('./app/services/queues.server.service');
 const spoor = require('./app/services/spoor.server.services');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
-const sentry = require('./config/sentry').init();
+const usersListsClient = require('./app/services/usersListsClient.server.services');
 
 const loggerId = 'WORKER:' + config.processId;
 
@@ -51,6 +52,23 @@ function start () {
 
             queue.pullFromQueue()
                 .then((data) => {
+                    // Suppress hard bounces
+                    let event = JSON.parse(data.body);
+
+                    if (isHardBounce(event) || isGenerationRejection(event)) {
+                        let uuid = event.ft_guid;
+                        return usersListsClient
+                            .editUser(uuid, { manuallySuppressed: true })
+                            .then(() => {
+                                logger.debug(loggerId, 'Suppressing user', uuid);
+                                return data
+                            });
+                    }
+                    else {
+                        return data;
+                    }
+                })
+                .then((data) => {
                     logger.verbose(loggerId, 'Message retrieved from the queue');
                     lastMessageFound = data;
                     logger.debug(loggerId, lastMessageFound.body);
@@ -80,4 +98,13 @@ function start () {
 
     }
 
+}
+
+
+function isHardBounce (event) {
+    return event.action === 'bounce' && (event.context.bounceClass === '10' || event.context.bounceClass === '30' || event.context.bounceClass === '90');
+}
+
+function isGenerationRejection (event) {
+    return event.action === 'generation_rejection';
 }
