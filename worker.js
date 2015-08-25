@@ -56,7 +56,7 @@ function start () {
                     let event = JSON.parse(data.body);
 
                     if (isHardBounce(event) || isGenerationRejection(event)) {
-                        let uuid = event.ft_guid;
+                        let uuid = event.user.ft_guid;
 
                         logger.debug(loggerId, 'Suppressing user', uuid);
 
