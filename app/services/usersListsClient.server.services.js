@@ -21,7 +21,7 @@ exports.editUser = (uuid, editedProperties) => {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Content-Length': new Buffer(editedProperties)
+                'Content-Length': new Buffer(editedProperties).length
             },
             body: editedProperties
         })
