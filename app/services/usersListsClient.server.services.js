@@ -14,9 +14,10 @@ exports.editUser = (uuid, editedProperties) => {
 
     return new Promise((fulfill, reject) => {
 
-        let contentLength = new Buffer(editedProperties).length;
+        let body = JSON.stringify(editedProperties);
+        let contentLength = Buffer.byteLength(body);
 
-        logger.debug('Editing a user', {user: uuid, editedProperties: editedProperties, contentLength: contentLength });
+        logger.debug('Editing a user', {user: uuid, body: body, contentLength: contentLength });
 
         fetch(config.userListsEndpoint + '/users/' + uuid, {
             method: 'patch',
@@ -25,7 +26,7 @@ exports.editUser = (uuid, editedProperties) => {
                 'Content-Type': 'application/json',
                 'Content-Length': contentLength
             },
-            body: editedProperties
+            body: body
         })
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
