@@ -57,11 +57,12 @@ function start () {
 
                     if (isHardBounce(event) || isGenerationRejection(event)) {
                         let uuid = event.user.ft_guid;
+                        let toEdit = { manuallySuppressed: true };
 
                         logger.debug(loggerId, 'Suppressing user', uuid);
 
                         return usersListsClient
-                            .editUser(uuid, { manuallySuppressed: true })
+                            .editUser(uuid, toEdit)
                             .then(() => data);
                     }
                     else {
