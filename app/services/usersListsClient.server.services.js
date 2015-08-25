@@ -14,21 +14,21 @@ exports.editUser = (uuid, editedProperties) => {
 
     return new Promise((fulfill, reject) => {
 
-        logger.debug('Editing a user', {user: uuid, editedProperties: editedProperties});
+        let contentLength = new Buffer(editedProperties).length;
+
+        logger.debug('Editing a user', {user: uuid, editedProperties: editedProperties, contentLength: contentLength });
 
         fetch(config.userListsEndpoint + '/users/' + uuid, {
             method: 'patch',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Content-Length': new Buffer(editedProperties).length
+                'Content-Length': contentLength
             },
             body: editedProperties
         })
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
-                    console.log(new Buffer(editedProperties).length);
-                    console.log(response);
                     return response.json();
                 }
                 if (response.status !== 404) {
