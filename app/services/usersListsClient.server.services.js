@@ -27,6 +27,8 @@ exports.editUser = (uuid, editedProperties) => {
         })
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
+                    console.log(new Buffer(editedProperties).length);
+                    console.log(response);
                     return response.json();
                 }
                 if (response.status !== 404) {
