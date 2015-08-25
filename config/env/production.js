@@ -6,6 +6,7 @@ const sqsQueueUrl =  process.env.SQS_QUEUE_URL;
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO;
+const authToken = process.env.AUTH_TOKEN;
 
 const userListsEndpoint = process.env.USER_LISTS_ENDPOINT;
 
@@ -16,5 +17,6 @@ module.exports = {
     logLevel: logLevel,
     sqsQueueUrl: sqsQueueUrl,
     spoorPostUrl: spoorPostUrl,
-    userListsEndpoint: userListsEndpoint
+    userListsEndpoint: userListsEndpoint,
+    authToken: authToken
 };

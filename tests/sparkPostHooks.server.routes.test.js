@@ -6,7 +6,7 @@ const request = require('supertest');
 
 // Our dependencies
 const app = require('../server');
-
+const config = require('../config/config');
 
 const agent = request.agent(app);
 
@@ -25,6 +25,7 @@ describe('SparkPost Hooks tests:', () => {
 
         // Save a new example
         agent.post('/hooks/sparkpost')
+            .set('X-MessageSystems-Webhook-Token', config.authToken)
             .send(events)
             .expect(200)
             .end((hooksPostErr, hooksPostRes) => {

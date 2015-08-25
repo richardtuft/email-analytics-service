@@ -23,6 +23,13 @@ exports.parse = (rawEvent) => {
     let rawEventMsys = rawEvent.msys;
     let rawEventBody;
 
+
+
+    if (!Object.keys(rawEventMsys).length) {
+        //This is a test event from Sparkpost
+        return {}
+    }
+
     if (rawEventMsys.message_event) {
         rawEventBody = rawEventMsys.message_event;
     }
