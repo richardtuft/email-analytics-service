@@ -27,7 +27,7 @@ exports.parse = (rawEvent) => {
 
     if (!Object.keys(rawEventMsys).length) {
         //This is a test event from Sparkpost
-        return {}
+        return {};
     }
 
     if (rawEventMsys.message_event) {
