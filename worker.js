@@ -57,7 +57,7 @@ function start () {
 
                     if (isHardBounce(event) || isGenerationRejection(event)) {
                         let uuid = event.user.ft_guid;
-                        let toEdit = { manuallySuppressed: true };
+                        let toEdit = { automaticallySuppressed: true };
 
                         logger.debug(loggerId, 'Suppressing user', uuid);
 
