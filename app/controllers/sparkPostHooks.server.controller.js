@@ -47,7 +47,7 @@ function dealWithEvent (rawEvent, next) {
 
     queue.addToQueue(emailEvent)
         .then(() => {
-            logger.verbose(loggerId, 'Message added to the queue');
+            logger.silly(loggerId, 'Message added to the queue');
             next();
         })
         .catch((addErr) => {

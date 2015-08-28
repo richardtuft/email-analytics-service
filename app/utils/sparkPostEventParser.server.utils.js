@@ -1,6 +1,7 @@
 'use strict';
 
 const extend = require('extend');
+const logger = require('../../config/logger');
 
 /**
  * parse() receives a JSON object and returns a valid EmailEvent Object
@@ -93,8 +94,9 @@ exports.parse = (rawEvent) => {
 
     }
 
-    if (!rawEventBody.rcpt_meta || !rawEventBody.rcpt_meta.userUuid) {
-        throw(new Error('EVENTPARSER: unsupported event format ' + rawEventBody));
+    if (!rawEventBody.rcpt_meta) {
+        logger.error('EVENTPARSER: no event metadata', rawEventBody);
+        return {};
     }
 
     let ft_guid = rawEventBody.rcpt_meta.userUuid;
