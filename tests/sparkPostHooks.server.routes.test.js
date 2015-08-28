@@ -37,4 +37,27 @@ describe('SparkPost Hooks tests:', () => {
             });
     });
 
+    it('responds with an Error when the request does not contain an auth token', (done) => {
+
+        let events = [bounceExample, openExample];
+
+        // Save a new example
+        agent.post('/hooks/sparkpost')
+            .send(events)
+            .expect(401)
+            .end(done);
+    });
+
+    it('responds with an Error when the request does not contain an invalid auth token', (done) => {
+
+        let events = [bounceExample, openExample];
+
+        // Save a new example
+        agent.post('/hooks/sparkpost')
+            .set('X-MessageSystems-Webhook-Token', 'random')
+            .send(events)
+            .expect(401)
+            .end(done);
+    });
+
 });

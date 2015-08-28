@@ -93,6 +93,10 @@ exports.parse = (rawEvent) => {
 
     }
 
+    if (!rawEventBody.rcpt_meta || !rawEventBody.rcpt_meta.userUuid) {
+        throw(new Error('EVENTPARSER: unsupported event format ' + rawEventBody));
+    }
+
     let ft_guid = rawEventBody.rcpt_meta.userUuid;
 
     parsedEvent.user = {
