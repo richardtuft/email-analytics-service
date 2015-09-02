@@ -94,16 +94,15 @@ exports.parse = (rawEvent) => {
 
     }
 
-    if (!rawEventBody.rcpt_meta) {
-        logger.error('EVENTPARSER: no event metadata', rawEventBody);
-        return {};
+    if (rawEventBody.rcpt_meta) {
+
+        let ft_guid = rawEventBody.rcpt_meta.userUuid;
+
+        parsedEvent.user = {
+            ft_guid: ft_guid
+        };
+
     }
-
-    let ft_guid = rawEventBody.rcpt_meta.userUuid;
-
-    parsedEvent.user = {
-        ft_guid: ft_guid
-    };
 
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent || rawEventBody.geo_ip) {
@@ -159,8 +158,12 @@ exports.parse = (rawEvent) => {
 
     parsedEvent.context.eventTimestamp = rawEventBody.timestamp;
 
-    // Extend meta property with the incoming meta
-    extend(parsedEvent.context, rawEventBody.rcpt_meta);
+    if (rawEventBody.rcpt_meta) {
+
+        // Extend meta property with the incoming meta
+        extend(parsedEvent.context, rawEventBody.rcpt_meta);
+
+    }
 
     // We only send events that happen in production to keen
     /* istanbul ignore if */
