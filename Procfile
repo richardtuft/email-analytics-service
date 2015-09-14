@@ -1,2 +1,2 @@
-web: node --harmony server.js
-worker: node --harmony worker.js
+web: node server.js
+worker: node worker.js

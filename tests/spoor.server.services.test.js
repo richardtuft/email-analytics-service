@@ -18,7 +18,7 @@ describe('Spoor tests:', () => {
             type: 'delivered',
             timestamp: Date.now()
         };
-        spoor.send(eventObj)
+        spoor.send(JSON.stringify(eventObj))
             .then((res) => {
                 res.status.should.be.above(200).and.be.below(299);
                 done();

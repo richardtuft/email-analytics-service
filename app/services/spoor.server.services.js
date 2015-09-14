@@ -14,6 +14,7 @@ exports.send = (event) => {
     return new Promise((fulfill, reject) => {
 
         let isProduction = process.env.NODE_ENV === 'production';
+        let length = new Buffer(event).length;
 
         fetch(postUrl, {
             method: 'post',
@@ -21,7 +22,7 @@ exports.send = (event) => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-Spoor-Test': !isProduction,
-                'Content-Length': new Buffer(event).length
+                'Content-Length': length
             },
             body: event
         })
