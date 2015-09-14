@@ -4,16 +4,16 @@
   "description": "FT email analytics service",
   "main": "server.js",
   "scripts": {
-    "start": "node --harmony server.js",
-    "test": "gulp --harmony test"
+    "start": "node server.js",
+    "test": "gulp test"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Financial-Times/email-analytics-service.git"
   },
-  "engines": {
-    "node": "0.12.x"
+  "engines" : {
+    "node" : "^4.0.0"
   },
   "author": "Daniele Zanni",
   "dependencies": {
