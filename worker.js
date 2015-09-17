@@ -55,8 +55,11 @@ function start () {
                     // Suppress hard bounces
                     let event = JSON.parse(data.body);
 
-                    if (isHardBounce(event) || isGenerationRejection(event)) {
-                        let uuid = event.user.ft_guid;
+                    let uuid = event.user && event.user.ft_guid;
+
+                    //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
+                    if (uuid && (isHardBounce(event) || isGenerationRejection(event))) {
+
                         let toEdit = { automaticallySuppressed: true };
 
                         logger.debug(loggerId, 'Suppressing user', uuid);
