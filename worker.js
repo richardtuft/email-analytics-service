@@ -106,7 +106,9 @@ function start () {
 
 
 function isHardBounce (event) {
-    return event.action === 'bounce' && (event.context.bounceClass === '10' || event.context.bounceClass === '30' || event.context.bounceClass === '90');
+    let action = event.action;
+    let bounceClass = event.context.bounceClass;
+    return (action === 'bounce' || action === 'out_of_band') && (bounceClass === '10' || bounceClass === '30' || bounceClass === '90');
 }
 
 function isGenerationRejection (event) {

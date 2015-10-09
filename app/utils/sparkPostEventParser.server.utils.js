@@ -16,7 +16,7 @@ exports.parse = (rawEvent) => {
         category: "email",
         system: {
             source: 'email-analytics',
-            version: '0.6.2',
+            version: '1.0.0',
             "api_key": ''
         }
     };
@@ -50,43 +50,43 @@ exports.parse = (rawEvent) => {
     switch (rawEventBody.type) {
 
         // Specific type-based event handling
-        case 'bounce': // ~ bounce/dropped
+        case 'bounce':
             break;
 
-        case 'click': // ~ click
+        case 'click':
             break;
 
-        case 'delay': // ~ deferred
+        case 'delay':
             break;
 
-        case 'delivery': // ~ delivered
+        case 'delivery':
             break;
 
-        case 'generation_failure': // NONE
+        case 'generation_failure':
             break;
 
-        case 'generation_rejection': // NONE
+        case 'generation_rejection':
             break;
 
-        case 'injection': // ~ processed
+        case 'injection':
             break;
 
-        case 'list_unsubscribe': // ~ unsubscribe
+        case 'list_unsubscribe':
             break;
 
-        case 'link_unsubscribe': // ~ unsubscribe
+        case 'link_unsubscribe':
             break;
 
-        case 'open': // ~ open
+        case 'open':
             break;
 
-        case 'out_of_band': // NONE
+        case 'out_of_band':
             break;
 
-        case 'policy_rejection': // NONE
+        case 'policy_rejection':
             break;
 
-        case 'spam_complaint': // ~ spamreport
+        case 'spam_complaint':
             break;
 
         default:
