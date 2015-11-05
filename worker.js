@@ -17,6 +17,7 @@ const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 const usersListsClient = require('./app/services/usersListsClient.server.services');
+const dataAssurance = require('./app/services/dataAssurance.server.services');
 
 const loggerId = 'WORKER:' + config.processId;
 
@@ -82,7 +83,10 @@ function start () {
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
-                    logger.info(loggerId,  'Message moved to Spoor');
+                    logger.info(loggerId, 'Message moved to Spoor');
+                    return dataAssurance.send(lastMessageFound.body);
+                })
+                .then(() => {
                     lastMessageFound = null;
                     fulfill();
                 })
