@@ -86,7 +86,7 @@ function start () {
                     logger.info(loggerId, 'Message moved to Spoor');
 
                     // Create data assurance message
-                    let dataAssurance = {
+                    let dataAssuranceMessage = {
                         environment: process.env.NODE_ENV,
                         application: 'email-service',
                         metric: (JSON.parse(lastMessageFound.body)).action,
@@ -94,7 +94,7 @@ function start () {
 
                     };
 
-                    return dataAssurance.send(JSON.stringify(dataAssurance));
+                    return dataAssurance.send(JSON.stringify(dataAssuranceMessage));
                 })
                 .then(() => {
                     lastMessageFound = null;
