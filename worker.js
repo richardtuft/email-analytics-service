@@ -17,6 +17,7 @@ const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
 const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
 const usersListsClient = require('./app/services/usersListsClient.server.services');
+const dataAssurance = require('./app/services/dataAssurance.server.services');
 
 const loggerId = 'WORKER:' + config.processId;
 
@@ -82,7 +83,20 @@ function start () {
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
-                    logger.info(loggerId,  'Message moved to Spoor');
+                    logger.info(loggerId, 'Message moved to Spoor');
+
+                    // Create data assurance message
+                    let dataAssurance = {
+                        environment: process.env.NODE_ENV,
+                        application: 'email-service',
+                        metric: (JSON.parse(lastMessageFound.body)).action,
+                        count: 1
+
+                    };
+
+                    return dataAssurance.send(JSON.stringify(dataAssurance));
+                })
+                .then(() => {
                     lastMessageFound = null;
                     fulfill();
                 })

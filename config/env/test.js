@@ -8,14 +8,16 @@ const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
 const userListsEndpoint = 'https://localhost:1337';
 const authToken = process.env.AUTH_TOKEN || 'test';
+const dataConsistencyPostUrl =  'https://di5p505om8.execute-api.eu-west-1.amazonaws.com/dev';
 
 module.exports = {
-    port: port,
-    processId: processId,
-    workers: workers,
-    logLevel: logLevel,
-    sqsQueueUrl: sqsQueueUrl,
-    spoorPostUrl: spoorPostUrl,
-    userListsEndpoint: userListsEndpoint,
-    authToken: authToken
+    port,
+    processId,
+    workers,
+    logLevel,
+    sqsQueueUrl,
+    spoorPostUrl,
+    userListsEndpoint,
+    authToken,
+    dataConsistencyPostUrl
 };
