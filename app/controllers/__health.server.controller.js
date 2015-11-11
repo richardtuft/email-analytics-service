@@ -37,7 +37,7 @@ exports.handle = (req, res) => {
         })
         .then(data => {
             let isUp = (data && data.Attributes && data.Attributes.ApproximateNumberOfMessages >=0);
-            let hasFewMessages = (data && data.Attributes && data.Attributes.ApproximateNumberOfMessages && data.Attributes.ApproximateNumberOfMessages < 1000);
+            let hasFewMessages = (data && data.Attributes && data.Attributes.ApproximateNumberOfMessages && data.Attributes.ApproximateNumberOfMessages < 10000);
 
             health.checks.push({
                 name: "AWS SQS is DOWN",
