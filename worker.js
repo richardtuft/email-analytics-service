@@ -51,13 +51,13 @@ function start () {
 
         return new Promise((fulfill, reject) => {
 
-            logger.profile('promise');
-            logger.profile('pullFromQueue');
+            logger.profile('promise'); // Start
+            logger.profile('pullFromQueue'); // Start
 
             queue.pullFromQueue()
                 .then((data) => {
 
-                    logger.profile('pullFromQueue');
+                    logger.profile('pullFromQueue'); // End
 
                     // Suppress hard bounces
                     let event = JSON.parse(data.body);
@@ -80,36 +80,20 @@ function start () {
                     }
                 })
                 .then((data) => {
-                    logger.verbose(loggerId, 'Message retrieved from the queue');
                     lastMessageFound = data;
                     logger.debug(loggerId, lastMessageFound.body);
-                    logger.profile('spoor.send');
+                    logger.profile('spoor.send'); // Start
                     return spoor.send(lastMessageFound.body);
                 })
                 .then(() => {
-                    logger.profile('spoor.send');
-                    logger.profile('queue.deleteFromQueue');
+                    logger.profile('spoor.send'); // End
+                    logger.profile('queue.deleteFromQueue'); // Start
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
-                    logger.profile('queue.deleteFromQueue');
-                    logger.info(loggerId, 'Message moved to Spoor');
-
-                    // Create data assurance message
-                    let dataAssuranceMessage = {
-                        environment: process.env.NODE_ENV,
-                        application: 'email-service',
-                        metric: (JSON.parse(lastMessageFound.body)).action,
-                        count: 1
-
-                    };
-                    logger.profile('dataAssurance.send');
-                    return dataAssurance.send(JSON.stringify(dataAssuranceMessage));
-                })
-                .then(() => {
-                    logger.profile('dataAssurance.send');
+                    logger.profile('queue.deleteFromQueue'); // End
+                    logger.profile('promise'); // End
                     lastMessageFound = null;
-                    logger.profile('promise');
                     fulfill();
                 })
                 .catch(function (error) {
