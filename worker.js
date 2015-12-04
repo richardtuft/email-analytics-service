@@ -51,8 +51,14 @@ function start () {
 
         return new Promise((fulfill, reject) => {
 
+            logger.profile('promise');
+            logger.profile('pullFromQueue');
+
             queue.pullFromQueue()
                 .then((data) => {
+
+                    logger.profile('pullFromQueue');
+
                     // Suppress hard bounces
                     let event = JSON.parse(data.body);
 
@@ -77,12 +83,16 @@ function start () {
                     logger.verbose(loggerId, 'Message retrieved from the queue');
                     lastMessageFound = data;
                     logger.debug(loggerId, lastMessageFound.body);
+                    logger.profile('spoor.send');
                     return spoor.send(lastMessageFound.body);
                 })
                 .then(() => {
+                    logger.profile('spoor.send');
+                    logger.profile('queue.deleteFromQueue');
                     return queue.deleteFromQueue(lastMessageFound.receiptHandle);
                 })
                 .then(() => {
+                    logger.profile('queue.deleteFromQueue');
                     logger.info(loggerId, 'Message moved to Spoor');
 
                     // Create data assurance message
@@ -93,11 +103,13 @@ function start () {
                         count: 1
 
                     };
-
+                    logger.profile('dataAssurance.send');
                     return dataAssurance.send(JSON.stringify(dataAssuranceMessage));
                 })
                 .then(() => {
+                    logger.profile('dataAssurance.send');
                     lastMessageFound = null;
+                    logger.profile('promise');
                     fulfill();
                 })
                 .catch(function (error) {
@@ -108,6 +120,7 @@ function start () {
                     }
                     // If any other error happens, we want the loop to end
                     else {
+                        logger.profile('promise');
                         reject(error);
                     }
 
