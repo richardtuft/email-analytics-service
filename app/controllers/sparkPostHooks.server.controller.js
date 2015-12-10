@@ -13,6 +13,8 @@ const loggerId = 'HOOKS:' + config.processId;
 
 exports.handlePost = (req, res) => {
 
+    logger.profile('handlePost');
+
     const concurrentConnections = 100; //Use config/env
 
     let eventsArray = req.body;
@@ -21,10 +23,11 @@ exports.handlePost = (req, res) => {
 
         logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
 
+        logger.profile('handlePost');
+
         /* istanbul ignore next */
         if (eachErr) {
-            logger.error(loggerId, eachErr);
-
+            return logger.error(loggerId, eachErr);
         }
     });
 
@@ -40,13 +43,19 @@ function dealWithEvent (rawEvent, next) {
     // We do not want to log the email address
     delete rawEvent.msys.rcpt_to;
 
+    logger.profile('eventParser.parse');
     let jEmailEvent = eventParser.parse(rawEvent);
     let emailEvent = JSON.stringify(jEmailEvent);
 
     logger.debug(loggerId, 'Raw Event:', rawEvent);
 
+    logger.profile('eventParser.parse');
+
+    logger.profile('queue.addToQueue');
+
     queue.addToQueue(emailEvent)
         .then(() => {
+            logger.profile('queue.addToQueue');
             logger.silly(loggerId, 'Message added to the queue');
             next();
         })
