@@ -13,6 +13,11 @@ const loggerId = 'HOOKS:' + config.processId;
 
 exports.handlePost = (req, res) => {
 
+    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
+
+    // Do not wait for the array to be processed, send the Ack as soon as possible
+    res.status(200).send('OK');
+
     const concurrentConnections = 100; //Use config/env
 
     let eventsArray = req.body;
@@ -24,14 +29,8 @@ exports.handlePost = (req, res) => {
         /* istanbul ignore next */
         if (eachErr) {
             logger.error(loggerId, eachErr);
-
         }
     });
-
-    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
-
-    // Do not wait for the array to be processed, send the Ack as soon as possible
-    res.status(200).send('OK');
 
 };
 
