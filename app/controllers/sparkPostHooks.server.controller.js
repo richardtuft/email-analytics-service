@@ -30,6 +30,8 @@ exports.handlePost = (req, res) => {
 
         logger.profile('handlePost');
 
+        eventsArray = null;
+
         /* istanbul ignore next */
         if (eachErr) {
             return logger.error(loggerId, eachErr);
