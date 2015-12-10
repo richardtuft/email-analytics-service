@@ -15,9 +15,14 @@ exports.handlePost = (req, res) => {
 
     logger.profile('handlePost');
 
-    const concurrentConnections = 100; //Use config/env
-
     let eventsArray = req.body;
+
+    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
+
+    // Do not wait for the array to be processed, send the Ack as soon as possible
+    res.status(200).send('OK');
+
+    const concurrentConnections = 100; //Use config/env
 
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
@@ -30,11 +35,6 @@ exports.handlePost = (req, res) => {
             return logger.error(loggerId, eachErr);
         }
     });
-
-    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
-
-    // Do not wait for the array to be processed, send the Ack as soon as possible
-    res.status(200).send('OK');
 
 };
 
