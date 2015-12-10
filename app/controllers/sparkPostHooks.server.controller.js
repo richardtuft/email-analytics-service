@@ -13,14 +13,14 @@ const loggerId = 'HOOKS:' + config.processId;
 
 exports.handlePost = (req, res) => {
 
+    let eventsArray = req.body;
+
     logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.length});
 
     // Do not wait for the array to be processed, send the Ack as soon as possible
     res.status(200).send('OK');
 
     const concurrentConnections = 100; //Use config/env
-
-    let eventsArray = req.body;
 
     async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
