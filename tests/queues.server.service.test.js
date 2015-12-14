@@ -89,15 +89,15 @@ describe('Queues service tests:', () => {
                 .catch(done);
         });
 
-        it('should retrieve a message from the queue', (done) => {
+        it('should retrieve an array of messages from the queue', (done) => {
 
             queues.pullFromQueue()
-                .then((message) => {
+                .then((messages) => {
 
-                    receiptHandle = message.receiptHandle;
+                    messages.should.be.an.instanceOf(Array);
+
                     // When testing, we can't be sure that the message we are receiving is the same one we have just sent
-                    message.body.should.be.a.string;
-                    message.receiptHandle.should.be.ok;
+                    messages[0].ReceiptHandle.should.be.ok;
 
                     done();
 

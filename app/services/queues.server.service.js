@@ -38,7 +38,8 @@ exports.pullFromQueue = () => {
         let receiveMessage = Q.nbind( sqs.receiveMessage, sqs );
 
         receiveMessage ({
-            QueueUrl: config.sqsQueueUrl
+            QueueUrl: config.sqsQueueUrl,
+            MaxNumberOfMessages: 10
         })
         .then((data) => {
 
@@ -48,13 +49,7 @@ exports.pullFromQueue = () => {
                 reject(new NoMessageInQueue());
             }
             else {
-                let message = data.Messages[0];
-
-                fulfill({
-                    id: message.MessageId,
-                    body: message.Body,
-                    receiptHandle: message.ReceiptHandle
-                });
+                fulfill(data.Messages);
             }
 
         })
