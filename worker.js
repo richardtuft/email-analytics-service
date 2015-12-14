@@ -47,74 +47,63 @@ function start () {
 
         logger.verbose(loggerId,  'Looking for new messages to move');
 
-        let lastMessageFound;
-
-        return new Promise((fulfill, reject) => {
-
-            logger.profile('promise'); // Start
-            logger.profile('pullFromQueue'); // Start
-
-            queue.pullFromQueue()
-                .then((data) => {
-
-                    logger.profile('pullFromQueue'); // End
-
-                    // Suppress hard bounces
-                    let event = JSON.parse(data.body);
-
-                    let uuid = event.user && event.user.ft_guid;
-
-                    //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-                    if (uuid && (isHardBounce(event) || isGenerationRejection(event))) {
-
-                        let toEdit = { automaticallySuppressed: true };
-
-                        logger.debug(loggerId, 'Suppressing user', uuid);
-
-                        return usersListsClient
-                            .editUser(uuid, toEdit)
-                            .then(() => data);
-                    }
-                    else {
-                        return data;
-                    }
-                })
-                .then((data) => {
-                    lastMessageFound = data;
-                    logger.debug(loggerId, lastMessageFound.body);
-                    logger.profile('spoor.send'); // Start
-                    return spoor.send(lastMessageFound.body);
-                })
-                .then(() => {
-                    logger.profile('spoor.send'); // End
-                    logger.profile('queue.deleteFromQueue'); // Start
-                    return queue.deleteFromQueue(lastMessageFound.receiptHandle);
-                })
-                .then(() => {
-                    logger.profile('queue.deleteFromQueue'); // End
-                    logger.profile('promise'); // End
-                    lastMessageFound = null;
-                    fulfill();
-                })
-                .catch(function (error) {
-                    // If there are no messages queued we want to try again
-                    if (error instanceof NoMessageInQueue) {
-                        logger.debug(loggerId, error.message);
-                        fulfill();
-                    }
-                    // If any other error happens, we want the loop to end
-                    else {
-                        logger.profile('promise');
-                        reject(error);
-                    }
-
-                });
-        });
+        return queue.pullFromQueue()
+            .then((messages) => {
+                return Promise.all(messages.map(dealWithSingleMessage));
+            });
 
     }
 
 }
 
+function dealWithSingleMessage(message) {
+
+    logger.debug(loggerId, message);
+
+    return new Promise((fulfill, reject) => {
+
+        return new Promise((fulfill, reject) => {
+            // Suppress hard bounces
+            let event = JSON.parse(message.Body);
+
+            let uuid = event.user && event.user.ft_guid;
+
+            //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
+            if (uuid && (isHardBounce(event) || isGenerationRejection(event))) {
+
+                let toEdit = {automaticallySuppressed: true};
+
+                return usersListsClient
+                    .editUser(uuid, toEdit)
+                    .then(fulfill)
+                    .catch(reject);
+
+            } else {
+                fulfill();
+            }
+
+        })
+        .then(() => {
+            return spoor.send(message.Body)
+                .then(() => {
+                    return queue.deleteFromQueue(message.ReceiptHandle);
+                });
+        })
+        .then(fulfill)
+        .catch(function (error) {
+            // If there are no messages queued we want to try again
+            if (error instanceof NoMessageInQueue) {
+                logger.debug(loggerId, error.message);
+                fulfill();
+            }
+            // If any other error happens, we want the loop to end
+            else {
+                reject(error);
+            }
+
+        });
+    });
+}
 
 function isHardBounce (event) {
     let action = event.action;
@@ -125,3 +114,4 @@ function isHardBounce (event) {
 function isGenerationRejection (event) {
     return event.action === 'generation_rejection';
 }
+
