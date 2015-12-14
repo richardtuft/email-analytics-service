@@ -2,6 +2,7 @@
 
 // External modules
 require('dotenv').load({silent: true});
+const async = require('async');
 const throng = require('throng');
 
 /* istanbul ignore next */
@@ -35,21 +36,44 @@ function start () {
         shutdown(loggerId);
     });
 
-    forever(moveToSpoor).catch((err) => {
+    forever(() => {
+
+        return new Promise ((fulfill, reject) => {
+
+            async.times(10, moveToSpoor, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                return fulfill();
+            });
+        });
+
+
+    }).catch((err) => {
 
         logger.error(loggerId, err);
         shutdown(loggerId);
 
     });
 
+
+
     // TODO: move to app/utils
-    function moveToSpoor() {
+    function moveToSpoor(n, next) {
 
-        logger.verbose(loggerId,  'Looking for new messages to move');
-
+        logger.profile('queue.pullFromQueue');
+        logger.profile('moveToSpoor');
         return queue.pullFromQueue()
             .then((messages) => {
+                logger.profile('queue.pullFromQueue');
                 return Promise.all(messages.map(dealWithSingleMessage));
+            }).then(() => {
+                logger.profile('moveToSpoor');
+                return next();
+            })
+            .catch((err) => {
+                logger.error(err);
+                next(err);
             });
 
     }
@@ -92,12 +116,18 @@ function dealWithSingleMessage(message) {
 
         })
         .then(() => {
+            logger.profile('spoor.send');
             return spoor.send(message.Body)
                 .then(() => {
+                    logger.profile('spoor.send');
+                    logger.profile('queue.deleteFromQueue');
                     return queue.deleteFromQueue(message.ReceiptHandle);
                 });
         })
-        .then(fulfill)
+        .then(() => {
+            logger.profile('queue.deleteFromQueue');
+            fulfill();
+        })
         .catch(function (error) {
             // If there are no messages queued we want to try again
             if (error instanceof NoMessageInQueue) {

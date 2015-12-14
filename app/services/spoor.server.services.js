@@ -24,7 +24,8 @@ exports.send = (event) => {
                 'X-Spoor-Test': !isProduction,
                 'Content-Length': length
             },
-            body: event
+            body: event,
+            timeout: 10000
         })
         .then((res) => {
 
