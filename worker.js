@@ -90,6 +90,14 @@ function dealWithSingleMessage(message) {
             // Suppress hard bounces
             let event = JSON.parse(message.Body);
 
+
+            // We only send events that happen in production to keen
+            /* istanbul ignore if */
+            if (process.env.NODE_ENV === 'production') {
+                const keenClient = require('./config/keen');
+                keenClient.addEvent('events', event);
+            }
+
             let uuid = event.user && event.user.ft_guid;
 
             //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
