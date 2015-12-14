@@ -16,7 +16,7 @@ const spoor = require('./app/services/spoor.server.services');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
-const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
+const NoMessageInQueueError = require('./app/errors/noMessageInQueue.server.error');
 const usersListsClient = require('./app/services/usersListsClient.server.services');
 const dataAssurance = require('./app/services/dataAssurance.server.services');
 
@@ -40,7 +40,7 @@ function start () {
 
         return new Promise ((fulfill, reject) => {
 
-            async.times(10, moveToSpoor, (err) => {
+            async.times(20, moveToSpoor, (err) => {
                 if (err) {
                     return reject(err);
                 }
@@ -61,19 +61,23 @@ function start () {
     // TODO: move to app/utils
     function moveToSpoor(n, next) {
 
-        logger.profile('queue.pullFromQueue');
-        logger.profile('moveToSpoor');
         return queue.pullFromQueue()
             .then((messages) => {
-                logger.profile('queue.pullFromQueue');
                 return Promise.all(messages.map(dealWithSingleMessage));
             }).then(() => {
-                logger.profile('moveToSpoor');
                 return next();
             })
-            .catch((err) => {
-                logger.error(err);
-                next(err);
+            .catch(function (error) {
+                // If there are no messages queued we want to try again
+                if (error instanceof NoMessageInQueueError) {
+                    logger.debug(loggerId, error.message);
+                    next();
+                }
+                // If any other error happens, we want the loop to end
+                else {
+                    next(error);
+                }
+
             });
 
     }
@@ -116,30 +120,16 @@ function dealWithSingleMessage(message) {
 
         })
         .then(() => {
-            logger.profile('spoor.send');
             return spoor.send(message.Body)
                 .then(() => {
-                    logger.profile('spoor.send');
-                    logger.profile('queue.deleteFromQueue');
                     return queue.deleteFromQueue(message.ReceiptHandle);
                 });
         })
         .then(() => {
-            logger.profile('queue.deleteFromQueue');
             fulfill();
         })
-        .catch(function (error) {
-            // If there are no messages queued we want to try again
-            if (error instanceof NoMessageInQueue) {
-                logger.debug(loggerId, error.message);
-                fulfill();
-            }
-            // If any other error happens, we want the loop to end
-            else {
-                reject(error);
-            }
+        .catch(reject);
 
-        });
     });
 }
 
