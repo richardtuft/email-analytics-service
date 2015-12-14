@@ -16,7 +16,7 @@ const spoor = require('./app/services/spoor.server.services');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const forever = require('./app/utils/forever.server.utils');
 const logger = require('./config/logger');
-const NoMessageInQueue = require('./app/errors/noMessageInQueue.server.error');
+const NoMessageInQueueError = require('./app/errors/noMessageInQueue.server.error');
 const usersListsClient = require('./app/services/usersListsClient.server.services');
 const dataAssurance = require('./app/services/dataAssurance.server.services');
 
@@ -71,9 +71,17 @@ function start () {
                 logger.profile('moveToSpoor');
                 return next();
             })
-            .catch((err) => {
-                logger.error(err);
-                next(err);
+            .catch(function (error) {
+                // If there are no messages queued we want to try again
+                if (error instanceof NoMessageInQueueError) {
+                    logger.debug(loggerId, error.message);
+                    next();
+                }
+                // If any other error happens, we want the loop to end
+                else {
+                    next(error);
+                }
+
             });
 
     }
@@ -128,18 +136,8 @@ function dealWithSingleMessage(message) {
             logger.profile('queue.deleteFromQueue');
             fulfill();
         })
-        .catch(function (error) {
-            // If there are no messages queued we want to try again
-            if (error instanceof NoMessageInQueue) {
-                logger.debug(loggerId, error.message);
-                fulfill();
-            }
-            // If any other error happens, we want the loop to end
-            else {
-                reject(error);
-            }
+        .catch(reject);
 
-        });
     });
 }
 

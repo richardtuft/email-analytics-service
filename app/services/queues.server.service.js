@@ -53,7 +53,6 @@ exports.pullFromQueue = () => {
             }
 
         })
-        .catch (reject);
     });
 
 };
