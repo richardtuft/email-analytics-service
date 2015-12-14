@@ -7,6 +7,12 @@ module.exports = () => {
 
     let app = express();
 
+    //Disable Nagle algorithm
+    app.use((req, res, next) => {
+        req.connection.setNoDelay(true);
+        next();
+    });
+
     app.use(bodyParser.urlencoded({
         extended: true,
         limit:'10mb'
