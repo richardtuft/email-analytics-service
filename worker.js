@@ -40,7 +40,7 @@ function start () {
 
         return new Promise ((fulfill, reject) => {
 
-            async.times(10, moveToSpoor, (err) => {
+            async.times(20, moveToSpoor, (err) => {
                 if (err) {
                     return reject(err);
                 }
@@ -61,14 +61,10 @@ function start () {
     // TODO: move to app/utils
     function moveToSpoor(n, next) {
 
-        logger.profile('queue.pullFromQueue');
-        logger.profile('moveToSpoor');
         return queue.pullFromQueue()
             .then((messages) => {
-                logger.profile('queue.pullFromQueue');
                 return Promise.all(messages.map(dealWithSingleMessage));
             }).then(() => {
-                logger.profile('moveToSpoor');
                 return next();
             })
             .catch(function (error) {
@@ -124,16 +120,12 @@ function dealWithSingleMessage(message) {
 
         })
         .then(() => {
-            logger.profile('spoor.send');
             return spoor.send(message.Body)
                 .then(() => {
-                    logger.profile('spoor.send');
-                    logger.profile('queue.deleteFromQueue');
                     return queue.deleteFromQueue(message.ReceiptHandle);
                 });
         })
         .then(() => {
-            logger.profile('queue.deleteFromQueue');
             fulfill();
         })
         .catch(reject);
