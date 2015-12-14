@@ -165,13 +165,6 @@ exports.parse = (rawEvent) => {
 
     }
 
-    // We only send events that happen in production to keen
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV === 'production') {
-        const keenClient = require('../../config/keen');
-        keenClient.addEvent('events', parsedEvent);
-    }
-
     return parsedEvent;
 
 };
