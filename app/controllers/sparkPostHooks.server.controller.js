@@ -22,20 +22,22 @@ exports.handlePost = (req, res) => {
     // Do not wait for the array to be processed, send the Ack as soon as possible
     res.status(200).send('OK');
 
-    const concurrentConnections = 100; //Use config/env
+    setImmediate(() => {
 
-    async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
+        const concurrentConnections = 100; //Use config/env
 
-        logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
+        async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
 
-        logger.profile('handlePost');
+            logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
 
-        eventsArray = null;
+            logger.profile('handlePost');
 
-        /* istanbul ignore next */
-        if (eachErr) {
-            return logger.error(loggerId, eachErr);
-        }
+            /* istanbul ignore next */
+            if (eachErr) {
+                return logger.error(loggerId, eachErr);
+            }
+        });
+
     });
 
 };
