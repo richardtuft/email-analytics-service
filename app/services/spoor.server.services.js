@@ -25,7 +25,7 @@ exports.send = (event) => {
                 'Content-Length': length
             },
             body: event,
-            timeout: 10000
+            timeout: 30000
         })
         .then((res) => {
 
