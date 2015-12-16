@@ -136,7 +136,7 @@ function dealWithSingleMessage(message) {
     });
 }
 
-function sendToKeen () {
+function sendToKeen (event) {
     const keenClient = require('./config/keen');
     return new Promise((fullfill, reject) => {
         keenClient.addEvent('events', event, (err, res) => {
