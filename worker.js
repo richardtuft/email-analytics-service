@@ -40,7 +40,7 @@ function start () {
 
         return new Promise ((fulfill, reject) => {
 
-            async.times(20, moveToSpoor, (err) => {
+            async.times(10, moveToSpoor, (err) => {
 
                 if (err) {
                     return reject(err);
