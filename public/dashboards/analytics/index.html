@@ -97,14 +97,18 @@
             });
 
         var injections7DaysQuery = new Keen.Query("count", {
-            eventCollection: "events",
-            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"},
-                {"operator":"eq","property_name":"action","property_value":"injection"}],
-            groupBy: "action",
-            interval: "hourly",
-            timeframe: "this_7_days",
-            timezone: "UTC"
-        });
+                eventCollection: "events",
+                filters: [
+                    { "operator": "eq", "property_name": "action", "property_value": "injection" },
+                    {"operator":"ne","property_name":"context.product","property_value":"test"}
+                ],
+                groupBy: [
+                    "context.product"
+                ],
+                interval: "daily",
+                timeframe: "this_7_days",
+                timezone: "UTC"
+            });
 
 
         /** PREPARE CHARTS **/
@@ -125,6 +129,7 @@
 
         var injections7DaysChart = new Keen.Dataviz()
                 .el(document.getElementById("injections-7-days"))
+                .chartType("columnchart")
                 .prepare(); // starts spinner
 
 
@@ -181,7 +186,7 @@
                 // Handle the response
                 injections7DaysChart
                         .parseRequest(this)
-                        .title("Injections per minute in past 7 days")
+                        .title("Injections per day in past 7 days")
                         .render();
             }
         });
