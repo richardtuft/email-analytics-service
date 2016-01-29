@@ -22,7 +22,8 @@ exports.send = (event) => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-Spoor-Test': !isProduction,
-                'Content-Length': length
+                'Content-Length': length,
+                'User-Agent': 'ft-email-service/v1.1'
             },
             body: event,
             timeout: 30000
