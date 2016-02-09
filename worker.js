@@ -122,7 +122,7 @@ function dealWithSingleMessage(message) {
             else return event;
         })
         .then(() => {
-            return spoor.send(message.Body)
+            return spoor.send(message.Body);
         })
         .then(() => {
                 return queue.deleteFromQueue(message.ReceiptHandle);

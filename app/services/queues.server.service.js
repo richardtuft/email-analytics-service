@@ -52,7 +52,7 @@ exports.pullFromQueue = () => {
                 fulfill(data.Messages);
             }
 
-        })
+        });
     });
 
 };
