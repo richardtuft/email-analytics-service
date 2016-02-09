@@ -22,10 +22,13 @@ describe('SparkPost Hooks tests:', () => {
     it('responds with OK when a POST is received', (done) => {
 
         let events = [bounceExample, openExample];
+        
+        let auth = new Buffer(config.authUser + ':' + config.authPassword);
+        let token =  'Basic ' + auth.toString('base64');
 
         // Save a new example
         agent.post('/hooks/sparkpost')
-            .set('X-MessageSystems-Webhook-Token', config.authToken)
+            .set('Authorization', token)
             .send(events)
             .expect(200)
             .end((hooksPostErr, hooksPostRes) => {
