@@ -63,14 +63,20 @@
 
         var total24HoursQuery = new Keen.Query("count", {
             eventCollection: "events",
-            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"}],
+            filters: [
+                {"operator": "exists", "property_name": "context.product", "property_value": true },
+                {"operator":"ne","property_name":"context.product","property_value":"test"}
+            ],
             timeframe: "this_24_hours",
             timezone: "UTC"
         });
 
         var actions24HoursQuery = new Keen.Query("count", {
             eventCollection: "events",
-            filters: [{"operator":"ne","property_name":"context.product","property_value":"test"}],
+            filters: [
+                {"operator": "exists", "property_name": "context.product", "property_value": true },
+                {"operator":"ne","property_name":"context.product","property_value":"test"}
+            ],
             groupBy: "action",
             timeframe: "this_24_hours",
             timezone: "UTC"
@@ -78,7 +84,9 @@
 
         var bounces7DaysQuery = new Keen.Query("count", {
                 eventCollection: "events",
-                filters: [{"operator":"exists","property_name":"context.bounceClass","property_value":true},
+                filters: [
+                    {"operator": "exists", "property_name": "context.product", "property_value": true },
+                    {"operator":"exists","property_name":"context.bounceClass","property_value":true},
                     {"operator":"ne","property_name":"context.product","property_value":"test"},
                     {"operator":"eq","property_name":"action","property_value":"bounce"},
                     {"operator":"ne","property_name":"context.bounceClass","property_value":20},
@@ -99,6 +107,7 @@
         var injections7DaysQuery = new Keen.Query("count", {
                 eventCollection: "events",
                 filters: [
+                    {"operator": "exists", "property_name": "context.product", "property_value": true },
                     { "operator": "eq", "property_name": "action", "property_value": "injection" },
                     {"operator":"ne","property_name":"context.product","property_value":"test"}
                 ],
