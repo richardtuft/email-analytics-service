@@ -10,7 +10,7 @@ const logger = require('../../config/logger');
 exports.send = (event) => {
 
     const postUrl = config.spoorPostUrl;
-
+    
     return new Promise((fulfill, reject) => {
 
         let isProduction = process.env.NODE_ENV === 'production';
@@ -23,6 +23,7 @@ exports.send = (event) => {
                 'Content-Type': 'application/json',
                 'X-Spoor-Test': !isProduction,
                 'Content-Length': length,
+                "spoor-region": Math.round(Math.random()) ? 'EU' : 'US', //Randomly assign a different region
                 'User-Agent': 'ft-email-service/v1.1'
             },
             body: event,
