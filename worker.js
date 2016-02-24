@@ -112,6 +112,12 @@ function dealWithSingleMessage(message) {
             }
 
         })
+        .then(() => {
+            return spoor.send(message.Body);
+        })
+        .then(() => {
+                return queue.deleteFromQueue(message.ReceiptHandle);
+        })
         .then((event) => {
 
             // We only send events received in production to keen
@@ -120,12 +126,6 @@ function dealWithSingleMessage(message) {
             }
 
             else return event;
-        })
-        .then(() => {
-            return spoor.send(message.Body);
-        })
-        .then(() => {
-                return queue.deleteFromQueue(message.ReceiptHandle);
         })
         .then(() => {
             message = null;
