@@ -15,12 +15,12 @@ module.exports = () => {
 
     app.use(bodyParser.urlencoded({
         extended: true,
-        limit:'10mb'
+        limit:'20mb'
     }));
 
 
     app.use(bodyParser.json({
-        limit:'10mb'
+        limit:'20mb'
     }));
 
     require('../app/routes/__health.server.routes')(app);
