@@ -2,12 +2,12 @@
 
 // External modules
 const eventParser = require('../utils/sparkPostEventParser.server.utils');
-const async = require ('async');
 
 // Internal modules
 const config = require('../../config/config');
 const logger = require('../../config/logger');
-const queue = require('../services/queues.server.service');
+const Queue = require('../services/queues1.server.service');
+const queue = new Queue(config);
 
 const loggerId = 'HOOKS:' + config.processId;
 
@@ -22,33 +22,18 @@ exports.handlePost = (req, res) => {
     // Do not wait for the array to be processed, send the Ack as soon as possible
     res.status(200).send('OK');
 
-    setImmediate(() => {
-
-        const concurrentConnections = 100; //Use config/env
-
-        async.eachLimit(eventsArray, concurrentConnections, dealWithEvent, (eachErr) => {
-
-            logger.info(loggerId, 'Batch of messages sent to the queue', {SIZE: eventsArray.length});
-
-            logger.profile('handlePost');
-
-            /* istanbul ignore next */
-            if (eachErr) {
-                return logger.error(loggerId, eachErr);
-            }
-        });
-
-    });
+    dealWithEvent(eventsArray);
 
 };
 
 function dealWithEvent (rawEvent, next) {
 
     // We do not want to log the email address
-    delete rawEvent.msys.rcpt_to;
+    //delete rawEvent.msys.rcpt_to;
 
     logger.profile('eventParser.parse');
-    let jEmailEvent = eventParser.parse(rawEvent);
+    //let jEmailEvent = eventParser.parse(rawEvent);
+    let jEmailEvent = rawEvent;
     let emailEvent = JSON.stringify(jEmailEvent);
 
     logger.debug(loggerId, 'Raw Event:', rawEvent);
