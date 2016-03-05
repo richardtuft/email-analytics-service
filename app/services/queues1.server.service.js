@@ -11,7 +11,8 @@ const spoor = require('../services/spoor.server.services');
 function isHardBounce (e) {
     let action = e.action;
     let bounceClass = e.context.bounceClass;
-    return (action === 'bounce' || action === 'out_of_band') && (bounceClass === '10' || bounceClass === '30' || bounceClass === '90');
+    return (action === 'bounce' || action === 'out_of_band') && 
+      (bounceClass === '10' || bounceClass === '30' || bounceClass === '90');
 }
 
 function isGenerationRejection (e) {
@@ -98,7 +99,6 @@ class QueueApp extends EventEmitter {
         next();
       })
       .catch(next);
-      
     }, (err) => {
       if (!err) {
         console.timeEnd('events');
