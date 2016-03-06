@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
 
 module.exports = () => {
 
@@ -12,16 +11,6 @@ module.exports = () => {
         req.connection.setNoDelay(true);
         next();
     });
-
-    app.use(bodyParser.urlencoded({
-        extended: true,
-        limit:'20mb'
-    }));
-
-
-    app.use(bodyParser.json({
-        limit:'20mb'
-    }));
 
     require('../app/routes/__health.server.routes')(app);
     require('../app/routes/__gtg.server.routes')(app);

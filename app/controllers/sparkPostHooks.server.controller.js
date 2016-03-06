@@ -2,6 +2,9 @@
 
 // External modules
 const eventParser = require('../utils/sparkPostEventParser.server.utils');
+const JSONStream = require('JSONStream');
+const through = require('through2');
+const es = require('event-stream');
 
 // Internal modules
 const config = require('../../config/config');
@@ -15,43 +18,26 @@ exports.handlePost = (req, res) => {
 
     logger.profile('handlePost');
 
-    let eventsArray = req.body;
-
-    logger.info(loggerId, 'Batch of messages received', {SIZE: eventsArray.results.length});
-
-    // Do not wait for the array to be processed, send the Ack as soon as possible
-    res.status(200).send('OK');
-
-    dealWithEvent(eventsArray);
+    dealWithEvent(req, res);
 
 };
 
-function dealWithEvent (rawEvent, next) {
+function dealWithEvent (rawEvent, res) {
 
-    // We do not want to log the email address
-    //delete rawEvent.msys.rcpt_to;
-
-    logger.profile('eventParser.parse');
-    //let jEmailEvent = eventParser.parse(rawEvent);
-    let jEmailEvent = rawEvent;
-    let emailEvent = JSON.stringify(jEmailEvent);
-
-    logger.debug(loggerId, 'Raw Event:', rawEvent);
-
-    logger.profile('eventParser.parse');
-
-    logger.profile('queue.addToQueue');
-
-    queue.addToQueue(emailEvent)
+  rawEvent
+    .on('end', () => res.status(200).send('OK'))
+    .pipe(JSONStream.parse('results.*'))
+    .pipe(es.map((data, cb) => {
+      // We do not want to log the email address
+      delete data.msys.message_event.rcpt_to;
+      eventParser.parse(data);
+      queue.addToQueue(JSON.stringify(data))
         .then(() => {
-            logger.profile('queue.addToQueue');
-            logger.silly(loggerId, 'Message added to the queue');
-            next();
+          cb();
         })
-        .catch((addErr) => {
-            /* istanbul ignore next */
-            logger.error(loggerId, addErr);
-            /* istanbul ignore next */
-            next(addErr);
+        .catch(err => {
+          console.log(err)
+          cb(err);
         });
+    }));
 }
