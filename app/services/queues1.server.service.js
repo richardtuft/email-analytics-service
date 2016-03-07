@@ -6,6 +6,7 @@ const Connector = require('./_connector');
 const logger = require('../../config/logger');
 const eventParser = require('../utils/sparkpostEventParser.server.utils');
 const usersListsClient = require('../services/usersListsClient.server.services');
+const keen = require('../services/keen.server.service');
 const spoor = require('../services/spoor.server.services');
 
 function isHardBounce (e) {
@@ -33,6 +34,7 @@ class QueueApp extends EventEmitter {
     this.connection.defaultChannel().then(channel => {
       //TODO make durable ?
       let ok = channel.assertQueue(this.config.eventQueue);
+      ok.then(() => channel.assertQueue(this.config.batchQueue));
       ok.then(() => channel.prefetch(200));
       ok.then(() => {
         this.channel = channel;
@@ -46,9 +48,9 @@ class QueueApp extends EventEmitter {
     this.emit('lost');
   }
 
-  addToQueue(task) {
+  addToQueue(task, queueName) {
     return new Promise((resolve, reject) => {
-      this.channel.sendToQueue(this.config.eventQueue, new Buffer(task),
+      this.channel.sendToQueue(queueName, new Buffer(task),
           {persistent: true},
           (err, ok) => {
             if (err) {
@@ -59,25 +61,50 @@ class QueueApp extends EventEmitter {
     });
   }
 
-  startConsuming() {
-    this.channel.consume(this.config.eventsQueue, this.onTask.bind(this));
+  startConsumingBatches() {
+    this.channel.consume(this.config.batchQueue, this.onBatch.bind(this));
   }
 
-  //onTask(task) {
-    //let evnt = JSON.parse(task.content.toString());
-    //setTimeout(() => {
-      //console.log('hi');
-      //this.channel.ack(task);
-    //}, 1000);
-  //}
+  startConsumingEvents() {
+    this.channel.consume(this.config.eventQueue, this.onTask.bind(this));
+  }
+
+  onBatch(task) {
+    let publishEvents = (e, next) => {
+      this.addToQueue(JSON.stringify(e), this.config.eventQueue)
+        .then(() => next())
+        .catch(next);
+    };
+
+    let batch = JSON.parse(task.content.toString()).results;
+    let q = async.queue(publishEvents, 2000);
+
+    q.drain = () => {
+      console.log('Batch queue drained');
+      this.channel.ack(task);
+    };
+
+    let count = 0;
+    q.push(batch, err => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('count', ++count);
+      }
+    });
+
+  }
 
   onTask(task) {
-    let evnt = JSON.parse(task.content.toString());
+    let e = JSON.parse(task.content.toString());
+    delete e.msys.message_event.rcpt_to;
+    e = eventParser.parse(e);
+
     return new Promise((resolve, reject) => {
-      let uuid = evnt.user && evnt.user.ft_guid;
+      let uuid = e.user && e.user.ft_guid;
 
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      if (uuid && (isHardBounce(event) || isGenerationRejection(event))) {
+      if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
 
         let toEdit = {
             automaticallySuppressed: true
@@ -85,23 +112,23 @@ class QueueApp extends EventEmitter {
 
         return usersListsClient
             .editUser(uuid, toEdit)
-            .then(() => resolve(evnt))
+            .then(() => resolve(e))
             .catch(reject);
 
         } else {
-            return resolve(evnt);
+            return resolve(e);
         }
       })
-      .then((evnt) => {
+      .then(() => {
+        return spoor.send(JSON.stringify(e));
+      })
+      .then(() => {
         // We only send events received in production to keen
         if (process.env.NODE_ENV === 'production') {
-          return sendToKeen(evnt);
+          return sendToKeen(e);
         }
 
-        else return evnt;
-      })
-      .then((e) => {
-        return spoor.send(JSON.stringify(evnt));
+        else return e;
       })
       .then(() => {
         return this.channel.ack(task);
@@ -111,6 +138,6 @@ class QueueApp extends EventEmitter {
         this.channel.nack(task, false, true);
       });
   }
-};
+}
 
 module.exports = QueueApp;

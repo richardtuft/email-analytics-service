@@ -16,28 +16,28 @@ const loggerId = 'HOOKS:' + config.processId;
 
 exports.handlePost = (req, res) => {
 
-    logger.profile('handlePost');
+  logger.profile('handlePost');
 
-    dealWithEvent(req, res);
-
+  queue.addToQueue(JSON.stringify(req.body), config.batchQueue)
+    .then(() => {
+      res.send('OK');
+    })
+    .catch(err => {
+      res.status(400);
+    });
 };
 
-function dealWithEvent (rawEvent, res) {
 
-  rawEvent
-    .on('end', () => res.status(200).send('OK'))
-    .pipe(JSONStream.parse('results.*'))
-    .pipe(es.map((data, cb) => {
-      // We do not want to log the email address
-      delete data.msys.message_event.rcpt_to;
-      eventParser.parse(data);
-      queue.addToQueue(JSON.stringify(data))
-        .then(() => {
-          cb();
-        })
-        .catch(err => {
-          console.log(err)
-          cb(err);
-        });
-    }));
-}
+  //rawEvent
+    //.on('end', () => res.status(200).send('OK'))
+    //.pipe(JSONStream.parse('results.*'))
+    //.pipe(es.map((data, cb) => {
+      //// We do not want to log the email address
+      //queue.addToQueue(JSON.stringify(data))
+        //.then(() => {
+          //cb();
+        //})
+        //.catch(err => {
+          //cb(err);
+        //});
+    //}).on('error', (err) => console.log(err) ));
