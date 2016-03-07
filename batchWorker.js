@@ -8,7 +8,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const throng = require('throng');
 const config = require('./config/config');
 const shutdown = require('./app/utils/shutdown.server.utils');
-const Queue = require('./app/services/queues1.server.service');
+const Queue = require('./app/services/queues.server.service');
 
 function start() {
 

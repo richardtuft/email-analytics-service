@@ -44,7 +44,7 @@ class QueueApp extends EventEmitter {
   }
 
   onLost() {
-    logger.info('connection to queue lost');
+    logger.error('connection to queue lost');
     this.emit('lost');
   }
 
@@ -80,16 +80,16 @@ class QueueApp extends EventEmitter {
     let q = async.queue(publishEvents, 2000);
 
     q.drain = () => {
-      console.log('Batch queue drained');
+      logger.info('Batch queue drained');
       this.channel.ack(task);
     };
 
     let count = 0;
     q.push(batch, err => {
       if (err) {
-        console.log(err);
+        logger.error(err);
       } else {
-        console.log('count', ++count);
+        logger.info('count', ++count);
       }
     });
 
@@ -134,7 +134,7 @@ class QueueApp extends EventEmitter {
         return this.channel.ack(task);
       })
       .catch(err => {
-        console.log(err);
+        logger.error(err);
         this.channel.nack(task, false, true);
       });
   }
