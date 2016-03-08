@@ -7,7 +7,6 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const throng = require('throng');
 const config = require('./config/config');
-const shutdown = require('./app/utils/shutdown.server.utils');
 const Queue = require('./app/services/queues.server.service');
 
 function start() {
@@ -24,6 +23,14 @@ function start() {
     console.log('worker ready to process queue');
     instance.on('lost', shutdown);
     instance.startConsumingEvents();
+  }
+
+  function shutDown() {
+    instance.closeConnection();
+      .then(() => {
+        logger.info(process.env.NODE_ENV + ' shutting down');
+        process.exit();
+      });
   }
 }
 

@@ -31,16 +31,12 @@ class QueueApp extends EventEmitter {
   }
 
   onConnected() {
-    this.connection.defaultChannel().then(channel => {
-      //TODO make durable ?
-      let ok = channel.assertQueue(this.config.eventQueue);
-      ok.then(() => channel.assertQueue(this.config.batchQueue));
-      ok.then(() => channel.prefetch(200));
-      ok.then(() => {
-        this.channel = channel;
-        this.emit('ready');
-      });
-    });
+    let ok = this.connection.defaultChannel();
+    ok.then(() => this.connection.assertQueue(this.config.eventQueue));
+    ok.then(() => this.connection.assertQueue(this.config.batchQueue));
+    ok.then(() => this.connection.setPrefetch(200));
+    ok.then(() => this.emit('ready'));
+    ok.catch(this.onLost);
   }
 
   onLost() {
@@ -49,24 +45,23 @@ class QueueApp extends EventEmitter {
   }
 
   addToQueue(task, queueName) {
-    return new Promise((resolve, reject) => {
-      this.channel.sendToQueue(queueName, new Buffer(task),
-          {persistent: true},
-          (err, ok) => {
-            if (err) {
-              return reject(err);
-            }
-            resolve();
-          });
-    });
+    return this.connection.sendToQueue(task, queueName);
+  }
+
+  countMessages() {
+    return this.connection.countMessages(); 
+  }
+  
+  closeConnection() {
+    return this.connection.closeConnection();
   }
 
   startConsumingBatches() {
-    this.channel.consume(this.config.batchQueue, this.onBatch.bind(this));
+    this.connection.consume(this.config.batchQueue, this.onBatch.bind(this));
   }
 
   startConsumingEvents() {
-    this.channel.consume(this.config.eventQueue, this.onTask.bind(this));
+    this.connection.consume(this.config.eventQueue, this.onTask.bind(this));
   }
 
   onBatch(task) {
@@ -81,7 +76,7 @@ class QueueApp extends EventEmitter {
 
     q.drain = () => {
       logger.info('Batch queue drained');
-      this.channel.ack(task);
+      this.connection.ack(task);
     };
 
     let count = 0;
@@ -125,17 +120,17 @@ class QueueApp extends EventEmitter {
       .then(() => {
         // We only send events received in production to keen
         if (process.env.NODE_ENV === 'production') {
-          return sendToKeen(e);
+          return keen.send(e);
         }
 
         else return e;
       })
       .then(() => {
-        return this.channel.ack(task);
+        return this.connection.ack(task);
       })
       .catch(err => {
         logger.error(err);
-        this.channel.nack(task, false, true);
+        this.connection.nack(task, false, true);
       });
   }
 }

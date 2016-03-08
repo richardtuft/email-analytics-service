@@ -20,7 +20,7 @@ class Connector extends EventEmitter {
       conn.on('close', () => {
         this.emit('lost');
         return setTimeout(() => {
-          this.connect(queueURL)
+          this.connect(queueURL);
         }, 1000);
       });
 
@@ -31,13 +31,63 @@ class Connector extends EventEmitter {
       this.emit('lost');
       logger.error(err);
       return setTimeout(() => {
-        this.connect(queueURL)
+        this.connect(queueURL);
       }, 1000);
     });
   }
 
   defaultChannel() {
-    return this.conn.createConfirmChannel();
+    return new Promise((resolve, reject) => {
+      this.conn.createConfirmChannel()
+        .then(channel => {
+          this.channel = channel;
+          resolve();
+        })
+        .catch(reject);
+    });
+  }
+
+	assertQueue(queue) {
+   return this.channel.assertQueue(queue);
+  }
+
+  setPrefetch(amount) {
+    return this.channel.prefetch(amount);
+  }
+
+  sendToQueue(task, queueName) {
+    return new Promise((resolve, reject) => {
+      this.channel.sendToQueue(queueName, new Buffer(task),
+        {persistent: true},
+        (err, ok) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+    });
+  }
+
+  consume(queueName, cb) {
+    this.channel.consume(queueName, cb);
+  }
+
+  ack(task) {
+    this.channel.ack(task);
+  }
+
+  countMessages() {
+    return new Promise((resolve, reject) => {
+      this.channel.checkQueue()
+        .then(details => {
+          resolve(details.messageCount);
+        })
+        .catch(reject);
+    });
+  }
+
+  closeConnection() {
+    return this.connection.close();
   }
 }
 
