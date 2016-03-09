@@ -35,7 +35,7 @@ class QueueApp extends EventEmitter {
     let ok = this.connection.defaultChannel();
     ok.then(() => this.connection.assertQueue(this.config.eventQueue));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
-    ok.then(() => this.connection.setPrefetch(200));
+    ok.then(() => this.connection.setPrefetch(this.config.prefetchLimit));
     ok.then(() => this.emit('ready'));
     ok.catch(this.onError);
   }
