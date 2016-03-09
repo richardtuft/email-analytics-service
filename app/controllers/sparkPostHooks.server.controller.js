@@ -16,8 +16,6 @@ module.exports = (queue) => {
   
   function handlePost(req, res) {
 
-    logger.profile('handlePost');
-
     queue.addToQueue(JSON.stringify(req.body), config.batchQueue)
       .then(() => {
         res.send('OK');
