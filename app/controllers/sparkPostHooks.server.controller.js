@@ -16,12 +16,11 @@ module.exports = (queue) => {
   
   function handlePost(req, res) {
 
+    res.send('OK');
+
     queue.addToQueue(JSON.stringify(req.body), config.batchQueue)
-      .then(() => {
-        res.send('OK');
-      })
       .catch(err => {
-        res.status(400);
+        logger.error(err);
       });
   }
 

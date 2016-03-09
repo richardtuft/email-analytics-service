@@ -120,7 +120,6 @@ class QueueApp extends EventEmitter {
         //logger.info('count', ++count);
       }
     });
-
   }
 
   onTask(task) {
