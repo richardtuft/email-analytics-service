@@ -105,7 +105,7 @@ class QueueApp extends EventEmitter {
         .catch(next);
     };
 
-    let batch = JSON.parse(task.content.toString()).results;
+    let batch = JSON.parse(task.content.toString());
     let q = async.queue(publishEvents, 2000);
 
     q.drain = () => {
