@@ -2,7 +2,7 @@
 
 const port = process.env.PORT || 1338;
 const logLevel = process.env.LOG_LEVEL || 'warn';
-const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost/test';
+const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost';
 const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
 const prefetchLimit = process.env.PREFETCH_LIMIT || 20;
