@@ -1,5 +1,12 @@
 'use strict';
 
+function int(str) {
+  if (!str) {
+    return 0;
+  }
+  return parseInt(str, 10);
+}
+
 const port = process.env.PORT;
 const logLevel = process.env.LOG_LEVEL || 'error';
 const sqsQueueUrl =  process.env.SQS_QUEUE_URL;
@@ -8,7 +15,7 @@ const workers = process.env.WEB_CONCURRENCY || 1;
 const rabbitUrl =  process.env.CLOUDAMQP_URL;
 const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
-const prefetchLimit = process.env.PREFETCH_LIMIT || 20;
+const prefetchLimit = int(process.env.PREFETCH_LIMIT) || 20;
 const processId = process.env.DYNO;
 const authUser = process.env.AUTH_USER;
 const authPassword = process.env.AUTH_PASSWORD;
