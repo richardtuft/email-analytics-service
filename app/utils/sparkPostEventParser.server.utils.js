@@ -45,6 +45,8 @@ exports.parse = (rawEvent) => {
         throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
 
+    delete rawEventBody.rcpt_to;
+
     switch (rawEventBody.type) {
 
         // Specific type-based event handling
