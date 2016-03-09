@@ -13,7 +13,7 @@ function isHardBounce (e) {
     let action = e.action;
     let bounceClass = e.context.bounceClass;
     return (action === 'bounce' || action === 'out_of_band') &&
-      (bounceClass === '10' || bounceClass === '30' || bounceClass === '90');
+      ['10', '30', '90'].indexOf(bounceClass) >= 0;
 }
 
 function isGenerationRejection (e) {
@@ -28,6 +28,7 @@ class QueueApp extends EventEmitter {
     this.connection = new Connector(config.queueURL);
     this.connection.on('ready', this.onConnected.bind(this));
     this.connection.on('lost', this.onLost.bind(this));
+    this.connection.on('error', this.onError.bind(this));
   }
 
   onConnected() {
@@ -36,11 +37,16 @@ class QueueApp extends EventEmitter {
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
     ok.then(() => this.connection.setPrefetch(200));
     ok.then(() => this.emit('ready'));
-    ok.catch(this.onLost);
+    ok.catch(this.onError);
   }
 
   onLost() {
-    logger.error('connection to queue lost');
+    logger.info('connection to queue lost');
+    this.emit('lost');
+  }
+
+  onError() {
+    logger.error('error with queue connection');
     this.emit('lost');
   }
 
@@ -48,12 +54,32 @@ class QueueApp extends EventEmitter {
     return this.connection.sendToQueue(task, queueName);
   }
 
-  countMessages() {
-    return this.connection.countMessages(); 
+  countQueueMessages(queueName) {
+    return this.connection.countMessages(queueName);
   }
-  
+
+  countAllMessages() {
+    let queueCount = {};
+    return new Promise((resolve, reject) => {
+      this.countQueueMessages(this.config.eventQueue)
+        .then(eventCount => {
+          queueCount.eventQueue = eventCount;
+          return this.countQueueMessages(this.config.batchQueue);
+        })
+        .then(batchCount => {
+          queueCount.batchQueue = batchCount;
+          resolve(queueCount);
+        })
+        .catch(reject);
+    });
+  }
+
   closeConnection() {
     return this.connection.closeConnection();
+  }
+
+  purgeQueue(queueName) {
+    return this.connection.purgeQueue(queueName);
   }
 
   startConsumingBatches() {
@@ -64,7 +90,15 @@ class QueueApp extends EventEmitter {
     this.connection.consume(this.config.eventQueue, this.onTask.bind(this));
   }
 
+  stopConsuming(consumerTag) {
+    this.connection.cancel(consumerTag);
+  }
+
   onBatch(task) {
+    if (!this.batchConsumer) {
+      this.batchConsumer = task.fields.consumerTag;
+    }
+    this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let publishEvents = (e, next) => {
       this.addToQueue(JSON.stringify(e), this.config.eventQueue)
         .then(() => next())
@@ -79,59 +113,58 @@ class QueueApp extends EventEmitter {
       this.connection.ack(task);
     };
 
-    let count = 0;
     q.push(batch, err => {
       if (err) {
         logger.error(err);
       } else {
-        logger.info('count', ++count);
+        //logger.info('count', ++count);
       }
     });
 
   }
 
   onTask(task) {
+    if (!this.eventConsumer) {
+      this.eventConsumer = task.fields.consumerTag;
+    }
+    this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
     delete e.msys.message_event.rcpt_to;
     e = eventParser.parse(e);
+    return this.sendEvents(e, task);
+  }
 
+  sendEvents(e, task) {
     return new Promise((resolve, reject) => {
       let uuid = e.user && e.user.ft_guid;
-
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
       if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
+        return this.sendSuppressionUpdate(uuid);
+      } 
+      return resolve(e);
+    })
+    .then(() => spoor.send(JSON.stringify(e)))
+    .then(() => {
+      // We only send events received in production to keen
+      /* istanbul ignore next */
+      if (process.env.NODE_ENV === 'production') {
+        return keen.send(e);
+      }
+      return e;
+    })
+    .then(() => this.connection.ack(task))
+    .catch(err => {
+      logger.error(err);
+      this.emit('requeuing', {deliveryTag: task.fields.deliveryTag});
+      this.connection.nack(task, false, true);
+    });
+  }
 
-        let toEdit = {
-            automaticallySuppressed: true
-        };
-
-        return usersListsClient
-            .editUser(uuid, toEdit)
-            .then(() => resolve(e))
-            .catch(reject);
-
-        } else {
-            return resolve(e);
-        }
-      })
-      .then(() => {
-        return spoor.send(JSON.stringify(e));
-      })
-      .then(() => {
-        // We only send events received in production to keen
-        if (process.env.NODE_ENV === 'production') {
-          return keen.send(e);
-        }
-
-        else return e;
-      })
-      .then(() => {
-        return this.connection.ack(task);
-      })
-      .catch(err => {
-        logger.error(err);
-        this.connection.nack(task, false, true);
-      });
+  sendSuppressionUpdate(uuid) {
+    let toEdit = {
+        automaticallySuppressed: true
+    };
+    return usersListsClient.editUser(uuid, toEdit);
   }
 }
 

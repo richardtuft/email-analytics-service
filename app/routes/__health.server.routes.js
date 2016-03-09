@@ -1,8 +1,8 @@
 'use strict';
 
-const gtg = require('../controllers/__health.server.controller');
+const controller = require('../controllers/__health.server.controller');
 
-module.exports = (app) => {
-
-    app.route('/__health').get(gtg.handle);
+module.exports = (app, queue) => {
+  let gtg = controller(queue);
+  app.route('/__health').get(gtg.handle);
 };

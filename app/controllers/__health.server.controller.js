@@ -1,11 +1,11 @@
 'use strict';
 
 const fetch = require('node-fetch');
+const config = require('../../config/config');
 
-const queue = require('../services/queues.server.service');
+module.exports = (queue) => {
 
-exports.handle = (req, res) => {
-
+  function handle(req, res) {
     let health = {};
     let now = new Date();
 
@@ -33,11 +33,12 @@ exports.handle = (req, res) => {
 
         })
         .then(() => {
-            return queue.countMessages();
+            return queue.countAllMessages(config.eventQueue);
         })
         .then(data => {
-            let isUp = (data && data.Attributes && data.Attributes.ApproximateNumberOfMessages >=0);
-            let hasFewMessages = (data && data.Attributes && data.Attributes.ApproximateNumberOfMessages && data.Attributes.ApproximateNumberOfMessages < 1000000);
+            
+            let isUp = (data && data.eventQueue >=0 && data.batchQueue >= 0);
+            let hasFewMessages = (data.eventQueue < 1000000 && data.batchQueue < 100000);
 
             health.checks.push({
                 name: "AWS SQS is DOWN",
@@ -71,13 +72,18 @@ exports.handle = (req, res) => {
             });
         });
 
+  }
+
+  function checkSpoor () {
+      return new Promise ((fulfill, reject) => {
+          fetch('https://spoor-api.ft.com/__gtg')
+              .then(res => fulfill(res.status))
+              .catch(err => reject(err));
+      });
+
+  }
+
+  return {
+    handle
+  };
 };
-
-function checkSpoor () {
-    return new Promise ((fulfill, reject) => {
-        fetch('https://spoor-api.ft.com/__gtg')
-            .then(res => fulfill(res.status))
-            .catch(err => reject(err));
-    });
-
-}

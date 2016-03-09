@@ -2,7 +2,9 @@
 
 const port = process.env.PORT || 1338;
 const logLevel = process.env.LOG_LEVEL || 'warn';
-const sqsQueueUrl =  process.env.SQS_QUEUE_URL || 'https://sqs.eu-west-1.amazonaws.com/371548805176/email-platform-analytics-test';
+const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost/test';
+const eventQueue = 'events.pending';
+const batchQueue = 'batch.pending';
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
@@ -16,7 +18,9 @@ module.exports = {
     processId,
     workers,
     logLevel,
-    sqsQueueUrl,
+    rabbitUrl,
+    eventQueue,
+    batchQueue,
     spoorPostUrl,
     userListsEndpoint,
     authUser,

@@ -1,6 +1,6 @@
 'use strict';
 
-
+/* istanbul ignore next */
 exports.send = (event) => {
 		const keenClient = require('../../config/keen');
     return new Promise((fullfill, reject) => {

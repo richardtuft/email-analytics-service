@@ -10,6 +10,8 @@ const config = require('./config/config');
 const shutdown = require('./app/utils/shutdown.server.utils');
 const Queue = require('./app/services/queues.server.service');
 
+const loggerId = 'SERVER:' + config.processId;
+
 function start() {
 
   console.log('starting batch worker');
@@ -17,12 +19,12 @@ function start() {
   let instance = new Queue(config);
 
   instance.on('ready', beginWork);
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', () => shutdown(loggerId, instance));
+  process.on('SIGINT', () => shutdown(loggerId, instance));
 
   function beginWork() {
     console.log('worker ready to process queue');
-    instance.on('lost', shutdown);
+    instance.on('lost', () => shutdown(loggerId, instance));
     instance.startConsumingBatches();
   }
 }

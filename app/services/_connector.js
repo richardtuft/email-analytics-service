@@ -72,13 +72,19 @@ class Connector extends EventEmitter {
     this.channel.consume(queueName, cb);
   }
 
+  cancel(consumerTag) {
+    if (consumerTag) {
+      this.channel.cancel(consumerTag);
+    }
+  }
+
   ack(task) {
     this.channel.ack(task);
   }
 
-  countMessages() {
+  countMessages(queueName) {
     return new Promise((resolve, reject) => {
-      this.channel.checkQueue()
+      this.channel.checkQueue(queueName)
         .then(details => {
           resolve(details.messageCount);
         })
@@ -87,7 +93,11 @@ class Connector extends EventEmitter {
   }
 
   closeConnection() {
-    return this.connection.close();
+    return this.conn.close();
+  }
+
+  purgeQueue(queueName) {
+    return this.channel.purgeQueue(queueName);
   }
 }
 
