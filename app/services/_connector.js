@@ -8,6 +8,7 @@ class Connector extends EventEmitter {
 
   constructor(queueURL) {
     super();
+    this.connected = false;
     this.connect(queueURL);
   }
 
@@ -18,6 +19,7 @@ class Connector extends EventEmitter {
       });
 
       conn.on('close', () => {
+        this.connected = false;
         this.emit('lost');
         return setTimeout(() => {
           this.connect(queueURL);
@@ -26,6 +28,7 @@ class Connector extends EventEmitter {
 
       logger.info('connected to queue');
       this.conn = conn;
+      this.connected = true;
       this.emit('ready');
     }).catch(err => {
       this.emit('lost');
@@ -102,6 +105,10 @@ class Connector extends EventEmitter {
 
   closeAll() {
     return this.closeChannel().then(() => this.closeConnection());
+  }
+
+  isConnected() {
+    return this.connected;
   }
 
   purgeQueue(queueName) {

@@ -19,7 +19,6 @@ const loggerId = 'SERVER:' + config.processId;
 
 /* istanbul ignore next */
 process.on('SIGTERM', () => shutdown(loggerId, queue));
-process.on('SIGINT', () => shutdown(loggerId, queue));
 
 queue.once('ready', () => {
   app.listen(config.port, () => {

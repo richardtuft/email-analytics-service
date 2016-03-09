@@ -78,6 +78,10 @@ class QueueApp extends EventEmitter {
     return this.connection.closeAll();
   }
 
+  isConnected() {
+    return this.connection.isConnected();
+  }
+
   purgeQueue(queueName) {
     return this.connection.purgeQueue(queueName);
   }
@@ -109,7 +113,6 @@ class QueueApp extends EventEmitter {
     let q = async.queue(publishEvents, 2000);
 
     q.drain = () => {
-      logger.info('Batch queue drained');
       this.connection.ack(task);
     };
 

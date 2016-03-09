@@ -240,5 +240,14 @@ describe('Queues service tests:', () => {
         connector.conn.close();
       });
     });
+
+    it('returns true for isConnected if valid connection', done => {
+      let connector = new Connector(config.queueURL);
+      connector.once('ready', () => {
+        connector.isConnected().should.be.true();
+        connector.conn.close();
+        done();
+      });
+    });
   });
 });
