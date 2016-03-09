@@ -111,6 +111,10 @@ class Connector extends EventEmitter {
     return this.connected;
   }
 
+  recover() {
+    return this.channel.recover();
+  }
+
   purgeQueue(queueName) {
     return this.channel.purgeQueue(queueName);
   }
