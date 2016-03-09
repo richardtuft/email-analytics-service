@@ -23,7 +23,6 @@ function start() {
 
   function beginWork() {
     console.log('worker ready to process queue');
-    instance.on('lost', () => process.exit());
     instance.startConsumingEvents();
   }
 }

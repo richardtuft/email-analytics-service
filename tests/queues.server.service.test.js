@@ -241,7 +241,7 @@ describe('Queues service tests:', () => {
       });
     });
 
-    it('returns true for isConnected if valid connection', done => {
+    it.skip('returns true for isConnected if valid connection', done => {
       let connector = new Connector(config.queueURL);
       connector.once('ready', () => {
         connector.isConnected().should.be.true();
