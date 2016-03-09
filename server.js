@@ -21,7 +21,7 @@ const loggerId = 'SERVER:' + config.processId;
 process.on('SIGTERM', () => shutdown(loggerId, queue));
 process.on('SIGINT', () => shutdown(loggerId, queue));
 
-queue.on('ready', () => {
+queue.once('ready', () => {
   app.listen(config.port, () => {
     logger.info(loggerId, process.env.NODE_ENV +
         ' server running at http://localhost:' + config.port);

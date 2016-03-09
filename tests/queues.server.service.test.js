@@ -199,7 +199,20 @@ describe('Queues service tests:', () => {
       let connector = new Connector(config.queueURL);
       connector.once('ready', () => {
         true.should.be.true();
+        connector.conn.close();
         done();
+      });
+    });
+
+    it('disconnects when closeAll is called', done => {
+      let connector = new Connector(config.queueURL);
+      connector.once('ready', () => {
+        connector.once('lost', () => {
+          true.should.be.true();
+          done();
+        });
+
+      connector.closeAll();
       });
     });
 

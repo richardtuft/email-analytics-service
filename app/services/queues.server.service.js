@@ -74,8 +74,8 @@ class QueueApp extends EventEmitter {
     });
   }
 
-  closeConnection() {
-    return this.connection.closeConnection();
+  closeAll() {
+    return this.connection.closeAll();
   }
 
   purgeQueue(queueName) {

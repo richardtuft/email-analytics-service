@@ -69,7 +69,7 @@ class Connector extends EventEmitter {
   }
 
   consume(queueName, cb) {
-    this.channel.consume(queueName, cb);
+    return this.channel.consume(queueName, cb);
   }
 
   cancel(consumerTag) {
@@ -79,7 +79,7 @@ class Connector extends EventEmitter {
   }
 
   ack(task) {
-    this.channel.ack(task);
+    return this.channel.ack(task);
   }
 
   countMessages(queueName) {
@@ -92,8 +92,16 @@ class Connector extends EventEmitter {
     });
   }
 
+  closeChannel() {
+    return this.channel.close();
+  }
+
   closeConnection() {
     return this.conn.close();
+  }
+
+  closeAll() {
+    return this.closeChannel().then(() => this.closeConnection());
   }
 
   purgeQueue(queueName) {
