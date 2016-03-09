@@ -108,6 +108,10 @@ class Connector extends EventEmitter {
     return this.closeChannel().then(() => this.closeConnection());
   }
 
+  nackAll() {
+    return this.channel.nackAll();
+  }
+
   purgeQueue(queueName) {
     return this.channel.purgeQueue(queueName);
   }
