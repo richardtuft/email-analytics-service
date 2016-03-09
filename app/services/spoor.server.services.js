@@ -31,7 +31,6 @@ exports.send = (event) => {
         })
         .then((res) => {
 
-            logger.info(res.status);
             /* istanbul ignore else */
             if (res.status >= 200 && res.status < 300) {
                 logger.debug('Spoor Header', {header: res.headers.get('spoor-ticket')});
