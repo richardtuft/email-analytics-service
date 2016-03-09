@@ -129,9 +129,9 @@ class QueueApp extends EventEmitter {
     }
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
-    console.log(e)
-    delete e.msys.message_event.rcpt_to;
+    //delete e.msys.message_event.rcpt_to;
     e = eventParser.parse(e);
+    console.log(e)
     return this.sendEvents(e, task);
   }
 
