@@ -12,7 +12,7 @@
     "AUTH_PASSWORD": {
       "required": true
     },
-    "AUTH_USER":
+    "AUTH_USER": {
       "required": true
     }
   },
