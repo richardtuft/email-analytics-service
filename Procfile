@@ -1,2 +1,3 @@
 web: node server.js
-worker: node worker.js
+batchWorker: node batchWorker.js
+eventworker: node eventWorker.js

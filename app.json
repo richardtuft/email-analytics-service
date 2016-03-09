@@ -6,10 +6,13 @@
     "LOG_LEVEL":"debug",
     "NODE_ENV": "development",
     "SENSIBLE_DEFAULTS": "enabled",
-    "TEST_SQS_ACCESS_KEY": {
+    "USER_LISTS_ENDPOINT": {
       "required": true
     },
-    "TEST_SQS_SECRET_KEY":  {
+    "AUTH_PASSWORD": {
+      "required": true
+    },
+    "AUTH_USER":
       "required": true
     }
   },
