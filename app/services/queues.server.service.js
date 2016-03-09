@@ -25,7 +25,7 @@ class QueueApp extends EventEmitter {
   constructor(config) {
     super();
     this.config = config;
-    this.connection = new Connector(config.queueURL);
+    this.connection = new Connector(config.rabbitUrl);
     this.connection.on('ready', this.onConnected.bind(this));
     this.connection.on('lost', this.onLost.bind(this));
     this.connection.on('error', this.onError.bind(this));
@@ -140,7 +140,7 @@ class QueueApp extends EventEmitter {
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
       if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
         return this.sendSuppressionUpdate(uuid);
-      } 
+      }
       return resolve(e);
     })
     .then(() => spoor.send(JSON.stringify(e)))
