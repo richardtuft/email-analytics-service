@@ -19,8 +19,8 @@ function start() {
   let instance = new Queue(config);
 
   instance.on('ready', beginWork);
-  process.on('SIGTERM', () => shutdown(loggerId, instance));
-  process.on('SIGTERM', () => shutdown(loggerId, instance));
+  //process.on('SIGTERM', () => shutdown(loggerId, instance));
+  process.on('SIGINT', () => shutdown(loggerId, instance));
 
   function beginWork() {
     console.log('worker ready to process queue');
