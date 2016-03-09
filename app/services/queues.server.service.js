@@ -33,7 +33,6 @@ class QueueApp extends EventEmitter {
 
   onConnected() {
     let ok = this.connection.defaultChannel();
-    ok.then(() => this.connection.recover());
     ok.then(() => this.connection.assertQueue(this.config.eventQueue));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
     ok.then(() => this.connection.setPrefetch(this.config.prefetchLimit));
@@ -158,7 +157,7 @@ class QueueApp extends EventEmitter {
     .catch(err => {
       logger.error(err);
       this.emit('requeuing', {deliveryTag: task.fields.deliveryTag});
-      this.connection.nack(task, false, true);
+      this.connection.nack(task)
     });
   }
 

@@ -85,6 +85,10 @@ class Connector extends EventEmitter {
     return this.channel.ack(task);
   }
 
+  nack(task) {
+    return this.channel.nack(task);
+  }
+
   countMessages(queueName) {
     return new Promise((resolve, reject) => {
       this.channel.checkQueue(queueName)
