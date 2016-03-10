@@ -16,7 +16,7 @@ function start() {
 
   console.log('starting event worker');
 
-  let instance = new Queue(config);
+  let instance = new Queue(config, config.eventPrefetchLimit);
 
   instance.on('ready', beginWork);
   process.on('SIGTERM', () => shutdown(loggerId, instance));

@@ -22,7 +22,7 @@ function isGenerationRejection (e) {
 
 class QueueApp extends EventEmitter {
 
-  constructor(config) {
+  constructor(config, prefetch) {
     super();
     this.config = config;
     this.connection = new Connector(config.rabbitUrl);
@@ -35,7 +35,7 @@ class QueueApp extends EventEmitter {
     let ok = this.connection.defaultChannel();
     ok.then(() => this.connection.assertQueue(this.config.eventQueue));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
-    ok.then(() => this.connection.setPrefetch(this.config.prefetchLimit));
+    ok.then(() => this.connection.setPrefetch(prefetch));
     ok.then(() => this.emit('ready'));
     ok.catch(this.onError);
   }

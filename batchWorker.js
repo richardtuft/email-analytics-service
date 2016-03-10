@@ -16,7 +16,7 @@ function start() {
 
   console.log('starting batch worker');
 
-  let instance = new Queue(config);
+  let instance = new Queue(config, batchPrefetchLimit);
 
   instance.on('ready', beginWork);
   process.on('SIGTERM', () => shutdown(loggerId, instance));
