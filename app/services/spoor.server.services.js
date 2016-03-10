@@ -21,7 +21,7 @@ exports.send = (event) => {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'X-Spoor-Test': true,
+                'spoor-test': true,
                 'Content-Length': length,
                 "spoor-region": Math.round(Math.random()) ? 'EU' : 'US', //Randomly assign a different region
                 'User-Agent': 'ft-email-service/v1.1'
