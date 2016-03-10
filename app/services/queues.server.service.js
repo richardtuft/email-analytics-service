@@ -153,7 +153,7 @@ class QueueApp extends EventEmitter {
     .catch(err => {
       logger.error(err);
       this.emit('requeuing', {deliveryTag: task.fields.deliveryTag});
-      this.connection.nack(task)
+      this.connection.nack(task);
     });
   }
 
