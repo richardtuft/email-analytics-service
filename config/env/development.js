@@ -13,7 +13,8 @@ const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost';
 const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
-const prefetchLimit = int(process.env.PREFETCH_LIMIT) || 20;
+const eventPrefetchLimit = int(process.env.EVENT_PREFETCH_LIMIT) || 100;
+const batchPrefetchLimit = int(process.env.BATCH_PREFETCH_LIMIT) || 1;
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
 const authUser = process.env.AUTH_USER;
@@ -29,7 +30,8 @@ module.exports = {
     rabbitUrl,
     eventQueue,
     batchQueue,
-    prefetchLimit,
+    eventPrefetchLimit,
+    batchPrefetchLimit,
     spoorPostUrl,
     userListsEndpoint,
     authUser,

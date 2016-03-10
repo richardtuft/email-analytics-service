@@ -57,9 +57,7 @@ class Connector extends EventEmitter {
 
   sendToQueue(task, queueName) {
     return new Promise((resolve, reject) => {
-      this.channel.sendToQueue(queueName, new Buffer(task),
-        {persistent: true},
-        (err, ok) => {
+      this.channel.sendToQueue(queueName, new Buffer(task), {}, (err, ok) => {
           if (err) {
             return reject(err);
           }
@@ -105,11 +103,20 @@ class Connector extends EventEmitter {
   }
 
   closeAll() {
-    return this.closeChannel().then(() => this.closeConnection());
+    return new Promise((resolve, reject) => {
+      this.closeChannel()
+        .then(() => this.closeConnection())
+        .then(() => resolve())
+        .catch(() => resolve());
+    });
   }
 
   nackAll() {
-    return this.channel.nackAll();
+    return new Promise((resolve, reject) => {
+      this.channel.nackAll()
+        .then(() => resolve())
+        .catch(() => reject());
+    });
   }
 
   purgeQueue(queueName) {

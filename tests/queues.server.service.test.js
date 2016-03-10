@@ -204,16 +204,17 @@ describe('Queues service tests:', () => {
       });
     });
 
-    it('disconnects when closeAll is called', done => {
+    it('disconnects and closes channel when closeAll is called', done => {
       let connector = new Connector(config.queueURL);
       connector.once('ready', () => {
-        connector.once('lost', () => {
-          true.should.be.true();
-          done();
+        let ok = connector.defaultChannel();
+        ok.then(() => connector.closeAll());
+        ok.then(() => {
+            true.should.be.true();
+            done();
+          })
+          .catch(done);
         });
-
-      connector.closeAll();
-      });
     });
 
     it('Emits "lost" when the connection is closed', done => {
