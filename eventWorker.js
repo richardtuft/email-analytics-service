@@ -23,6 +23,7 @@ function start() {
 
   function beginWork() {
     console.log('worker ready to process queue');
+    instance.on('lost', () => shutdown(loggerId, instance));
     instance.startConsumingEvents();
   }
 }

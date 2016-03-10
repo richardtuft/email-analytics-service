@@ -16,13 +16,14 @@ function start() {
 
   console.log('starting batch worker');
 
-  let instance = new Queue(config, batchPrefetchLimit);
+  let instance = new Queue(config, config.batchPrefetchLimit);
 
   instance.on('ready', beginWork);
   process.on('SIGTERM', () => shutdown(loggerId, instance));
 
   function beginWork() {
     console.log('worker ready to process queue');
+    instance.on('lost', () => shutdown(loggerId, instance));
     instance.startConsumingBatches();
   }
 }
