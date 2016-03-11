@@ -25,6 +25,7 @@ class QueueApp extends EventEmitter {
   constructor(config, prefetch) {
     super();
     this.config = config;
+    this.prefetch = prefetch;
     this.connection = new Connector(config.rabbitUrl);
     this.connection.on('ready', this.onConnected.bind(this));
     this.connection.on('lost', this.onLost.bind(this));
@@ -35,7 +36,7 @@ class QueueApp extends EventEmitter {
     let ok = this.connection.defaultChannel();
     ok.then(() => this.connection.assertQueue(this.config.eventQueue));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
-    ok.then(() => this.connection.setPrefetch(prefetch));
+    ok.then(() => this.connection.setPrefetch(this.prefetch));
     ok.then(() => this.emit('ready'));
     ok.catch(this.onError);
   }
