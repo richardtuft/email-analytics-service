@@ -20,7 +20,6 @@ function start() {
 
   instance.on('ready', beginWork);
   process.on('SIGTERM', () => shutdown(loggerId, instance));
-  process.on('SIGINT', () => shutdown(loggerId, instance));
 
   function beginWork() {
     console.log('worker ready to process queue');

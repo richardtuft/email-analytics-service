@@ -111,13 +111,9 @@ class Connector extends EventEmitter {
     });
   }
 
-  //nackAll() {
-    //return new Promise((resolve, reject) => {
-      //this.channel.nackAll()
-        //.then(() => resolve())
-        //.catch(() => reject());
-    //});
-  //}
+  recover() {
+    return this.channel.recover();
+  }
 
   purgeQueue(queueName) {
     return this.channel.purgeQueue(queueName);
