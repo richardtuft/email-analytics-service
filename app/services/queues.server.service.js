@@ -142,7 +142,10 @@ class QueueApp extends EventEmitter {
       let uuid = e.user && e.user.ft_guid;
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
       if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
-        return this.sendSuppressionUpdate(uuid);
+        let toEdit = {
+            automaticallySuppressed: true
+        };
+        return usersListsClient.editUser(uuid, toEdit);
       }
       return resolve(e);
     })
@@ -167,10 +170,6 @@ class QueueApp extends EventEmitter {
   }
 
   sendSuppressionUpdate(uuid) {
-    let toEdit = {
-        automaticallySuppressed: true
-    };
-    return usersListsClient.editUser(uuid, toEdit);
   }
 }
 
