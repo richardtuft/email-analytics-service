@@ -142,6 +142,7 @@ class QueueApp extends EventEmitter {
       let uuid = e.user && e.user.ft_guid;
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
       if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
+        console.log('here')
         return this.sendSuppressionUpdate(uuid);
       }
       return resolve(e);
@@ -150,9 +151,9 @@ class QueueApp extends EventEmitter {
     .then(() => {
       // We only send events received in production to keen
       /* istanbul ignore next */
-      //if (process.env.NODE_ENV === 'production') {
-        //return keen.send(e);
-      //}
+      if (process.env.NODE_ENV === 'production') {
+        return keen.send(e);
+      }
       return e;
     })
     .then(() => this.connection.ack(task))
