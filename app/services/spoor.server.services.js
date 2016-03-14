@@ -8,11 +8,13 @@ const config = require('../../config/config');
 const logger = require('../../config/logger');
 
 exports.send = (event) => {
+  console.log('hi')
 
     const postUrl = config.spoorPostUrl;
     
     return new Promise((fulfill, reject) => {
 
+      console.log('bye')
         let isProduction = process.env.NODE_ENV === 'production';
         let length = new Buffer(event).length;
 
@@ -31,7 +33,6 @@ exports.send = (event) => {
         })
         .then((res) => {
 
-          console.log(res.status)
             /* istanbul ignore else */
             if (res.status >= 200 && res.status < 300) {
                 logger.debug('Spoor Header', {header: res.headers.get('spoor-ticket')});
