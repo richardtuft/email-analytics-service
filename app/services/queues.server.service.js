@@ -131,9 +131,6 @@ class QueueApp extends EventEmitter {
     if (!this.eventConsumer) {
       this.eventConsumer = task.fields.consumerTag;
     }
-    if (task.fields.redelivered) {
-      task.fields.redelivered = false;
-    }
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
     e = eventParser.parse(e);
@@ -153,9 +150,9 @@ class QueueApp extends EventEmitter {
     .then(() => {
       // We only send events received in production to keen
       /* istanbul ignore next */
-      if (process.env.NODE_ENV === 'production') {
-        return keen.send(e);
-      }
+      //if (process.env.NODE_ENV === 'production') {
+        //return keen.send(e);
+      //}
       return e;
     })
     .then(() => this.connection.ack(task))
