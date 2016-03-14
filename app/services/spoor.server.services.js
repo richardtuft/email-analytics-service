@@ -8,13 +8,11 @@ const config = require('../../config/config');
 const logger = require('../../config/logger');
 
 exports.send = (event) => {
-  console.log('hi')
 
     const postUrl = config.spoorPostUrl;
     
     return new Promise((fulfill, reject) => {
 
-      console.log('bye')
         let isProduction = process.env.NODE_ENV === 'production';
         let length = new Buffer(event).length;
 

@@ -146,7 +146,10 @@ class QueueApp extends EventEmitter {
       }
       return resolve(e);
     })
-    .then(() => spoor.send(JSON.stringify(e)))
+    .then(() => {
+      console.log('here');
+      spoor.send(JSON.stringify(e))
+    })
     .then(() => {
       // We only send events received in production to keen
       /* istanbul ignore next */
