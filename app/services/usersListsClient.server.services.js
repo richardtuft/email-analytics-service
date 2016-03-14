@@ -18,7 +18,6 @@ exports.editUser = (uuid, editedProperties) => {
         let contentLength = Buffer.byteLength(body);
 
         logger.debug('Editing a user', {user: uuid, body: body, contentLength: contentLength });
-        console.log(config.userListsEndpoint)
 
         fetch(config.userListsEndpoint + '/users/' + uuid, {
             method: 'patch',
@@ -30,7 +29,6 @@ exports.editUser = (uuid, editedProperties) => {
             body: body
         })
             .then(response => {
-              console.log(response.status)
                 if (response.status >= 200 && response.status < 300) {
                     return response.json();
                 }
