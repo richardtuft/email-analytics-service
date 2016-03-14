@@ -37,6 +37,7 @@ class QueueApp extends EventEmitter {
     ok.then(() => this.connection.assertQueue(this.config.eventQueue));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue));
     ok.then(() => this.connection.setPrefetch(this.prefetch));
+    ok.then(() => this.connection.recover());
     ok.then(() => this.emit('ready'));
     ok.catch(this.onError);
   }
