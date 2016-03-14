@@ -128,9 +128,11 @@ class QueueApp extends EventEmitter {
   }
 
   onTask(task) {
-    console.log(task)
     if (!this.eventConsumer) {
       this.eventConsumer = task.fields.consumerTag;
+    }
+    if (!task.fields.redelivered) {
+      console.log(task)
     }
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
