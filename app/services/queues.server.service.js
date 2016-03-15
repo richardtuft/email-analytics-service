@@ -33,9 +33,10 @@ class QueueApp extends EventEmitter {
   }
 
   onConnected() {
+    let options = {durable: true};
     let ok = this.connection.defaultChannel();
-    ok.then(() => this.connection.assertQueue(this.config.eventQueue));
-    ok.then(() => this.connection.assertQueue(this.config.batchQueue));
+    ok.then(() => this.connection.assertQueue(this.config.eventQueue, options));
+    ok.then(() => this.connection.assertQueue(this.config.batchQueue, options));
     ok.then(() => this.connection.setPrefetch(this.prefetch));
     ok.then(() => this.connection.recover());
     ok.then(() => this.emit('ready'));
