@@ -1,89 +1,173 @@
 'use strict';
 
-// Our modules
-const sqs = require('../../config/sqs');
-const config = require('../../config/config');
-const NoMessageInQueue = require('../errors/noMessageInQueue.server.error');
+const async = require('async');
+const EventEmitter = require('events').EventEmitter;
+const Connector = require('./_connector');
+const logger = require('../../config/logger');
+const eventParser = require('../utils/sparkPostEventParser.server.utils');
+const usersListsClient = require('../services/usersListsClient.server.services');
+const keen = require('../services/keen.server.service');
+const spoor = require('../services/spoor.server.services');
 
-// External modules
-const Q = require( 'q' );
+function isHardBounce (e) {
+    let action = e.action;
+    let bounceClass = e.context.bounceClass;
+    return (action === 'bounce' || action === 'out_of_band') &&
+      ['10', '30', '90'].indexOf(bounceClass) >= 0;
+}
 
-exports.addToQueue = (message) => {
+function isGenerationRejection (e) {
+    return e.action === 'generation_rejection';
+}
 
-    return new Promise((fulfill, reject) => {
+class QueueApp extends EventEmitter {
 
-        // Use the Q module to create a promise interface for the sqs sendMessage method
-        let sendMessage = Q.nbind( sqs.sendMessage, sqs );
+  constructor(config, prefetch) {
+    super();
+    this.config = config;
+    this.prefetch = prefetch;
+    this.connection = new Connector(config.rabbitUrl);
+    this.connection.on('ready', this.onConnected.bind(this));
+    this.connection.on('lost', this.onLost.bind(this));
+    this.connection.on('error', this.onError.bind(this));
+  }
 
-        sendMessage({
-            QueueUrl: config.sqsQueueUrl,
-            MessageBody: message
+  onConnected() {
+    let options = {durable: true};
+    let ok = this.connection.defaultChannel();
+    ok.then(() => this.connection.assertQueue(this.config.eventQueue, options));
+    ok.then(() => this.connection.assertQueue(this.config.batchQueue, options));
+    ok.then(() => this.connection.setPrefetch(this.prefetch));
+    ok.then(() => this.connection.recover());
+    ok.then(() => this.emit('ready'));
+    ok.catch(this.onError);
+  }
+
+  onLost() {
+    logger.info('connection to queue lost');
+    this.emit('lost');
+  }
+
+  onError() {
+    logger.error('error with queue connection');
+    this.emit('lost');
+  }
+
+  addToQueue(task, queueName) {
+    return this.connection.sendToQueue(task, queueName);
+  }
+
+  countQueueMessages(queueName) {
+    return this.connection.countMessages(queueName);
+  }
+
+  countAllMessages() {
+    let queueCount = {};
+    return new Promise((resolve, reject) => {
+      this.countQueueMessages(this.config.eventQueue)
+        .then(eventCount => {
+          queueCount.eventQueue = eventCount;
+          return this.countQueueMessages(this.config.batchQueue);
         })
-        .then((data) => {
-            let messageId = data.MessageId;
-            fulfill(messageId);
-
+        .then(batchCount => {
+          queueCount.batchQueue = batchCount;
+          resolve(queueCount);
         })
         .catch(reject);
-
     });
+  }
 
-};
+  closeChannel() {
+    return this.connection.closeChannel();
+  }
 
-exports.pullFromQueue = () => {
+  purgeQueue(queueName) {
+    return this.connection.purgeQueue(queueName);
+  }
 
-    return new Promise((fulfill, reject) => {
+  startConsumingBatches() {
+    this.connection.consume(this.config.batchQueue, this.onBatch.bind(this));
+  }
 
-        // Use the Q module to create a promise interface for the sqs receiveMessage method
-        let receiveMessage = Q.nbind( sqs.receiveMessage, sqs );
+  startConsumingEvents() {
+    this.connection.consume(this.config.eventQueue, this.onTask.bind(this));
+  }
 
-        receiveMessage ({
-            QueueUrl: config.sqsQueueUrl,
-            MaxNumberOfMessages: 10
-        })
-        .then((data) => {
+  stopConsuming(consumerTag) {
+    this.connection.cancel(consumerTag);
+  }
 
-            //There are no messages in the queue
-            /* istanbul ignore if  */
-            if (!data.Messages) {
-                reject(new NoMessageInQueue());
-            }
-            else {
-                fulfill(data.Messages);
-            }
+  onBatch(task) {
+    if (!this.batchConsumer) {
+      this.batchConsumer = task.fields.consumerTag;
+    }
+    this.emit('processing-task', 'queue: ' + task.fields.routingKey);
+    let publishEvents = (e, next) => {
+      this.addToQueue(JSON.stringify(e), this.config.eventQueue)
+        .then(() => next())
+        .catch(next);
+    };
 
-        });
+    let batch = JSON.parse(task.content.toString());
+    let q = async.queue(publishEvents, 2000);
+
+    q.drain = () => {
+      this.connection.ack(task);
+    };
+
+    q.push(batch, err => {
+      if (err) {
+        logger.error(err);
+      } else {
+        //logger.info('count', ++count);
+      }
     });
+  }
 
-};
+  onTask(task) {
+    if (!this.eventConsumer) {
+      this.eventConsumer = task.fields.consumerTag;
+    }
+    this.emit('processing-task', 'queue: ' + task.fields.routingKey);
+    let e = JSON.parse(task.content.toString());
+    e = eventParser.parse(e);
+    return this.sendEvents(e, task);
+  }
 
-exports.deleteFromQueue = (receiptHandle) => {
-
-    return new Promise((fulfill, reject) =>  {
-
-        // Use the Q module to create a promise interface for the sqs deleteMessage method
-        let deleteMessage = Q.nbind( sqs.deleteMessage, sqs );
-
-        deleteMessage({
-            QueueUrl: config.sqsQueueUrl,
-            ReceiptHandle: receiptHandle
-        })
-        .then(fulfill)
-        .catch (reject);
+  sendEvents(e, task) {
+    return new Promise((resolve, reject) => {
+      let uuid = e.user && e.user.ft_guid;
+      //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
+      if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
+        return this.sendSuppressionUpdate(uuid)
+          .then(() => resolve(e))
+          .catch(reject);
+      }
+      return resolve(e);
+    })
+    .then(() => spoor.send(JSON.stringify(e)))
+    .then(() => {
+      // We only send events received in production to keen
+      /* istanbul ignore next */
+      if (process.env.NODE_ENV === 'production') {
+        return keen.send(e);
+      }
+      return e;
+    })
+    .then(() => this.connection.ack(task))
+    .catch(err => {
+      logger.error(err);
+      this.emit('requeuing', {deliveryTag: task.fields.deliveryTag});
+      this.connection.nack(task);
     });
+  }
 
-};
+  sendSuppressionUpdate(uuid) {
+    let toEdit = {
+        automaticallySuppressed: true
+    };
+    return usersListsClient.editUser(uuid, toEdit);
+  }
+}
 
-exports.countMessages = () => {
-    return new Promise((fulfill, reject) => {
-
-        let getQueueAttributes = Q.nbind( sqs.getQueueAttributes, sqs );
-
-        getQueueAttributes({
-            QueueUrl: config.sqsQueueUrl,
-            AttributeNames: ['ApproximateNumberOfMessages']
-        })
-        .then(fulfill)
-        .catch (reject);
-    });
-};
+module.exports = QueueApp;

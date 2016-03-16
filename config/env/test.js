@@ -1,8 +1,19 @@
 'use strict';
 
+function int(str) {
+  if (!str) {
+    return 0;
+  }
+  return parseInt(str, 10);
+}
+
 const port = process.env.PORT || 1338;
 const logLevel = process.env.LOG_LEVEL || 'warn';
-const sqsQueueUrl =  process.env.SQS_QUEUE_URL || 'https://sqs.eu-west-1.amazonaws.com/371548805176/email-platform-analytics-test';
+const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost';
+const eventQueue = 'events.pending';
+const batchQueue = 'batch.pending';
+const eventPrefetchLimit = int(process.env.EVENT_PREFETCH_LIMIT) || 100;
+const batchPrefetchLimit = int(process.env.BATCH_PREFETCH_LIMIT) || 1;
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
@@ -16,7 +27,11 @@ module.exports = {
     processId,
     workers,
     logLevel,
-    sqsQueueUrl,
+    rabbitUrl,
+    eventQueue,
+    batchQueue,
+    eventPrefetchLimit,
+    batchPrefetchLimit,
     spoorPostUrl,
     userListsEndpoint,
     authUser,

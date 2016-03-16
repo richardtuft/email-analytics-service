@@ -11,7 +11,9 @@
       "msg_from": "sender@example.com",
       "msg_size": "1337",
       "num_retries": "2",
-      "rcpt_meta": {},
+      "rcpt_meta": {
+        "userUuid": "123"
+      },
       "rcpt_tags": [
         "male",
         "US"

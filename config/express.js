@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-module.exports = () => {
+module.exports = (queue) => {
 
     let app = express();
 
@@ -13,19 +13,13 @@ module.exports = () => {
         next();
     });
 
-    app.use(bodyParser.urlencoded({
-        extended: true,
-        limit:'20mb'
-    }));
-
-
     app.use(bodyParser.json({
         limit:'20mb'
     }));
 
-    require('../app/routes/__health.server.routes')(app);
-    require('../app/routes/__gtg.server.routes')(app);
-    require('../app/routes/sparkPostHooks.server.routes')(app);
+    require('../app/routes/__health.server.routes')(app, queue);
+    require('../app/routes/__gtg.server.routes')(app, queue);
+    require('../app/routes/sparkPostHooks.server.routes')(app, queue);
 
 
     app.use(express.static('./public'));

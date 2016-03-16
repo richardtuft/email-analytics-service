@@ -24,8 +24,6 @@ exports.parse = (rawEvent) => {
     let rawEventMsys = rawEvent.msys;
     let rawEventBody;
 
-
-
     if (!Object.keys(rawEventMsys).length) {
         //This is a test event from Sparkpost
         return {};
@@ -46,6 +44,8 @@ exports.parse = (rawEvent) => {
     else {
         throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
+
+    delete rawEventBody.rcpt_to;
 
     switch (rawEventBody.type) {
 

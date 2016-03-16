@@ -28,17 +28,17 @@ exports.editUser = (uuid, editedProperties) => {
             },
             body: body
         })
-            .then(response => {
-                if (response.status >= 200 && response.status < 300) {
-                    return response.json();
-                }
-                if (response.status !== 404) {
-                    //We received a status we do not accept
-                    logger.error('Unexpected response from users-lists API', response);
-                }
-                throw new Error(response.statusText);
-            })
-            .then(fulfill)
-            .catch(reject);
+        .then(response => {
+            if (response.status >= 200 && response.status < 300) {
+                return response.json();
+            }
+            if (response.status !== 404) {
+                //We received a status we do not accept
+                logger.error('Unexpected response from users-lists API', response);
+            }
+            throw new Error(response.statusText);
+        })
+        .then(fulfill)
+        .catch(reject);
     });
 };
