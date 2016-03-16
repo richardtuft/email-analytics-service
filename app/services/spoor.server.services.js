@@ -25,7 +25,7 @@ exports.send = (event) => {
         };
         
         if (!isProduction) {
-            headers['spoor-test]' =  'true';
+            headers['spoor-test'] =  'true';
         }
 
         fetch(postUrl, {
