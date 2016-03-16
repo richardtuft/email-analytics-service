@@ -95,11 +95,19 @@ class Connector extends EventEmitter {
   }
 
   closeChannel() {
-    return this.channel.close();
+    try {
+      return this.channel.close();
+    } catch (alreadyClosed) {
+      return Promise.resolve();
+    }
   }
 
   closeConnection() {
-    return this.conn.close();
+    try {
+      return this.conn.close();
+    } catch (alreadyClosed) {
+      return Promise.resolve();
+    }
   }
 
   closeAll() {
