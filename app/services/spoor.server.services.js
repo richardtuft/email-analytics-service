@@ -15,17 +15,22 @@ exports.send = (event) => {
 
         let isProduction = process.env.NODE_ENV === 'production';
         let length = new Buffer(event).length;
+        
+        let headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Content-Length': length,
+            "spoor-region": Math.round(Math.random()) ? 'EU' : 'US', //Randomly assign a different region
+            'User-Agent': 'ft-email-service/v1.1'
+        };
+        
+        if (!isProduction) {
+            headers['spoor-test'] =  'true';
+        }
 
         fetch(postUrl, {
             method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'spoor-test': 'true',
-                'Content-Length': length,
-                "spoor-region": Math.round(Math.random()) ? 'EU' : 'US', //Randomly assign a different region
-                'User-Agent': 'ft-email-service/v1.1'
-            },
+            headers,
             body: event,
             timeout: 30000
         })
