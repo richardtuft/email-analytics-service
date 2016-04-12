@@ -12,7 +12,7 @@ const batchSchema = new Schema({
         index: { unique: true },
         required: 'batchId cannot be blank'
     }
-}, { capped: 800000 });
+}, { capped: 800000000 });
 
 mongoose.model('Batch', batchSchema);
 
