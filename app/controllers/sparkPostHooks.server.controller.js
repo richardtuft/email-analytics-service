@@ -35,7 +35,7 @@ module.exports = (queue) => {
                         logger.error(err);
                     });
             } else {
-                logger.error(saveErr)
+                logger.error(saveErr);
             }
 
         });
