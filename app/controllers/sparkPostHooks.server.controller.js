@@ -24,7 +24,7 @@ module.exports = (queue) => {
 
         res.send('OK');
         
-        console.debug(req.headers['X-Messagesystems-Batch-Id'])
+        logger.debug(req.headers['X-Messagesystems-Batch-Id'])
 
         let batch = new Batch({ batchId: req.headers['X-Messagesystems-Batch-Id'] });
 
