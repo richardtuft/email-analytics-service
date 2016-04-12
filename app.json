@@ -18,6 +18,7 @@
   },
   "addons":[
     "cloudamqp",
-    "papertrail"
+    "papertrail",
+    "mongohq"
   ]
 }
