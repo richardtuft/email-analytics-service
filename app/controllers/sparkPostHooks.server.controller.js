@@ -22,7 +22,11 @@ module.exports = (queue) => {
 
     return (req, res) => {
 
-        res.send('OK');
+        setTimeout(() => {
+            res.send('OK');
+        }, 20000);
+        
+        logger.debug(req.header('X-Messagesystems-Batch-Id'));
         
         let batch = new Batch({ batchId: req.header('X-Messagesystems-Batch-Id') });
 
