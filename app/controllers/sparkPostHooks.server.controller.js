@@ -34,6 +34,8 @@ module.exports = (queue) => {
                     .catch(err => {
                         logger.error(err);
                     });
+            } else {
+                logger.error(saveErr)
             }
 
         });
