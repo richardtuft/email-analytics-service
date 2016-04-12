@@ -23,12 +23,14 @@ module.exports = (queue) => {
     return (req, res) => {
 
         res.send('OK');
+        
+        console.debug(req.headers['X-Messagesystems-Batch-Id'])
 
         let batch = new Batch({ batchId: req.headers['X-Messagesystems-Batch-Id'] });
 
-        batch.save((savErr) => {
+        batch.save((saveErr) => {
 
-            if (!savErr) {
+            if (!saveErr) {
 
                 queue.addToQueue(JSON.stringify(req.body), config.batchQueue)
                     .catch(err => {
