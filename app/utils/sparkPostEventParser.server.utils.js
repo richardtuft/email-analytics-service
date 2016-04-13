@@ -91,6 +91,9 @@ exports.parse = (rawEvent) => {
             
         case 'sms_status':
             break;
+            
+        case 'relay_event':
+            break;
 
         default:
             throw(new Error('EVENTPARSER: unrecognised event type: ' + rawEventBody.type));
