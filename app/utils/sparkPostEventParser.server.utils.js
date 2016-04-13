@@ -88,6 +88,9 @@ exports.parse = (rawEvent) => {
 
         case 'spam_complaint':
             break;
+            
+        case 'sms_status':
+            break;
 
         default:
             throw(new Error('EVENTPARSER: unrecognised event type: ' + rawEventBody.type));
