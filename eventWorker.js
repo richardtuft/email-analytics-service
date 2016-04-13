@@ -28,4 +28,4 @@ function start() {
   }
 }
 
-throng(start, {workers: config.workers, lifetime: Infinity});
+throng({workers: config.workers, lifetime: Infinity}, start);
