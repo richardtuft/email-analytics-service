@@ -5,6 +5,7 @@ node_js:
 
 services:
   - rabbitmq
+  - mongodb
 
 before_install:
   - npm install --global gulp
