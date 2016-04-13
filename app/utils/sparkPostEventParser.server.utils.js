@@ -41,6 +41,9 @@ exports.parse = (rawEvent) => {
     else if (rawEventMsys.unsubscribe_event) {
         rawEventBody = rawEventMsys.unsubscribe_event;
     }
+    else if (rawEventMsys.relay_event) {
+        rawEventBody = rawEventMsys.relay_event;
+    }
     else {
         throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
@@ -87,12 +90,6 @@ exports.parse = (rawEvent) => {
             break;
 
         case 'spam_complaint':
-            break;
-            
-        case 'sms_status':
-            break;
-            
-        case 'relay_event':
             break;
 
         default:
