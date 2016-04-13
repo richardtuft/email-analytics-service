@@ -41,6 +41,9 @@ exports.parse = (rawEvent) => {
     else if (rawEventMsys.unsubscribe_event) {
         rawEventBody = rawEventMsys.unsubscribe_event;
     }
+    else if (rawEventMsys.relay_event) {
+        rawEventBody = rawEventMsys.relay_event;
+    }
     else {
         throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
