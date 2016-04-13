@@ -132,7 +132,7 @@ class QueueApp extends EventEmitter {
     let e = JSON.parse(task.content.toString());
     try {
         e = eventParser.parse(e);
-    } catch {
+    } catch (e) {
         return this.connection.nack(task);
     }
     return this.sendEvents(e, task);
