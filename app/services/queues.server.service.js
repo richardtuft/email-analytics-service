@@ -150,7 +150,10 @@ class QueueApp extends EventEmitter {
       logger.debug(JSON.stringify(e));
       return resolve(e);
     })
-    .then(() => spoor.send(JSON.stringify(e)))
+    .then(() => {
+      let eventId = e.contex && e.context.eventId;
+      return spoor.send(JSON.stringify(e), eventId);
+    })
     .then(() => {
       // We only send events received in production to keen
       /* istanbul ignore next */

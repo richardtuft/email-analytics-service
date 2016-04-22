@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const config = require('../../config/config');
 const logger = require('../../config/logger');
 
-exports.send = (event) => {
+exports.send = (event, eventId) => {
 
     const postUrl = config.spoorPostUrl;
     
@@ -24,8 +24,8 @@ exports.send = (event) => {
             'User-Agent': 'ft-email-service/v1.1'
         };
         
-        if (event.context && event.context.eventId) {
-            headers['spoor-ticket'] = event.context.eventId;
+        if (eventId) {
+            headers['spoor-ticket'] = eventId;
         }
         
         if (!isProduction) {
