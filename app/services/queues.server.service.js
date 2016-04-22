@@ -147,7 +147,7 @@ class QueueApp extends EventEmitter {
           .then(() => resolve(e))
           .catch(reject);
       }
-      logger.debug(e);
+      logger.debug(JSON.stringify(e));
       return resolve(e);
     })
     .then(() => spoor.send(JSON.stringify(e)))
