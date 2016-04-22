@@ -151,7 +151,7 @@ class QueueApp extends EventEmitter {
       return resolve(e);
     })
     .then(() => {
-      let eventId = e.contex && e.context.eventId;
+      let eventId = e.context && e.context.eventId;
       return spoor.send(JSON.stringify(e), eventId);
     })
     .then(() => {
