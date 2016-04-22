@@ -106,6 +106,10 @@ exports.parse = (rawEvent) => {
         };
 
     }
+    
+    if (rawEvent.event_id) {
+        parsedEvent.context.eventId = rawEvent.event_id;
+    }
 
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent || rawEventBody.geo_ip) {
