@@ -24,10 +24,8 @@ exports.send = (event, eventId) => {
             'User-Agent': 'ft-email-service/v1.1'
         };
         
-        console.log(eventId);
-        
         if (eventId) {
-            headers['spoor-ticket'] = eventId;
+            headers['spoor-ticket'] = 'email-analytics-' + eventId;
         }
         
         if (!isProduction) {
