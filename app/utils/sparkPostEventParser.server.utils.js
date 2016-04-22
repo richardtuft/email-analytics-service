@@ -107,8 +107,8 @@ exports.parse = (rawEvent) => {
 
     }
     
-    if (rawEvent.event_id) {
-        parsedEvent.context.eventId = rawEvent.event_id;
+    if (rawEventBody.event_id) {
+        parsedEvent.context.eventId = rawEventBody.event_id;
     }
 
     // Not every SparkPost event type has the following properties:
