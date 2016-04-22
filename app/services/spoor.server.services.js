@@ -35,8 +35,7 @@ exports.send = (event) => {
         fetch(postUrl, {
             method: 'post',
             headers,
-            body: event,
-            timeout: 30000
+            body: event
         })
         .then((res) => {
 
