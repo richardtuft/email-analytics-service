@@ -24,6 +24,10 @@ exports.send = (event) => {
             'User-Agent': 'ft-email-service/v1.1'
         };
         
+        if (event.context && event.context.eventId) {
+            headers['spoor-ticket'] = event.context.eventId;
+        }
+        
         if (!isProduction) {
             headers['spoor-test'] =  'true';
         }
