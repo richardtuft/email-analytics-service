@@ -68,7 +68,8 @@
                 {"operator":"ne","property_name":"context.product","property_value":"test"}
             ],
             timeframe: "this_24_hours",
-            timezone: "UTC"
+            timezone: "UTC",
+            maxAge: 5*60
         });
 
         var actions24HoursQuery = new Keen.Query("count", {
@@ -79,45 +80,48 @@
             ],
             groupBy: "action",
             timeframe: "this_24_hours",
-            timezone: "UTC"
+            timezone: "UTC",
+            maxAge: 5*60
         });
 
         var bounces7DaysQuery = new Keen.Query("count", {
-                eventCollection: "events",
-                filters: [
-                    {"operator": "exists", "property_name": "context.product", "property_value": true },
-                    {"operator":"exists","property_name":"context.bounceClass","property_value":true},
-                    {"operator":"ne","property_name":"context.product","property_value":"test"},
-                    {"operator":"eq","property_name":"action","property_value":"bounce"},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":20},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":21},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":22},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":23},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":24},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":40},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":60},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":70},
-                    {"operator":"ne","property_name":"context.bounceClass","property_value":100}],
-                groupBy: "context.bounceClass",
-                interval: "daily",
-                timeframe: "this_7_days",
-                timezone: "UTC"
-            });
+            eventCollection: "events",
+            filters: [
+                {"operator": "exists", "property_name": "context.product", "property_value": true },
+                {"operator":"exists","property_name":"context.bounceClass","property_value":true},
+                {"operator":"ne","property_name":"context.product","property_value":"test"},
+                {"operator":"eq","property_name":"action","property_value":"bounce"},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":20},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":21},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":22},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":23},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":24},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":40},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":60},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":70},
+                {"operator":"ne","property_name":"context.bounceClass","property_value":100}],
+            groupBy: "context.bounceClass",
+            interval: "daily",
+            timeframe: "this_7_days",
+            timezone: "UTC",
+            maxAge: 5*60
+        });
 
         var injections7DaysQuery = new Keen.Query("count", {
-                eventCollection: "events",
-                filters: [
-                    {"operator": "exists", "property_name": "context.product", "property_value": true },
-                    { "operator": "eq", "property_name": "action", "property_value": "injection" },
-                    {"operator":"ne","property_name":"context.product","property_value":"test"}
-                ],
-                groupBy: [
-                    "context.product"
-                ],
-                interval: "daily",
-                timeframe: "this_7_days",
-                timezone: "UTC"
-            });
+            eventCollection: "events",
+            filters: [
+                {"operator": "exists", "property_name": "context.product", "property_value": true },
+                { "operator": "eq", "property_name": "action", "property_value": "injection" },
+                {"operator":"ne","property_name":"context.product","property_value":"test"}
+            ],
+            groupBy: [
+                "context.product"
+            ],
+            interval: "daily",
+            timeframe: "this_7_days",
+            timezone: "UTC",
+            maxAge: 5*60
+        });
 
 
         /** PREPARE CHARTS **/
