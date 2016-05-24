@@ -20,6 +20,14 @@ function isGenerationRejection (e) {
     return e.action === 'generation_rejection';
 }
 
+function isSpamComplaint (e) {
+    return e.action === 'spam_complaint';
+}
+
+function isListUnsubscribe (e) {
+    return e.action === 'list_unsubscribe';
+}
+
 class QueueApp extends EventEmitter {
 
   constructor(config, prefetch) {
@@ -142,7 +150,7 @@ class QueueApp extends EventEmitter {
     return new Promise((resolve, reject) => {
       let uuid = e.user && e.user.ft_guid;
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      if (uuid && (isHardBounce(e) || isGenerationRejection(e))) {
+      if (uuid && (isHardBounce(e) || isGenerationRejection(e) || isSpamComplaint(e) || isListUnsubscribe(e))) {
         return this.sendSuppressionUpdate(uuid)
           .then(() => resolve(e))
           .catch(reject);
