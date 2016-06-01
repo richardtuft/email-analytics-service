@@ -117,8 +117,7 @@
             groupBy: [
                 "context.product"
             ],
-            interval: "daily",
-            timeframe: "this_7_days",
+            timeframe: "this_24_hours",
             timezone: "UTC",
             maxAge: 5*60
         });
@@ -199,7 +198,7 @@
                 // Handle the response
                 injections7DaysChart
                         .parseRequest(this)
-                        .title("Injections per day in past 7 days")
+                        .title("Injections per product in past 24 hours")
                         .render();
             }
         });
