@@ -159,6 +159,10 @@ exports.parse = (rawEvent) => {
     if (rawEventBody.bounce_class) {
         parsedEvent.context.bounceClass = rawEventBody.bounce_class;
     }
+    
+    if (rawEventBody.msg_size) {
+        parsedEvent.context.msgSize = rawEventBody.msg_size;
+    }
 
     // Common to every type event handling
     parsedEvent.action = rawEventBody.type;
