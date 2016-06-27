@@ -161,7 +161,7 @@ exports.parse = (rawEvent) => {
     }
     
     if (rawEventBody.msg_size) {
-        parsedEvent.context.msgSize = rawEventBody.msg_size;
+        parsedEvent.context.msgSize = parseInt(rawEventBody.msg_size);
     }
 
     // Common to every type event handling
