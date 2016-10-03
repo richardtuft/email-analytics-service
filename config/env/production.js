@@ -17,6 +17,7 @@ const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
 const eventPrefetchLimit = int(process.env.EVENT_PREFETCH_LIMIT) || 100;
 const batchPrefetchLimit = int(process.env.BATCH_PREFETCH_LIMIT) || 1;
+const batchQueueLimit = int(process.env.BATCH_QUEUE_LIMIT) || 100;
 const processId = process.env.DYNO;
 const authUser = process.env.AUTH_USER;
 const authPassword = process.env.AUTH_PASSWORD;
@@ -35,6 +36,7 @@ module.exports = {
     batchQueue,
     eventPrefetchLimit,
     batchPrefetchLimit,
+    batchQueueLimit,
     spoorPostUrl,
     userListsEndpoint,
     authUser,
