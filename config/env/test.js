@@ -14,6 +14,7 @@ const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
 const eventPrefetchLimit = int(process.env.EVENT_PREFETCH_LIMIT) || 100;
 const batchPrefetchLimit = int(process.env.BATCH_PREFETCH_LIMIT) || 1;
+const batchQueueLimit = int(process.env.BATCH_QUEUE_LIMIT) || 100;
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const processId = process.env.DYNO || process.pid;
@@ -34,6 +35,7 @@ module.exports = {
     batchQueue,
     eventPrefetchLimit,
     batchPrefetchLimit,
+    batchQueueLimit,
     spoorPostUrl,
     userListsEndpoint,
     authUser,
