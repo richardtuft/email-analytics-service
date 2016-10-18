@@ -9,6 +9,18 @@ const usersListsClient = require('../services/usersListsClient.server.services')
 const keen = require('../services/keen.server.service');
 const spoor = require('../services/spoor.server.services');
 
+// Event types
+const GENERATION_REJECTION = 'generation_rejection';
+const SPAM_COMPLAINT = 'spam_complaint';
+const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const BOUNCE = 'bounce';
+
+// Categories
+const NEWSLETTER = 'newsletter';
+const MARKETING = 'marketing';
+const ACCOUNT = 'account';
+const RECOMMENDATION = 'recommendation';
+
 function isHardBounce (e) {
     let action = e.action;
     let bounceClass = e.context.bounceClass;
@@ -17,15 +29,15 @@ function isHardBounce (e) {
 }
 
 function isGenerationRejection (e) {
-    return e.action === 'generation_rejection';
+    return e.action === GENERATION_REJECTION;
 }
 
 function isSpamComplaint (e) {
-    return e.action === 'spam_complaint';
+    return e.action === SPAM_COMPLAINT;
 }
 
 function isListUnsubscribe (e) {
-    return e.action === 'list_unsubscribe';
+    return e.action === LIST_UNSUBSCRIBE;
 }
 
 class QueueApp extends EventEmitter {
@@ -149,9 +161,11 @@ class QueueApp extends EventEmitter {
   sendEvents(e, task) {
     return new Promise((resolve, reject) => {
       let uuid = e.user && e.user.ft_guid;
+      let category = context.category;
+
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      if (uuid && (isHardBounce(e) || isGenerationRejection(e) || isSpamComplaint(e) || isListUnsubscribe(e))) {
-        return this.sendSuppressionUpdate(uuid)
+      if (category && uuid && (isHardBounce(e) || isGenerationRejection(e) || isSpamComplaint(e) || isListUnsubscribe(e))) {
+        return this.sendSuppressionUpdate(e)
           .then(() => resolve(e))
           .catch(reject);
       }
@@ -178,9 +192,67 @@ class QueueApp extends EventEmitter {
     });
   }
 
-  sendSuppressionUpdate(uuid) {
+  generateReason(event) {
+    switch (event.action) {
+      case BOUNCE:
+        return `BOUNCE: ${event.context.reason || ''}`;
+      
+      case SPAM_COMPLAINT:
+        return `SPAM_COMPLAINT: ${event.context.fbType || ''}`;
+
+      case GENERATION_REJECTION:
+        return `GENERATION_REJECTION: ${event.context.reason || ''}`;
+
+      case LIST_UNSUBSCRIBE:
+        return 'LIST_UNSUBSCRIBE';
+    
+      default:
+        return 'Unknown';
+    }
+
+  }
+
+
+  generateSuppressionType(category) {
+
+    switch(category) {
+      case NEWSLETTER:
+        return 'suppressedNewsletter';
+
+      case RECOMMENDATION:
+        return 'suppressedRecommendation';
+
+      case MARKETING:
+        return 'suppressedMarketing';
+
+      case ACCOUNT:
+        return 'suppressedAccount';
+
+      default:
+        return;
+    }
+
+  }
+
+  sendSuppressionUpdate(event) {
+
+    const { 
+      user: { ft_guid: uuid },
+      context: { category },
+      action
+    } = event;
+
+    let suppressionType = this.generateSuppressionType(category);
+    let reason = this.generateReason(event);
+
+    if (!suppressionType) {
+      // Do not suppress
+      return Promise.resolve();
+    }
+
     let toEdit = {
-        automaticallySuppressed: true
+        [suppressionType]: true,
+        reason
     };
     return usersListsClient.editUser(uuid, toEdit);
   }

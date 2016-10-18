@@ -166,12 +166,64 @@ describe('Queues service tests:', () => {
         });
     });
 
-    it('send of suppression updates via users lists client', done => {
+    it('sends suppression updates via users lists client', done => {
       let usersListsStub = sandbox.stub(usersListsClient, 'editUser').returns({});
-      queues.sendSuppressionUpdate(123);
+      queues.sendSuppressionUpdate({ user: { ft_guid: "1234" }, action: 'bounce', context: { category: 'marketing' }});
       usersListsStub.called.should.be.true();
       done();
     });
+
+    it('generates the correct reason', done => {
+      const GENERATION_REJECTION = 'generation_rejection';
+      const SPAM_COMPLAINT = 'spam_complaint';
+      const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+      const BOUNCE = 'bounce';
+
+      const TEXT = 'Some text'; 
+
+      
+      const events = [
+        { action: BOUNCE, context: {reason: TEXT}},
+        { action: SPAM_COMPLAINT, context: {fbType: TEXT}},
+        { action: GENERATION_REJECTION, context: {reason: TEXT}},
+        { action: LIST_UNSUBSCRIBE }
+      ];
+      const reasons = [
+        `BOUNCE: ${TEXT}`,
+        `SPAM_COMPLAINT: ${TEXT}`,
+        `GENERATION_REJECTION: ${TEXT}`,
+        'LIST_UNSUBSCRIBE'
+      ];
+      events.forEach((e, i) => {
+        const reason = queues.generateReason(e);
+        reason.should.equal(reasons[i]);
+      });
+
+      done();
+      
+    });
+
+
+    it('generates the correct suppression type', done => {
+
+      // Categories
+      const NEWSLETTER = 'newsletter';
+      const MARKETING = 'marketing';
+      const ACCOUNT = 'account';
+      const RECOMMENDATION = 'recommendation';
+      
+      const categories = [NEWSLETTER, MARKETING, ACCOUNT, RECOMMENDATION, ''];
+      const types = ['suppressedNewsletter', 'suppressedMarketing', 'suppressedAccount', 'suppressedRecommendation', undefined];
+      
+      categories.forEach((c, i) => {
+        const type = queues.generateSuppressionType(c);
+        should(type === types[i]).be.true()
+      });
+
+      done();
+      
+    });
+
   });
 
   describe('Emitting queue events', () => {

@@ -112,7 +112,7 @@ exports.parse = (rawEvent) => {
     }
 
     // Not every SparkPost event type has the following properties:
-    if (rawEventBody.user_agent || rawEventBody.geo_ip || rawEventBody.ip_address) {
+    if (rawEventBody.user_agent || rawEventBody.geo_ip) {
         parsedEvent.device = {};
         
         if (rawEventBody.user_agent) {
@@ -122,11 +122,7 @@ exports.parse = (rawEvent) => {
         if (rawEventBody.geo_ip) {
             parsedEvent.device.geo = rawEventBody.geo_ip;
         }
-
-        if (rawEventBody.ip_address) {
-            parsedEvent.device.ip = rawEventBody.ip_address;
-        }
-        
+  
     }
 
     if (rawEventBody.target_link_name) {
@@ -155,10 +151,6 @@ exports.parse = (rawEvent) => {
 
     if (rawEventBody.error_code) {
         parsedEvent.context.errorCode = rawEventBody.error_code;
-    }
-
-    if (rawEventBody.bounce_class) {
-        parsedEvent.context.bounceClass = rawEventBody.bounce_class;
     }
     
     if (rawEventBody.msg_size) {
