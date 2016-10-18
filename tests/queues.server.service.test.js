@@ -217,7 +217,7 @@ describe('Queues service tests:', () => {
       
       categories.forEach((c, i) => {
         const type = queues.generateSuppressionType(c);
-        should(type === types[i]).be.true()
+        should(type === types[i]).be.true();
       });
 
       done();
