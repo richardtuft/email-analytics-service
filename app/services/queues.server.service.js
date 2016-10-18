@@ -21,25 +21,6 @@ const MARKETING = 'marketing';
 const ACCOUNT = 'account';
 const RECOMMENDATION = 'recommendation';
 
-function isHardBounce (e) {
-    let action = e.action;
-    let bounceClass = e.context.bounceClass;
-    return (action === 'bounce' || action === 'out_of_band') &&
-      ['10', '30', '90'].indexOf(bounceClass) >= 0;
-}
-
-function isGenerationRejection (e) {
-    return e.action === GENERATION_REJECTION;
-}
-
-function isSpamComplaint (e) {
-    return e.action === SPAM_COMPLAINT;
-}
-
-function isListUnsubscribe (e) {
-    return e.action === LIST_UNSUBSCRIBE;
-}
-
 class QueueApp extends EventEmitter {
 
   constructor(config, prefetch) {
@@ -164,7 +145,7 @@ class QueueApp extends EventEmitter {
       let category = context.category;
 
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      if (category && uuid && (isHardBounce(e) || isGenerationRejection(e) || isSpamComplaint(e) || isListUnsubscribe(e))) {
+      if (category && uuid && (this.isHardBounce(e) || this.isGenerationRejection(e) || this.isSpamComplaint(e) || this.isListUnsubscribe(e))) {
         return this.sendSuppressionUpdate(e)
           .then(() => resolve(e))
           .catch(reject);
@@ -233,6 +214,25 @@ class QueueApp extends EventEmitter {
     }
 
   }
+
+  isHardBounce (e) {
+    let action = e.action;
+    let bounceClass = e.context.bounceClass;
+    return (action === 'bounce' || action === 'out_of_band') &&
+      ['10', '30', '90'].indexOf(bounceClass) >= 0;
+}
+
+  isGenerationRejection (e) {
+    return e.action === GENERATION_REJECTION;
+}
+
+   isSpamComplaint (e) {
+    return e.action === SPAM_COMPLAINT;
+}
+
+   isListUnsubscribe (e) {
+    return e.action === LIST_UNSUBSCRIBE;
+}
 
   sendSuppressionUpdate(event) {
 

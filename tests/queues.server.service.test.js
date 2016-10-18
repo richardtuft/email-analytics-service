@@ -20,6 +20,12 @@ const hardBounceMessage = require('./events/sparkpost/hardBounce.json');
 const hardBounceParsed = eventParser.parse(hardBounceMessage);
 const msg = 'A message';
 
+// Actions
+const GENERATION_REJECTION = 'generation_rejection';
+const SPAM_COMPLAINT = 'spam_complaint';
+const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const BOUNCE = 'bounce';
+
 // Test variables
 let queues;
 
@@ -174,10 +180,6 @@ describe('Queues service tests:', () => {
     });
 
     it('generates the correct reason', done => {
-      const GENERATION_REJECTION = 'generation_rejection';
-      const SPAM_COMPLAINT = 'spam_complaint';
-      const LIST_UNSUBSCRIBE = 'list_unsubscribe';
-      const BOUNCE = 'bounce';
 
       const TEXT = 'Some text'; 
 
@@ -222,6 +224,30 @@ describe('Queues service tests:', () => {
 
       done();
       
+    });
+
+    it('detects hard bounces', done => {
+      const event = { action: BOUNCE, context: { bounceClass: '10'}};
+      queues.isHardBounce(event).should.be.true();
+      done();
+    });
+
+    it('detects generation rejections', done => {
+      const event = { action: GENERATION_REJECTION };
+      queues.isGenerationRejection(event).should.be.true();
+      done();
+    });
+
+    it('detects spam complaints', done => {
+      const event = { action: SPAM_COMPLAINT };
+      queues.isSpamComplaint(event).should.be.true();
+      done();
+    });
+
+    it('detects list unsubscriptions', done => {
+      const event = { action: LIST_UNSUBSCRIBE };
+      queues.isListUnsubscribe(event).should.be.true();
+      done();
     });
 
   });
