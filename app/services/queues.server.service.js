@@ -251,8 +251,10 @@ class QueueApp extends EventEmitter {
     }
 
     let toEdit = {
-        [suppressionType]: true,
-        reason
+        [suppressionType]: {
+          value: true,
+          reason
+        }
     };
     return usersListsClient.editUser(uuid, toEdit);
   }
