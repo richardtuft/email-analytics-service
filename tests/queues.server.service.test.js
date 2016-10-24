@@ -181,9 +181,9 @@ describe('Queues service tests:', () => {
 
     it('generates the correct reason', done => {
 
-      const TEXT = 'Some text'; 
+      const TEXT = 'Some text';
 
-      
+
       const events = [
         { action: BOUNCE, context: {reason: TEXT}},
         { action: SPAM_COMPLAINT, context: {fbType: TEXT}},
@@ -192,9 +192,9 @@ describe('Queues service tests:', () => {
       ];
       const reasons = [
         `BOUNCE: ${TEXT}`,
-        `SPAM_COMPLAINT: ${TEXT}`,
-        `GENERATION_REJECTION: ${TEXT}`,
-        'LIST_UNSUBSCRIBE'
+        `SPAM COMPLAINT: ${TEXT}`,
+        `GENERATION REJECTION: ${TEXT}`,
+        'LIST UNSUBSCRIBE'
       ];
       events.forEach((e, i) => {
         const reason = queues.generateReason(e);
@@ -202,7 +202,7 @@ describe('Queues service tests:', () => {
       });
 
       done();
-      
+
     });
 
 
@@ -213,17 +213,17 @@ describe('Queues service tests:', () => {
       const MARKETING = 'marketing';
       const ACCOUNT = 'account';
       const RECOMMENDATION = 'recommendation';
-      
+
       const categories = [NEWSLETTER, MARKETING, ACCOUNT, RECOMMENDATION, ''];
       const types = ['suppressedNewsletter', 'suppressedMarketing', 'suppressedAccount', 'suppressedRecommendation', undefined];
-      
+
       categories.forEach((c, i) => {
-        const type = queues.generateSuppressionType(c);
+        const type = queues.suppressionTypeByCategory(c);
         should(type === types[i]).be.true();
       });
 
       done();
-      
+
     });
 
     it('detects hard bounces', done => {
