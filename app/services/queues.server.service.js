@@ -9,24 +9,25 @@ const usersListsClient = require('../services/usersListsClient.server.services')
 const keen = require('../services/keen.server.service');
 const spoor = require('../services/spoor.server.services');
 
-function isHardBounce (e) {
-    let action = e.action;
-    let bounceClass = e.context.bounceClass;
-    return (action === 'bounce' || action === 'out_of_band') &&
-      ['10', '30', '90'].indexOf(bounceClass) >= 0;
-}
+// Event types
+const GENERATION_REJECTION = 'generation_rejection';
+const SPAM_COMPLAINT = 'spam_complaint';
+const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const BOUNCE = 'bounce';
 
-function isGenerationRejection (e) {
-    return e.action === 'generation_rejection';
-}
+// Categories
+const NEWSLETTER = 'newsletter';
+const MARKETING = 'marketing';
+const ACCOUNT = 'account';
+const RECOMMENDATION = 'recommendation';
 
-function isSpamComplaint (e) {
-    return e.action === 'spam_complaint';
-}
-
-function isListUnsubscribe (e) {
-    return e.action === 'list_unsubscribe';
-}
+//field names
+const FIELDS = {
+  NEWSLETTER: 'suppressedNewsletter',
+  RECOMMENDATION: 'suppressedRecommendation',
+  MARKETING: 'suppressedMarketing',
+  ACCOUNT: 'suppressedAccount'
+};
 
 class QueueApp extends EventEmitter {
 
@@ -41,7 +42,7 @@ class QueueApp extends EventEmitter {
   }
 
   onConnected() {
-    let options = {durable: true};
+    let options = { durable: true };
     let ok = this.connection.defaultChannel();
     ok.then(() => this.connection.assertQueue(this.config.eventQueue, options));
     ok.then(() => this.connection.assertQueue(this.config.batchQueue, options));
@@ -139,50 +140,130 @@ class QueueApp extends EventEmitter {
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
     try {
-        e = eventParser.parse(e);
+      e = eventParser.parse(e);
     } catch (e) {
-        return this.connection.nack(task);
+      return this.connection.nack(task);
     }
     return this.sendEvents(e, task);
   }
 
-  sendEvents(e, task) {
+  sendEvents(event, task) {
     return new Promise((resolve, reject) => {
-      let uuid = e.user && e.user.ft_guid;
+      let uuid = event.user && event.user.ft_guid;
+      let category = context.category;
+
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      if (uuid && (isHardBounce(e) || isGenerationRejection(e) || isSpamComplaint(e) || isListUnsubscribe(e))) {
-        return this.sendSuppressionUpdate(uuid)
-          .then(() => resolve(e))
+      const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event));
+      if (suppressionApplies) {
+        const suppressInAllCategories = this.isHardBounce(event) || this.isGenerationRejection(event);
+        return this.sendSuppressionUpdate(event, suppressInAllCategories)
+          .then(() => resolve(event))
           .catch(reject);
       }
-      logger.debug(JSON.stringify(e));
-      return resolve(e);
+      logger.debug(JSON.stringify(event));
+      return resolve(event);
     })
-    .then(() => {
-      let eventId = e.context && e.context.eventId;
-      return spoor.send(JSON.stringify(e), eventId);
-    })
-    .then(() => {
-      // We only send events received in production to keen
-      /* istanbul ignore next */
-      if (process.env.NODE_ENV === 'production') {
-        return keen.send(e);
-      }
-      return e;
-    })
-    .then(() => this.connection.ack(task))
-    .catch(err => {
-      logger.error(err);
-      this.emit('requeuing', {deliveryTag: task.fields.deliveryTag});
-      this.connection.nack(task);
-    });
+      .then(() => {
+        let eventId = event.context && event.context.eventId;
+        return spoor.send(JSON.stringify(event), eventId);
+      })
+      .then(() => {
+        // We only send events received in production to keen
+        /* istanbul ignore next */
+        if (process.env.NODE_ENV === 'production') {
+          return keen.send(event);
+        }
+        return event;
+      })
+      .then(() => this.connection.ack(task))
+      .catch(err => {
+        logger.error(err);
+        this.emit('requeuing', { deliveryTag: task.fields.deliveryTag });
+        this.connection.nack(task);
+      });
   }
 
-  sendSuppressionUpdate(uuid) {
-    let toEdit = {
-        automaticallySuppressed: true
-    };
-    return usersListsClient.editUser(uuid, toEdit);
+  generateReason(event) {
+    switch (event.action) {
+      case BOUNCE:
+        return `BOUNCE: ${event.context.reason || ''}`;
+
+      case SPAM_COMPLAINT:
+        return `SPAM COMPLAINT: ${event.context.fbType || ''}`;
+
+      case GENERATION_REJECTION:
+        return `GENERATION REJECTION: ${event.context.reason || ''}`;
+
+      case LIST_UNSUBSCRIBE:
+        return 'LIST UNSUBSCRIBE';
+
+      default:
+        return 'Unknown';
+    }
+
+  }
+
+
+  suppressionTypeByCategory(category) {
+
+    switch (category) {
+      case NEWSLETTER:
+        return FIELDS.NEWSLETTER;
+      case RECOMMENDATION:
+        return FIELDS.RECOMMENDATION;
+      case MARKETING:
+        return FIELDS.MARKETING;
+      case ACCOUNT:
+        return FIELDS.ACCOUNT;
+      default:
+        return;
+    }
+  }
+
+  isHardBounce(e) {
+    let action = e.action;
+    let bounceClass = e.context.bounceClass;
+    return (action === 'bounce' || action === 'out_of_band') &&
+      ['10', '30', '90'].indexOf(bounceClass) >= 0;
+  }
+
+  isGenerationRejection(e) {
+    return e.action === GENERATION_REJECTION;
+  }
+
+  isSpamComplaint(e) {
+    return e.action === SPAM_COMPLAINT;
+  }
+
+  isListUnsubscribe(e) {
+    return e.action === LIST_UNSUBSCRIBE;
+  }
+
+  sendSuppressionUpdate(event, inAllCategories = false) {
+
+    const {
+      user: { ft_guid: uuid },
+      context: { category },
+      action
+    } = event;
+
+    const suppressionType = this.suppressionTypeByCategory(category);
+    const reason = this.generateReason(event);
+
+    if (!suppressionType) {
+      // Do not suppress
+      return Promise.resolve();
+    }
+
+    const updateSuppressionsData = inAllCategories ?
+      { [suppressionType]: { value: true, reason } } :
+      {
+        [FIELDS.RECOMMENDATION]: { value: true, reason },
+        [FIELDS.NEWSLETTER]: { value: true, reason },
+        [FIELDS.MARKETING]: { value: true, reason },
+        [FIELDS.ACCOUNT]: { value: true, reason }
+      };
+    return usersListsClient.editUser(uuid, updateSuppressionsData);
   }
 }
 

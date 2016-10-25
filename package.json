@@ -13,7 +13,7 @@
     "url": "https://github.com/Financial-Times/email-analytics-service.git"
   },
   "engines": {
-    "node": "^5.0.0"
+    "node": "^6.0.0"
   },
   "author": "Daniele Zanni",
   "dependencies": {

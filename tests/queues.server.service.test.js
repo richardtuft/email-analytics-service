@@ -20,6 +20,12 @@ const hardBounceMessage = require('./events/sparkpost/hardBounce.json');
 const hardBounceParsed = eventParser.parse(hardBounceMessage);
 const msg = 'A message';
 
+// Actions
+const GENERATION_REJECTION = 'generation_rejection';
+const SPAM_COMPLAINT = 'spam_complaint';
+const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const BOUNCE = 'bounce';
+
 // Test variables
 let queues;
 
@@ -166,12 +172,84 @@ describe('Queues service tests:', () => {
         });
     });
 
-    it('send of suppression updates via users lists client', done => {
+    it('sends suppression updates via users lists client', done => {
       let usersListsStub = sandbox.stub(usersListsClient, 'editUser').returns({});
-      queues.sendSuppressionUpdate(123);
+      queues.sendSuppressionUpdate({ user: { ft_guid: "1234" }, action: 'bounce', context: { category: 'marketing' }});
       usersListsStub.called.should.be.true();
       done();
     });
+
+    it('generates the correct reason', done => {
+
+      const TEXT = 'Some text';
+
+
+      const events = [
+        { action: BOUNCE, context: {reason: TEXT}},
+        { action: SPAM_COMPLAINT, context: {fbType: TEXT}},
+        { action: GENERATION_REJECTION, context: {reason: TEXT}},
+        { action: LIST_UNSUBSCRIBE }
+      ];
+      const reasons = [
+        `BOUNCE: ${TEXT}`,
+        `SPAM COMPLAINT: ${TEXT}`,
+        `GENERATION REJECTION: ${TEXT}`,
+        'LIST UNSUBSCRIBE'
+      ];
+      events.forEach((e, i) => {
+        const reason = queues.generateReason(e);
+        reason.should.equal(reasons[i]);
+      });
+
+      done();
+
+    });
+
+
+    it('generates the correct suppression type', done => {
+
+      // Categories
+      const NEWSLETTER = 'newsletter';
+      const MARKETING = 'marketing';
+      const ACCOUNT = 'account';
+      const RECOMMENDATION = 'recommendation';
+
+      const categories = [NEWSLETTER, MARKETING, ACCOUNT, RECOMMENDATION, ''];
+      const types = ['suppressedNewsletter', 'suppressedMarketing', 'suppressedAccount', 'suppressedRecommendation', undefined];
+
+      categories.forEach((c, i) => {
+        const type = queues.suppressionTypeByCategory(c);
+        should(type === types[i]).be.true();
+      });
+
+      done();
+
+    });
+
+    it('detects hard bounces', done => {
+      const event = { action: BOUNCE, context: { bounceClass: '10'}};
+      queues.isHardBounce(event).should.be.true();
+      done();
+    });
+
+    it('detects generation rejections', done => {
+      const event = { action: GENERATION_REJECTION };
+      queues.isGenerationRejection(event).should.be.true();
+      done();
+    });
+
+    it('detects spam complaints', done => {
+      const event = { action: SPAM_COMPLAINT };
+      queues.isSpamComplaint(event).should.be.true();
+      done();
+    });
+
+    it('detects list unsubscriptions', done => {
+      const event = { action: LIST_UNSUBSCRIBE };
+      queues.isListUnsubscribe(event).should.be.true();
+      done();
+    });
+
   });
 
   describe('Emitting queue events', () => {
