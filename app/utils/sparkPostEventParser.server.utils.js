@@ -111,6 +111,14 @@ exports.parse = (rawEvent) => {
         parsedEvent.context.eventId = rawEventBody.event_id;
     }
 
+    if (rawEventBody.message_id) {
+        parsedEvent.context.messageId = rawEventBody.message_id;
+    }
+
+    if (rawEventBody.subject) {
+        parsedEvent.context.subjectText = rawEventBody.subject;
+    }
+
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent || rawEventBody.geo_ip) {
         parsedEvent.device = {};
