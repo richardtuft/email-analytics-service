@@ -28,7 +28,7 @@
             max-width: 100%;
         }
         .google-visualization-table-table td {
-            font-size: 1.5em;
+            font-size: 1.3em;
         }
     </style>
 </head>
@@ -47,8 +47,11 @@
 </div>
 <div class="o-grid-row chart-row">
     <div id="bounces-24-hours"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
-    <div id="injections-7-days"  data-o-grid-colspan="XL6 L6 S12 M12" class="chart"></div>
-
+    <div data-o-grid-colspan="XL6 L6 S12 M12">
+        <p><strong>Injections:</strong></p>
+        <div id="injections-7-days"  data-o-grid-colspan="XL6 XL6 S6 M6" class="chart"></div>
+        <div id="categories-7-days"  data-o-grid-colspan="XL6 XL6 S6 M6" class="chart"></div>
+    </div>
 </div>
 
 <script src="//cdn.jsdelivr.net/keen.js/3.2.6/keen.min.js" type="text/javascript"></script>
@@ -125,6 +128,21 @@
             maxAge: 5*60
         });
 
+        var categories7DaysQuery = new Keen.Query("count", {
+            eventCollection: "events",
+            filters: [
+                {"operator": "exists", "property_name": "context.category", "property_value": true },
+                { "operator": "eq", "property_name": "action", "property_value": "injection" },
+                {"operator":"ne","property_name":"context.product","property_value":"test"}
+            ],
+            groupBy: [
+                "context.category"
+            ],
+            timeframe: "this_24_hours",
+            timezone: "UTC",
+            maxAge: 5*60
+        });
+
 
         /** PREPARE CHARTS **/
 
@@ -144,6 +162,10 @@
 
         var injections7DaysChart = new Keen.Dataviz()
                 .el(document.getElementById("injections-7-days"))
+                .chartType("table")
+                .prepare(); // starts spinner
+        var categories7DaysChart = new Keen.Dataviz()
+                .el(document.getElementById("categories-7-days"))
                 .chartType("table")
                 .prepare(); // starts spinner
 
@@ -206,14 +228,19 @@
             }
         });
 
-
-        /** REFRESHES **/
-
-        // Updates itself every 2 minutes
-        setInterval(total24HoursReq.refresh, 1000 * 60 * 2);
-        setInterval(actions24HoursReq.refresh, 1000 * 60 * 2);
-        setInterval(bounces7DaysReq.refresh, 1000 * 60 * 2);
-        setInterval(injections7DaysReq.refresh, 1000 * 60 * 2);
+        var categories7DaysReq = client.run(categories7DaysQuery, function(err){
+            if (err) {
+                // Display the API error
+                categories7DaysChart.error(err.message);
+            }
+            else {
+                // Handle the response
+                categories7DaysChart
+                        .parseRequest(this)
+                        .title("Categories per product in past 24 hours")
+                        .render();
+            }
+        });
 
     });
 
