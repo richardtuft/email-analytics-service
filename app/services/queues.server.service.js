@@ -256,13 +256,13 @@ class QueueApp extends EventEmitter {
     }
 
     const updateSuppressionsData = inAllCategories ?
-      { [suppressionType]: { value: true, reason } } :
       {
         [FIELDS.RECOMMENDATION]: { value: true, reason },
         [FIELDS.NEWSLETTER]: { value: true, reason },
         [FIELDS.MARKETING]: { value: true, reason },
         [FIELDS.ACCOUNT]: { value: true, reason }
-      };
+      } :
+      { [suppressionType]: { value: true, reason } };
     return usersListsClient.editUser(uuid, updateSuppressionsData);
   }
 }
