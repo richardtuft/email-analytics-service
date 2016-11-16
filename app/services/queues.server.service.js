@@ -87,6 +87,7 @@ class QueueApp extends EventEmitter {
     });
   }
 
+  /* istanbul ignore next */
   closeChannel() {
     return this.connection.closeChannel();
   }
@@ -126,10 +127,9 @@ class QueueApp extends EventEmitter {
     };
 
     q.push(batch, err => {
+      /* istanbul ignore next */
       if (err) {
         logger.error(err);
-      } else {
-        //logger.info('count', ++count);
       }
     });
   }
