@@ -24,6 +24,7 @@ const msg = 'A message';
 const GENERATION_REJECTION = 'generation_rejection';
 const SPAM_COMPLAINT = 'spam_complaint';
 const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const LINK_UNSUBSCRIBE = 'link_unsubscribe';
 const BOUNCE = 'bounce';
 
 // Test variables
@@ -188,13 +189,15 @@ describe('Queues service tests:', () => {
         { action: BOUNCE, context: {reason: TEXT}},
         { action: SPAM_COMPLAINT, context: {fbType: TEXT}},
         { action: GENERATION_REJECTION, context: {reason: TEXT}},
-        { action: LIST_UNSUBSCRIBE }
+        { action: LIST_UNSUBSCRIBE },
+        { action: LINK_UNSUBSCRIBE }
       ];
       const reasons = [
         `BOUNCE: ${TEXT}`,
         `SPAM COMPLAINT: ${TEXT}`,
         `GENERATION REJECTION: ${TEXT}`,
-        'LIST UNSUBSCRIBE'
+        'LIST UNSUBSCRIBE',
+        'LINK UNSUBSCRIBE'
       ];
       events.forEach((e, i) => {
         const reason = queues.generateReason(e);
@@ -249,6 +252,12 @@ describe('Queues service tests:', () => {
       queues.isListUnsubscribe(event).should.be.true();
       done();
     });
+    
+    it('detects link unsubscriptions', done => {
+      const event = { action: LINK_UNSUBSCRIBE };
+      queues.isLinkUnsubscribe(event).should.be.true();
+      done();
+    });    
 
   });
 
