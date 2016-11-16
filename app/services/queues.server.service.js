@@ -13,6 +13,7 @@ const spoor = require('../services/spoor.server.services');
 const GENERATION_REJECTION = 'generation_rejection';
 const SPAM_COMPLAINT = 'spam_complaint';
 const LIST_UNSUBSCRIBE = 'list_unsubscribe';
+const LINK_UNSUBSCRIBE = 'link_unsubscribe';
 const BOUNCE = 'bounce';
 
 // Categories
@@ -153,7 +154,7 @@ class QueueApp extends EventEmitter {
       let category = event.context.category;
 
       //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event));
+      const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event) || this.isLinkUnsubscribe(event));
       if (suppressionApplies) {
         const suppressInAllCategories = this.isHardBounce(event) || this.isGenerationRejection(event);
         return this.sendSuppressionUpdate(event, suppressInAllCategories)
@@ -196,6 +197,10 @@ class QueueApp extends EventEmitter {
 
       case LIST_UNSUBSCRIBE:
         return 'LIST UNSUBSCRIBE';
+        
+       
+      case LINK_UNSUBSCRIBE:
+        return 'LINK UNSUBSCRIBE';
 
       default:
         return 'Unknown';
@@ -237,6 +242,10 @@ class QueueApp extends EventEmitter {
 
   isListUnsubscribe(e) {
     return e.action === LIST_UNSUBSCRIBE;
+  }
+  
+  isLinkUnsubscribe(e) {
+    return e.action === LINK_UNSUBSCRIBE;
   }
 
   sendSuppressionUpdate(event, inAllCategories = false) {
