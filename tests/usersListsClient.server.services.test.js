@@ -53,7 +53,7 @@ describe('The usersListsClient service', () =>{
             }).catch(done);
         });
 
-        it('should fail a promise if underlying service returns 404 user not found', (done) => {
+        it('should not fail a promise if underlying service returns 404 user not found', (done) => {
             usersListsClientMock
                 .patch('/users/' + user.uuid)
                 .reply(404, responseBodies.notFound);
@@ -63,8 +63,11 @@ describe('The usersListsClient service', () =>{
             let result = usersListsClient.editUser(user.uuid, data);
 
             result
-                .then(() => done(new Error('Call should not succeed.')))
-                .catch((err) => done());
+              .then((json) => {
+                json.should.exist; 
+                done();
+              })
+              .catch((err) => done(err));
         });
 
         it('should fail a promise if underlying service returns a validation error', (done) => {

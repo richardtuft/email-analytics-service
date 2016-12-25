@@ -29,14 +29,15 @@ exports.editUser = (uuid, editedProperties) => {
             body: body
         })
         .then(response => {
-            if (response.status >= 200 && response.status < 300) {
+            if (response.ok) {
                 return response.json();
             }
             if (response.status !== 404) {
                 //We received a status we do not accept
                 logger.error('Unexpected response from users-lists API', response);
+                throw new Error(response.statusText);
             }
-            throw new Error(response.statusText);
+            return Promise.resolve({});
         })
         .then(fulfill)
         .catch(reject);
