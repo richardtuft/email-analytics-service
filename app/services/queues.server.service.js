@@ -145,6 +145,11 @@ class QueueApp extends EventEmitter {
     } catch (e) {
       return this.connection.nack(task);
     }
+
+    if (!e) {
+      return this.connection.ack(task);
+    }
+
     return this.sendEvents(e, task);
   }
 

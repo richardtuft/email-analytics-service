@@ -2,6 +2,7 @@
 
 const extend = require('extend');
 const logger = require('../../config/logger');
+const config = require('../../config/config');
 
 /**
  * parse() receives a JSON object and returns a valid EmailEvent Object
@@ -98,6 +99,10 @@ exports.parse = (rawEvent) => {
     }
 
     if (rawEventBody.rcpt_meta) {
+
+        if (config.filterTestEvents && rawEventBody.rcpt_meta.product === 'test') {
+          return null;
+        }
 
         let ft_guid = rawEventBody.rcpt_meta.userUuid;
 
