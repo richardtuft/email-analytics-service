@@ -9,7 +9,6 @@ function int(str) {
 
 const port = process.env.PORT;
 const logLevel = process.env.LOG_LEVEL || 'error';
-const sqsQueueUrl =  process.env.SQS_QUEUE_URL;
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const workers = process.env.WEB_CONCURRENCY || 1;
 const rabbitUrl =  process.env.CLOUDAMQP_URL;
@@ -18,6 +17,7 @@ const batchQueue = 'batch.pending';
 const eventPrefetchLimit = int(process.env.EVENT_PREFETCH_LIMIT) || 100;
 const batchPrefetchLimit = int(process.env.BATCH_PREFETCH_LIMIT) || 1;
 const batchQueueLimit = int(process.env.BATCH_QUEUE_LIMIT) || 100;
+const filterTestEvents = process.env.FILTER_TEST_EVENTS || false;
 const processId = process.env.DYNO;
 const authUser = process.env.AUTH_USER;
 const authPassword = process.env.AUTH_PASSWORD;
@@ -37,6 +37,7 @@ module.exports = {
     eventPrefetchLimit,
     batchPrefetchLimit,
     batchQueueLimit,
+    filterTestEvents,
     spoorPostUrl,
     userListsEndpoint,
     authUser,

@@ -8,7 +8,7 @@ const logger = require('../../config/logger');
  * @param rawEvent Object The raw event received
  * @returns Object A formatted event object
  */
-exports.parse = (rawEvent) => {
+exports.parse = (rawEvent, filterTestEvents) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
@@ -98,6 +98,10 @@ exports.parse = (rawEvent) => {
     }
 
     if (rawEventBody.rcpt_meta) {
+
+        if (filterTestEvents && rawEventBody.rcpt_meta.product === 'test') {
+          return null;
+        }
 
         let ft_guid = rawEventBody.rcpt_meta.userUuid;
 

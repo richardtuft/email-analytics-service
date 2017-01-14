@@ -2,19 +2,19 @@
 
 // External Dependencies
 const should = require('should');
-const extend = require('extend');
 
 // Our Modules
 const eventParser = require('../app/utils/sparkPostEventParser.server.utils');
 const source = 'email-analytics';
 
 let meta = require('./meta/meta.json');
+let baseEvent = require('./events/sparkpost/bounce.json');
 
 describe('SparkPost Event Parser Unit tests:', () => {
 
     it('correctly parses a BOUNCE event', (done) => {
-        let rawEvent = extend({}, require('./events/sparkpost/bounce.json'));
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = Object.assign({}, baseEvent);
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -27,8 +27,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a CLICK event', (done) => {
-        let rawEvent = require ('./events/sparkpost/click.json');
-        rawEvent.msys.track_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/click.json');
+        rawEvent.msys.track_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.track_event.timestamp;
         let useragent = rawEvent.msys.track_event.user_agent;
@@ -45,8 +45,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a DELAY event', (done) => {
-        let rawEvent = require ('./events/sparkpost/delay.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/delay.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -60,8 +60,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a DELIVERY event', (done) => {
-        let rawEvent = require ('./events/sparkpost/delivery.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/delivery.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -75,8 +75,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a GENERATION_FAILURE event', (done) => {
-        let rawEvent = require ('./events/sparkpost/generation_failure.json');
-        rawEvent.msys.gen_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/generation_failure.json');
+        rawEvent.msys.gen_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.gen_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -90,8 +90,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a GENERATION_REJECTION event', (done) => {
-        let rawEvent = require ('./events/sparkpost/generation_rejection.json');
-        rawEvent.msys.gen_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/generation_rejection.json');
+        rawEvent.msys.gen_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.gen_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -105,8 +105,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a INJECTION event', (done) => {
-        let rawEvent = require ('./events/sparkpost/injection.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/injection.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -120,8 +120,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a LINK_UNSUBSCRIBE event', (done) => {
-        let rawEvent = require ('./events/sparkpost/link_unsubscribe.json');
-        rawEvent.msys.unsubscribe_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/link_unsubscribe.json');
+        rawEvent.msys.unsubscribe_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -135,8 +135,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a LIST_UNSUBSCRIBE event', (done) => {
-        let rawEvent = require ('./events/sparkpost/list_unsubscribe.json');
-        rawEvent.msys.unsubscribe_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/list_unsubscribe.json');
+        rawEvent.msys.unsubscribe_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -150,8 +150,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a OPEN event', (done) => {
-        let rawEvent = require ('./events/sparkpost/open.json');
-        rawEvent.msys.track_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/open.json');
+        rawEvent.msys.track_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.track_event.timestamp;
         let useragent = rawEvent.msys.track_event.user_agent;
@@ -169,8 +169,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a OUT_OF_BAND event', (done) => {
-        let rawEvent = require ('./events/sparkpost/out_of_band.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/out_of_band.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -184,8 +184,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a POLICY_REJECTION event', (done) => {
-        let rawEvent = require ('./events/sparkpost/policy_rejection.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/policy_rejection.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -200,8 +200,8 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly parses a SPAM_COMPLAINT event', (done) => {
-        let rawEvent = require ('./events/sparkpost/spam_complaint.json');
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = require('./events/sparkpost/spam_complaint.json');
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
         let parsedEvent = eventParser.parse(rawEvent);
@@ -216,8 +216,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
     });
 
     it('correctly throws an exception if the message type is not recognised', (done) => {
-        let rawEvent = extend({}, require ('./events/sparkpost/bounce.json'));
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        let rawEvent = Object.assign({}, baseEvent);
         rawEvent.msys = 'wrongType';
 
         try {
@@ -235,9 +234,9 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
     it('correctly throws an exception if the event type is not recognised', (done) => {
 
-        let rawEvent = extend({}, require ('./events/sparkpost/bounce.json'));
-        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
-        rawEvent.msys.message_event.type = 'wrongType';
+        let rawEvent = Object.assign({}, require ('./events/sparkpost/bounce.json'));
+        rawEvent.msys = Object.assign({}, baseEvent.msys);
+        rawEvent.msys.message_event = Object.assign({}, baseEvent.msys.messageEvent, { type: 'wrong' });
 
         try {
             eventParser.parse(rawEvent);
@@ -248,6 +247,30 @@ describe('SparkPost Event Parser Unit tests:', () => {
             return;
         }
         done('We should not be here');
+
+    });
+
+    it('returns null if event is a test event and filter test events is true', (done) => {
+
+        let rawEvent = Object.assign({}, require ('./events/sparkpost/bounce.json'));
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
+        rawEvent.msys.message_event.rcpt_meta.product = 'test';
+
+        const parsedEvent = eventParser.parse(rawEvent, true);
+        should(parsedEvent).not.be.ok();
+        done();
+
+    });
+
+    it('returns parsed event if is test event and filter test events is false', (done) => {
+
+        let rawEvent = Object.assign({}, require ('./events/sparkpost/bounce.json'));
+        rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
+        rawEvent.msys.message_event.rcpt_meta.product = 'test';
+
+        const parsedEvent = eventParser.parse(rawEvent, false);
+        should(parsedEvent).be.ok();
+        done();
 
     });
 

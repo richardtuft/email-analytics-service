@@ -141,10 +141,15 @@ class QueueApp extends EventEmitter {
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
     try {
-      e = eventParser.parse(e);
+      e = eventParser.parse(e, this.config.filterTestEvents);
     } catch (e) {
       return this.connection.nack(task);
     }
+
+    if (!e) {
+      return this.connection.ack(task);
+    }
+
     return this.sendEvents(e, task);
   }
 
