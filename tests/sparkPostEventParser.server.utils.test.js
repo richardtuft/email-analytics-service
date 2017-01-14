@@ -251,4 +251,28 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
     });
 
+    it('returns null if event is a test event and filter test events is true', (done) => {
+
+        let rawEvent = extend({}, require ('./events/sparkpost/bounce.json'));
+        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        rawEvent.msys.message_event.rcpt_meta.product = 'test';
+
+        const parsedEvent = eventParser.parse(rawEvent, true);
+        should(parsedEvent).not.be.ok();
+        done();
+
+    });
+
+    it('returns parsed event if is test event and filter test events is false', (done) => {
+
+        let rawEvent = extend({}, require ('./events/sparkpost/bounce.json'));
+        rawEvent.msys.message_event.rcpt_meta = extend({}, meta);
+        rawEvent.msys.message_event.rcpt_meta.product = 'test';
+
+        const parsedEvent = eventParser.parse(rawEvent, false);
+        should(parsedEvent).be.ok();
+        done();
+
+    });
+
 });

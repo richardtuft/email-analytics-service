@@ -2,14 +2,13 @@
 
 const extend = require('extend');
 const logger = require('../../config/logger');
-const config = require('../../config/config');
 
 /**
  * parse() receives a JSON object and returns a valid EmailEvent Object
  * @param rawEvent Object The raw event received
  * @returns Object A formatted event object
  */
-exports.parse = (rawEvent) => {
+exports.parse = (rawEvent, filterTestEvents) => {
 
     //TODO: use EmailEvent model (and constructor)
     let parsedEvent = {
@@ -100,7 +99,7 @@ exports.parse = (rawEvent) => {
 
     if (rawEventBody.rcpt_meta) {
 
-        if (config.filterTestEvents && rawEventBody.rcpt_meta.product === 'test') {
+        if (filterTestEvents && rawEventBody.rcpt_meta.product === 'test') {
           return null;
         }
 
