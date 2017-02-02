@@ -43,3 +43,31 @@ exports.editUser = (uuid, editedProperties) => {
         .catch(reject);
     });
 };
+
+exports.unsubscribe = (uuid, listId) => {
+
+    return new Promise((fulfill, reject) => {
+
+        logger.debug('Unsubscribing user', {user: uuid, listId});
+
+        fetch(config.userListsEndpoint + '/users/' + uuid + '/' + listId, {
+            method: 'delete',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            if (response.status !== 404) {
+                //We received a status we do not accept
+                logger.error('Unexpected response from users-lists API', response);
+                throw new Error(response.statusText);
+            }
+            return Promise.resolve({});
+        })
+        .then(fulfill)
+        .catch(reject);
+    });
+};
