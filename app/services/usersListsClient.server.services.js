@@ -50,7 +50,7 @@ exports.unsubscribe = (uuid, listId) => {
 
         logger.debug('Unsubscribing user', {user: uuid, listId});
 
-        fetch(config.userListsEndpoint + '/users/' + uuid + '/' + listId, {
+        fetch(config.userListsEndpoint + '/users/' + uuid + '/lists/' + listId, {
             method: 'delete',
             headers: {
                 'Accept': 'application/json'
