@@ -91,7 +91,7 @@ describe('The usersListsClient service', () =>{
     it('should fulfil a promise when the underlying service succeeds', (done) => {
       const listId = 123;
       usersListsClientMock
-        .delete('/users/' + user.uuid + '/' + listId)
+        .delete('/users/' + user.uuid + '/lists/' + listId)
         .reply(200, responseBodies.successEdit);
 
       let result = usersListsClient.unsubscribe(user.uuid, listId);
@@ -105,7 +105,7 @@ describe('The usersListsClient service', () =>{
     it('should not fail a promise if underlying service returns 404 user not found', (done) => {
       const listId = 'notexist';
       usersListsClientMock
-        .delete('/users/' + user.uuid + '/' + listId)
+        .delete('/users/' + user.uuid + '/lists/' + listId)
         .reply(404, responseBodies.notFound);
 
       let result = usersListsClient.unsubscribe(user.uuid, listId);
@@ -121,7 +121,7 @@ describe('The usersListsClient service', () =>{
     it('should fail a promise if underlying service returns a validation error', (done) => {
       const listId = '1234';
       usersListsClientMock
-        .delete('/users/' + user.uuid + '/' + listId)
+        .delete('/users/' + user.uuid + '/lists/' + listId)
         .reply(400, responseBodies.notFound);
 
       let result = usersListsClient.unsubscribe(user.uuid, listId);
