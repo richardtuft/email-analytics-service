@@ -203,7 +203,6 @@ class QueueApp extends EventEmitter {
       case LIST_UNSUBSCRIBE:
         return 'LIST UNSUBSCRIBE';
         
-       
       case LINK_UNSUBSCRIBE:
         return 'LINK UNSUBSCRIBE';
 
@@ -269,6 +268,11 @@ class QueueApp extends EventEmitter {
       return Promise.resolve();
     }
 
+    if (!inAllCategories && suppressionType === FIELDS.NEWSLETTER) {
+      const listId = event.context.listId;
+      return usersListsClient.unsubscribe(uuid, listId);
+    }
+
     const updateSuppressionsData = inAllCategories ?
       {
         [FIELDS.RECOMMENDATION]: { value: true, reason },
@@ -277,6 +281,7 @@ class QueueApp extends EventEmitter {
         [FIELDS.ACCOUNT]: { value: true, reason }
       } :
       { [suppressionType]: { value: true, reason } };
+
     return usersListsClient.editUser(uuid, updateSuppressionsData);
   }
 }

@@ -8,82 +8,129 @@ const nock = require('nock');
 
 describe('The usersListsClient service', () =>{
 
-    let usersListsClientMock = nock(config.userListsEndpoint);
+  let usersListsClientMock = nock(config.userListsEndpoint);
 
-    let user;
+  let user;
 
-    let responseBodies = {
-        successEdit: { "uuid":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","email":"email@email.com","firstName":"First","lastName":"Last","lists":[], "manuallySuppressed": true},
-        notFound: { "message": "User Not Found"},
-        saveError: {"message": "uuid cannot be blank"}
-    };
+  let responseBodies = {
+    successEdit: { "uuid":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","email":"email@email.com","firstName":"First","lastName":"Last","lists":[], "manuallySuppressed": true},
+    notFound: { "message": "User Not Found"},
+    saveError: {"message": "uuid cannot be blank"}
+  };
 
-    beforeEach(() => {
+  beforeEach(() => {
 
-        user = {"uuid":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","email":"email@email.com","firstName":"First","lastName":"Last", "manuallySuppressed": false};
+    user = {"uuid":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","email":"email@email.com","firstName":"First","lastName":"Last", "manuallySuppressed": false};
 
-        usersListsClientMock
-            .defaultReplyHeaders({
-                'Content-Type':'application/json'
-            });
+    usersListsClientMock
+      .defaultReplyHeaders({
+        'Content-Type':'application/json'
+      });
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
+  describe('The editUser method', () => {
+
+    it('should fulfil a promise providing a user object when the underlying service succeeds', (done) => {
+      usersListsClientMock
+        .patch('/users/' + user.uuid)
+        .reply(200, responseBodies.successEdit);
+
+      let data = { manuallySuppressed: true };
+
+      let result = usersListsClient.editUser(user.uuid, data);
+
+      result.then((json) => {
+        json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
+        json.should.have.a.property('email', responseBodies.successEdit.email);
+        json.should.have.a.property('firstName', responseBodies.successEdit.firstName);
+        json.should.have.a.property('lastName', responseBodies.successEdit.lastName);
+        json.should.have.a.property('lists', []);
+        done();
+      }).catch(done);
     });
 
-    afterEach(() => {
-        nock.cleanAll();
+    it('should not fail a promise if underlying service returns 404 user not found', (done) => {
+      usersListsClientMock
+        .patch('/users/' + user.uuid)
+        .reply(404, responseBodies.notFound);
+
+      let data = { manuallySuppressed: true };
+
+      let result = usersListsClient.editUser(user.uuid, data);
+
+      result
+        .then((json) => {
+          json.should.exist; 
+          done();
+        })
+        .catch((err) => done(err));
     });
 
-    describe('The editUser method', () => {
+    it('should fail a promise if underlying service returns a validation error', (done) => {
+      usersListsClientMock
+        .patch('/users')
+        .reply(400, responseBodies.saveError);
 
-        it('should fulfil a promise providing a user object when the underlying service succeeds', (done) => {
-            usersListsClientMock
-                .patch('/users/' + user.uuid)
-                .reply(200, responseBodies.successEdit);
+      let data = { email: '' };
 
-            let data = { manuallySuppressed: true };
+      let result = usersListsClient.editUser(user.uuid, data);
 
-            let result = usersListsClient.editUser(user.uuid, data);
-
-            result.then((json) => {
-                json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
-                json.should.have.a.property('email', responseBodies.successEdit.email);
-                json.should.have.a.property('firstName', responseBodies.successEdit.firstName);
-                json.should.have.a.property('lastName', responseBodies.successEdit.lastName);
-                json.should.have.a.property('lists', []);
-                done();
-            }).catch(done);
-        });
-
-        it('should not fail a promise if underlying service returns 404 user not found', (done) => {
-            usersListsClientMock
-                .patch('/users/' + user.uuid)
-                .reply(404, responseBodies.notFound);
-
-            let data = { manuallySuppressed: true };
-
-            let result = usersListsClient.editUser(user.uuid, data);
-
-            result
-              .then((json) => {
-                json.should.exist; 
-                done();
-              })
-              .catch((err) => done(err));
-        });
-
-        it('should fail a promise if underlying service returns a validation error', (done) => {
-            usersListsClientMock
-                .patch('/users')
-                .reply(400, responseBodies.saveError);
-
-            let data = { email: '' };
-
-            let result = usersListsClient.editUser(user.uuid, data);
-
-            result
-                .then(() => done(new Error('Call should not succeed.')))
-                .catch((err) => done());
-        });
-
+      result
+        .then(() => done(new Error('Call should not succeed.')))
+        .catch((err) => done());
     });
+
+  });
+
+  describe('The unsubscribe method', () => {
+
+    it('should fulfil a promise when the underlying service succeeds', (done) => {
+      const listId = 123;
+      usersListsClientMock
+        .delete('/users/' + user.uuid + '/' + listId)
+        .reply(200, responseBodies.successEdit);
+
+      let result = usersListsClient.unsubscribe(user.uuid, listId);
+
+      result.then((json) => {
+        json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
+        done();
+      }).catch(done);
+    });
+
+    it('should not fail a promise if underlying service returns 404 user not found', (done) => {
+      const listId = 'notexist';
+      usersListsClientMock
+        .delete('/users/' + user.uuid + '/' + listId)
+        .reply(404, responseBodies.notFound);
+
+      let result = usersListsClient.unsubscribe(user.uuid, listId);
+
+      result
+        .then((json) => {
+          json.should.exist; 
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('should fail a promise if underlying service returns a validation error', (done) => {
+      const listId = '1234';
+      usersListsClientMock
+        .delete('/users/' + user.uuid + '/' + listId)
+        .reply(400, responseBodies.notFound);
+
+      let result = usersListsClient.unsubscribe(user.uuid, listId);
+
+      result
+        .then(() => done(new Error('Call should not succeed.')))
+        .catch((err) => done());
+    });
+
+  });
 
 });
