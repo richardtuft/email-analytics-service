@@ -268,9 +268,13 @@ class QueueApp extends EventEmitter {
       return Promise.resolve();
     }
 
+    /* istanbul ignore next */
     if (!inAllCategories && suppressionType === FIELDS.NEWSLETTER) {
       const listId = event.context.listId;
-      return usersListsClient.unsubscribe(uuid, listId);
+      if (listId) {
+        return usersListsClient.unsubscribe(uuid, listId);
+      }
+      return Promise.resolve();
     }
 
     const updateSuppressionsData = inAllCategories ?
