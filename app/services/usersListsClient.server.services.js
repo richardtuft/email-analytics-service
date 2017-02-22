@@ -17,7 +17,6 @@ function createUser(user) {
     let contentLength = Buffer.byteLength(body);
 
     logger.debug('Creating an anon user');
-    console.log('here', body);
 
     fetch(config.userListsEndpoint + '/users', {
       method: 'post',
@@ -29,7 +28,6 @@ function createUser(user) {
       body: body
     })
     .then(response => {
-      console.log(response.status);
       if (response.ok) {
         return response.json();
       }
