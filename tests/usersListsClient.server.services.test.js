@@ -36,12 +36,12 @@ describe('The usersListsClient service', () =>{
 
     it('should fulfil a promise providing a user object when the underlying service succeeds', (done) => {
       usersListsClientMock
-        .patch('/users/' + user.uuid)
+        .post('/users/update-one')
         .reply(200, responseBodies.successEdit);
 
       let data = { manuallySuppressed: true };
 
-      let result = usersListsClient.editUser(user.uuid, data);
+      let result = usersListsClient.editUser(user.email, data);
 
       result.then((json) => {
         json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
@@ -53,14 +53,18 @@ describe('The usersListsClient service', () =>{
       }).catch(done);
     });
 
-    it('should not fail a promise if underlying service returns 404 user not found', (done) => {
+    it('should create a user if Not Found response when editing', (done) => {
       usersListsClientMock
-        .patch('/users/' + user.uuid)
+        .post('/users/update-one')
         .reply(404, responseBodies.notFound);
+
+      usersListsClientMock
+        .post('/users')
+        .reply(200, responseBodies.successEdit);
 
       let data = { manuallySuppressed: true };
 
-      let result = usersListsClient.editUser(user.uuid, data);
+      let result = usersListsClient.editUser(user.email, data);
 
       result
         .then((json) => {
@@ -72,12 +76,12 @@ describe('The usersListsClient service', () =>{
 
     it('should fail a promise if underlying service returns a validation error', (done) => {
       usersListsClientMock
-        .patch('/users')
+        .post('/users/update-one')
         .reply(400, responseBodies.saveError);
 
       let data = { email: '' };
 
-      let result = usersListsClient.editUser(user.uuid, data);
+      let result = usersListsClient.editUser(user.email, data);
 
       result
         .then(() => done(new Error('Call should not succeed.')))

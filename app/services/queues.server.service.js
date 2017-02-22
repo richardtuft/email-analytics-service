@@ -162,7 +162,8 @@ class QueueApp extends EventEmitter {
       const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event) || this.isLinkUnsubscribe(event));
       if (suppressionApplies) {
         const suppressInAllCategories = this.isHardBounce(event) || this.isGenerationRejection(event);
-        return this.sendSuppressionUpdate(event, suppressInAllCategories)
+        const email = JSON.parse(task.content.toString()).rcpt_to;
+        return this.sendSuppressionUpdate(event, email, suppressInAllCategories)
           .then(() => resolve(event))
           .catch(reject);
       }
@@ -252,7 +253,7 @@ class QueueApp extends EventEmitter {
     return e.action === LINK_UNSUBSCRIBE;
   }
 
-  sendSuppressionUpdate(event, inAllCategories = false) {
+  sendSuppressionUpdate(event, email, inAllCategories = false) {
 
     const {
       user: { ft_guid: uuid },
@@ -286,7 +287,7 @@ class QueueApp extends EventEmitter {
       } :
       { [suppressionType]: { value: true, reason } };
 
-    return usersListsClient.editUser(uuid, updateSuppressionsData);
+    return usersListsClient.editUser(email, updateSuppressionsData);
   }
 }
 
