@@ -64,7 +64,6 @@ exports.editUser = (email, editedProperties) => {
     })
     .then(response => {
       if (response.ok) {
-        console.log(editedProperties, response.status);
         return response.json();
       }
       if (response.status !== 404) {
@@ -73,12 +72,12 @@ exports.editUser = (email, editedProperties) => {
         throw new Error(response.statusText);
       }
       const newUser = Object.assign({}, editedProperties, {email: email});
-      return createUser(newUser)
-        .then(usr => {
-          return usr;
-        })
+      console.log('here');
+      return createUser(newUser);
     })
-    .then(fulfill)
+    .then((usr) => {
+      fulfill(usr);
+    })
     .catch(reject);
   });
 };
