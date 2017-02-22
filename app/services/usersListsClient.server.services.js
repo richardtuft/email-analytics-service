@@ -31,7 +31,7 @@ function createUser(user) {
       if (response.ok) {
         return response.json();
       }
-      logger.error('Unexpected response from users-lists API', response);
+      logger.error('Unexpected response from users-lists API', response.statusText);
       throw new Error(response.statusText);
     })
     .then(fulfill)
@@ -41,68 +41,68 @@ function createUser(user) {
 
 exports.editUser = (email, editedProperties) => {
 
-    return new Promise((fulfill, reject) => {
+  return new Promise((fulfill, reject) => {
 
-        let body = JSON.stringify({
-            key: {
-                email: email    
-            },
-            user: editedProperties
-        });
-        let contentLength = Buffer.byteLength(body);
-
-        logger.debug('Editing a user');
-
-        fetch(config.userListsEndpoint + '/users/update-one', {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Content-Length': contentLength
-            },
-            body: body
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            if (response.status !== 404) {
-                //We received a status we do not accept
-                logger.error('Unexpected response from users-lists API', response);
-                throw new Error(response.statusText);
-            }
-            const newUser = Object.assign({}, editedProperties, {email: email});
-            return createUser(newUser);
-        })
-        .then(fulfill)
-        .catch(reject);
+    let body = JSON.stringify({
+      key: {
+        email: email
+      },
+      user: editedProperties
     });
+    let contentLength = Buffer.byteLength(body);
+
+    logger.debug('Editing a user');
+
+    fetch(config.userListsEndpoint + '/users/update-one', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Content-Length': contentLength
+      },
+      body: body
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      if (response.status !== 404) {
+        //We received a status we do not accept
+        logger.error('Unexpected response from users-lists API', response.statusText);
+        throw new Error(response.statusText);
+      }
+      const newUser = Object.assign({}, editedProperties, {email: email});
+      return createUser(newUser);
+    })
+    .then(fulfill)
+    .catch(reject);
+  });
 };
 
 exports.unsubscribe = (uuid, listId) => {
 
-    return new Promise((fulfill, reject) => {
+  return new Promise((fulfill, reject) => {
 
-        logger.debug('Unsubscribing user', {user: uuid, listId});
+    logger.debug('Unsubscribing user', {user: uuid, listId});
 
-        fetch(config.userListsEndpoint + '/users/' + uuid + '/lists/' + listId, {
-            method: 'delete',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            if (response.status !== 404) {
-                //We received a status we do not accept
-                logger.error('Unexpected response from users-lists API', response);
-                throw new Error(response.statusText);
-            }
-            return Promise.resolve({});
-        })
-        .then(fulfill)
-        .catch(reject);
-    });
+    fetch(config.userListsEndpoint + '/users/' + uuid + '/lists/' + listId, {
+      method: 'delete',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      if (response.status !== 404) {
+        //We received a status we do not accept
+        logger.error('Unexpected response from users-lists API', response);
+        throw new Error(response.statusText);
+      }
+      return Promise.resolve({});
+    })
+    .then(fulfill)
+    .catch(reject);
+  });
 };

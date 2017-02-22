@@ -17,7 +17,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
         parsedEvent.action.should.match('bounce');
         parsedEvent.system.source.should.match(source);
         parsedEvent.context.eventTimestamp.should.match(timestamp);
@@ -32,7 +32,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
         let timestamp = rawEvent.msys.track_event.timestamp;
         let useragent = rawEvent.msys.track_event.user_agent;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('click');
         parsedEvent.system.source.should.match(source);
@@ -49,7 +49,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('delay');
         parsedEvent.system.source.should.match(source);
@@ -64,7 +64,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('delivery');
         parsedEvent.system.source.should.match(source);
@@ -79,7 +79,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.gen_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.gen_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('generation_failure');
         parsedEvent.system.source.should.match(source);
@@ -94,7 +94,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.gen_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.gen_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('generation_rejection');
         parsedEvent.system.source.should.match(source);
@@ -109,7 +109,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('injection');
         parsedEvent.system.source.should.match(source);
@@ -124,7 +124,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.unsubscribe_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('link_unsubscribe');
         parsedEvent.system.source.should.match(source);
@@ -139,7 +139,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.unsubscribe_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.unsubscribe_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('list_unsubscribe');
         parsedEvent.system.source.should.match(source);
@@ -155,7 +155,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
 
         let timestamp = rawEvent.msys.track_event.timestamp;
         let useragent = rawEvent.msys.track_event.user_agent;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('open');
         parsedEvent.system.source.should.match(source);
@@ -173,7 +173,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('out_of_band');
         parsedEvent.system.source.should.match(source);
@@ -188,7 +188,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('policy_rejection');
         parsedEvent.system.source.should.match(source);
@@ -204,7 +204,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event.rcpt_meta = Object.assign({}, meta);
 
         let timestamp = rawEvent.msys.message_event.timestamp;
-        let parsedEvent = eventParser.parse(rawEvent);
+        let parsedEvent = eventParser.parse(rawEvent).parsedEvent;
 
         parsedEvent.action.should.match('spam_complaint');
         parsedEvent.system.source.should.match(source);
@@ -220,7 +220,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys = 'wrongType';
 
         try {
-            eventParser.parse(rawEvent);
+            eventParser.parse(rawEvent).parsedEvent;
         }
         catch (parseErr) {
             parseErr.should.be.an.error;
@@ -239,7 +239,7 @@ describe('SparkPost Event Parser Unit tests:', () => {
         rawEvent.msys.message_event = Object.assign({}, baseEvent.msys.messageEvent, { type: 'wrong' });
 
         try {
-            eventParser.parse(rawEvent);
+            eventParser.parse(rawEvent).parsedEvent;
         }
         catch (parseErr) {
             parseErr.should.be.an.error;
