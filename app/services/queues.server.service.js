@@ -158,11 +158,10 @@ class QueueApp extends EventEmitter {
 
   sendEvents(event, email, task) {
     return new Promise((resolve, reject) => {
-      let uuid = event.user && event.user.ft_guid;
       let category = event.context.category;
 
-      //If we have the uuid and it is an hard bounce (or suppressed user) we want to mark the user as suppressed
-      const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event) || this.isLinkUnsubscribe(event));
+      //If it is an hard bounce (or suppressed user) we want to mark the user as suppressed
+      const suppressionApplies = category && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event) || this.isLinkUnsubscribe(event));
       if (suppressionApplies) {
         const suppressInAllCategories = this.isHardBounce(event) || this.isGenerationRejection(event);
         return this.sendSuppressionUpdate(event, email, suppressInAllCategories)
