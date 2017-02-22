@@ -71,6 +71,7 @@ exports.editUser = (email, editedProperties) => {
         logger.error('Unexpected response from users-lists API', response.statusText);
         throw new Error(response.statusText);
       }
+      console.log('here');
       const newUser = Object.assign({}, editedProperties, {email: email});
       return createUser(newUser)
         .then(usr => {
