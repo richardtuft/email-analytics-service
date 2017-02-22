@@ -175,7 +175,7 @@ describe('Queues service tests:', () => {
 
     it('sends suppression updates via users lists client', done => {
       let usersListsStub = sandbox.stub(usersListsClient, 'editUser').returns({});
-      queues.sendSuppressionUpdate({ user: { ft_guid: "1234" }, action: 'bounce', context: { category: 'marketing' }});
+      queues.sendSuppressionUpdate({ user: { ft_guid: "1234" }, action: 'bounce', context: { category: 'marketing' }}, 'test@test.com');
       usersListsStub.called.should.be.true();
       done();
     });

@@ -10,17 +10,51 @@ const logger = require('../../config/logger');
 
 const loggerId = 'SERVER:' + config.processId;
 
-exports.editUser = (uuid, editedProperties) => {
+function createUser(user) {
+
+  return new Promise((fulfill, reject) => {
+    let body = JSON.stringify(user);
+    let contentLength = Buffer.byteLength(body);
+
+    logger.debug('Creating an anon user');
+
+    fetch(config.userListsEndpoint + '/users', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Content-Length': contentLength
+      },
+      body: body
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      logger.error('Unexpected response from users-lists API', response);
+      throw new Error(response.statusText);
+    })
+    .then(fulfill)
+    .catch(reject);
+  });
+}
+
+exports.editUser = (email, editedProperties) => {
 
     return new Promise((fulfill, reject) => {
 
-        let body = JSON.stringify(editedProperties);
+        let body = JSON.stringify({
+            key: {
+                email: email    
+            },
+            user: editedProperties
+        });
         let contentLength = Buffer.byteLength(body);
 
-        logger.debug('Editing a user', {user: uuid, body: body, contentLength: contentLength });
+        logger.debug('Editing a user');
 
-        fetch(config.userListsEndpoint + '/users/' + uuid, {
-            method: 'patch',
+        fetch(config.userListsEndpoint + '/users/update-one', {
+            method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -37,7 +71,8 @@ exports.editUser = (uuid, editedProperties) => {
                 logger.error('Unexpected response from users-lists API', response);
                 throw new Error(response.statusText);
             }
-            return Promise.resolve({});
+            const newUser = Object.assign({}, editedProperties, {email: email});
+            return createUser(newUser);
         })
         .then(fulfill)
         .catch(reject);
