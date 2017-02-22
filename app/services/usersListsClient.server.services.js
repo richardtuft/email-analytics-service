@@ -74,9 +74,7 @@ exports.editUser = (email, editedProperties) => {
       const newUser = Object.assign({}, editedProperties, {email: email});
       return createUser(newUser);
     })
-    .then((usr) => {
-      fulfill(usr);
-    })
+    .then(fulfill)
     .catch(reject);
   });
 };
