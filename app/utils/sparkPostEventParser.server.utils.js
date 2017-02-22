@@ -23,6 +23,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
 
     let rawEventMsys = rawEvent.msys;
     let rawEventBody;
+    let email;
 
     if (!Object.keys(rawEventMsys).length) {
         //This is a test event from Sparkpost
@@ -48,6 +49,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
         throw(new Error('EVENTPARSER: unrecognised event type: ' + Object.keys(rawEventMsys)));
     }
 
+    email = rawEventBody.rcpt_to;
     delete rawEventBody.rcpt_to;
 
     switch (rawEventBody.type) {
@@ -110,7 +112,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
         };
 
     }
-    
+
     if (rawEventBody.event_id) {
         parsedEvent.context.eventId = rawEventBody.event_id;
     }
@@ -126,7 +128,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
     // Not every SparkPost event type has the following properties:
     if (rawEventBody.user_agent || rawEventBody.geo_ip) {
         parsedEvent.device = {};
-        
+
         if (rawEventBody.user_agent) {
             parsedEvent.device.user_agent = rawEventBody.user_agent;
         }
@@ -134,7 +136,6 @@ exports.parse = (rawEvent, filterTestEvents) => {
         if (rawEventBody.geo_ip) {
             parsedEvent.device.geo = rawEventBody.geo_ip;
         }
-  
     }
 
     if (rawEventBody.target_link_name) {
@@ -144,7 +145,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
     if (rawEventBody.target_link_url) {
         parsedEvent.context.targetLinkUrl = rawEventBody.target_link_url;
     }
-    
+
     if (rawEventBody.fbtype) {
         parsedEvent.context.fbType = rawEventBody.fbtype;
     }
@@ -164,7 +165,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
     if (rawEventBody.error_code) {
         parsedEvent.context.errorCode = rawEventBody.error_code;
     }
-    
+
     if (rawEventBody.msg_size) {
         parsedEvent.context.msgSize = parseInt(rawEventBody.msg_size, 10);
     }
@@ -181,6 +182,6 @@ exports.parse = (rawEvent, filterTestEvents) => {
 
     }
 
-    return parsedEvent;
+    return { parsedEvent, email };
 
 };

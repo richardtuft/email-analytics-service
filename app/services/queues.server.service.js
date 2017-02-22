@@ -140,9 +140,12 @@ class QueueApp extends EventEmitter {
     }
     this.emit('processing-task', 'queue: ' + task.fields.routingKey);
     let e = JSON.parse(task.content.toString());
+    let email;
     try {
-      e = eventParser.parse(e, this.config.filterTestEvents);
-    } catch (e) {
+      const parsed = eventParser.parse(e, this.config.filterTestEvents);
+      e = parsed.parsedEvent;
+      email = parsed.email;
+    } catch (err) {
       return this.connection.nack(task);
     }
 
@@ -150,10 +153,10 @@ class QueueApp extends EventEmitter {
       return this.connection.ack(task);
     }
 
-    return this.sendEvents(e, task);
+    return this.sendEvents(e, email, task);
   }
 
-  sendEvents(event, task) {
+  sendEvents(event, email, task) {
     return new Promise((resolve, reject) => {
       let uuid = event.user && event.user.ft_guid;
       let category = event.context.category;
@@ -162,7 +165,6 @@ class QueueApp extends EventEmitter {
       const suppressionApplies = category && uuid && (this.isHardBounce(event) || this.isGenerationRejection(event) || this.isSpamComplaint(event) || this.isListUnsubscribe(event) || this.isLinkUnsubscribe(event));
       if (suppressionApplies) {
         const suppressInAllCategories = this.isHardBounce(event) || this.isGenerationRejection(event);
-        const email = JSON.parse(task.content.toString()).rcpt_to;
         return this.sendSuppressionUpdate(event, email, suppressInAllCategories)
           .then(() => resolve(event))
           .catch(reject);
