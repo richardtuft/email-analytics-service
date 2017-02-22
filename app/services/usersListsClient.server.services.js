@@ -72,7 +72,6 @@ exports.editUser = (email, editedProperties) => {
         throw new Error(response.statusText);
       }
       const newUser = Object.assign({}, editedProperties, {email: email});
-      console.log('here');
       return createUser(newUser);
     })
     .then((usr) => {
