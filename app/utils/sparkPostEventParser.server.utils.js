@@ -121,6 +121,10 @@ exports.parse = (rawEvent, filterTestEvents) => {
         parsedEvent.context.messageId = rawEventBody.message_id;
     }
 
+    if (rawEventBody.routing_domain) {
+        parsedEvent.context.routingDomain = rawEventBody.routing_domain;
+    }
+
     if (rawEventBody.subject) {
         parsedEvent.context.subjectText = rawEventBody.subject;
     }
