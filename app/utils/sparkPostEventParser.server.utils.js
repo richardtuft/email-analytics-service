@@ -176,6 +176,7 @@ exports.parse = (rawEvent, filterTestEvents) => {
 
     // Common to every type event handling
     parsedEvent.action = rawEventBody.type;
+    parsedEvent.context.action = rawEventBody.type;
 
     parsedEvent.context.eventTimestamp = rawEventBody.timestamp;
 
