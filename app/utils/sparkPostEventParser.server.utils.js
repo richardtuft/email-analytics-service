@@ -110,7 +110,8 @@ exports.parse = (rawEvent, filterTestEvents) => {
     let ft_guid = rawEventBody.rcpt_meta.userUuid;
 
     parsedEvent.user = {
-      ft_guid: ft_guid
+      ft_guid: ft_guid,
+      uuid: ft_guid
     };
 
   }
