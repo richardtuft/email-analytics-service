@@ -8,7 +8,6 @@ function int(str) {
 }
 
 const port = process.env.PORT || 1337;
-const logLevel = process.env.LOG_LEVEL || 'info';
 const spoorPostUrl = 'https://spoor-api.ft.com/ingest';
 const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost';
 const eventQueue = 'events.pending';
@@ -30,7 +29,6 @@ module.exports = {
     port,
     processId,
     workers,
-    logLevel,
     rabbitUrl,
     eventQueue,
     batchQueue,

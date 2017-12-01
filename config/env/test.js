@@ -8,7 +8,6 @@ function int(str) {
 }
 
 const port = process.env.PORT || 1338;
-const logLevel = process.env.LOG_LEVEL || 'warn';
 const rabbitUrl =  process.env.CLOUDAMQP_URL || 'amqp://localhost';
 const eventQueue = 'events.pending';
 const batchQueue = 'batch.pending';
@@ -30,7 +29,6 @@ module.exports = {
     port,
     processId,
     workers,
-    logLevel,
     rabbitUrl,
     eventQueue,
     batchQueue,
