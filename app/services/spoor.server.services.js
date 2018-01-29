@@ -7,10 +7,10 @@ const fetch = require('node-fetch');
 const config = require('../../config/config');
 const logger = require('../../config/logger');
 
-exports.send = (event, eventId) => {
+exports.send = (event, eventId, product = '') => {
 
   // we currently send to scout and ftcom orgs on spoor
-  const scout = event.context.product && event.context.product.includes('scout');
+  const scout = product.includes('scout');
   const postUrl = scout ? `${config.spoorPostUrl}?org=scout` : config.spoorPostUrl;
 
   return new Promise((fulfill, reject) => {
