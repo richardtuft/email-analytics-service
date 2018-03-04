@@ -204,7 +204,7 @@ class QueueApp extends EventEmitter {
 
       case LIST_UNSUBSCRIBE:
         return 'LIST UNSUBSCRIBE';
-        
+
       case LINK_UNSUBSCRIBE:
         return 'LINK UNSUBSCRIBE';
 
@@ -249,7 +249,7 @@ class QueueApp extends EventEmitter {
   isListUnsubscribe(e) {
     return e.action === LIST_UNSUBSCRIBE;
   }
-  
+
   isLinkUnsubscribe(e) {
     return e.action === LINK_UNSUBSCRIBE;
   }

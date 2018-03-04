@@ -7,7 +7,7 @@ const jshint = require('gulp-jshint');
 const istanbul = require('gulp-istanbul');
 
 // Paths
-const files =  {
+const files = {
     server: ['server.js'],
     worker: ['worker.js'],
     mochaTests: ['./tests/**/*.js'],

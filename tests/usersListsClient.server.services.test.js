@@ -19,7 +19,6 @@ describe('The usersListsClient service', () =>{
   };
 
   beforeEach(() => {
-
     user = {"uuid":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","email":"email@email.com","firstName":"First","lastName":"Last", "manuallySuppressed": false};
 
     usersListsClientMock
