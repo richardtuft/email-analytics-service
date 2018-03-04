@@ -1,10 +1,10 @@
 'use strict';
 
 function int(str) {
-  if (!str) {
-    return 0;
-  }
-  return parseInt(str, 10);
+	if (!str) {
+		return 0;
+	}
+	return parseInt(str, 10);
 }
 
 const port = process.env.PORT || 1338;
@@ -25,20 +25,20 @@ const dataConsistencyPostUrl = 'https://di5p505om8.execute-api.eu-west-1.amazona
 const db = process.env.MONGOHQ_URL || 'mongodb://localhost/ft-email-analytics-test';
 
 module.exports = {
-    port,
-    processId,
-    workers,
-    rabbitUrl,
-    eventQueue,
-    batchQueue,
-    eventPrefetchLimit,
-    batchPrefetchLimit,
-    batchQueueLimit,
-    filterTestEvents,
-    spoorPostUrl,
-    userListsEndpoint,
-    authUser,
-    authPassword,
-    dataConsistencyPostUrl,
-    db
+		port,
+		processId,
+		workers,
+		rabbitUrl,
+		eventQueue,
+		batchQueue,
+		eventPrefetchLimit,
+		batchPrefetchLimit,
+		batchQueueLimit,
+		filterTestEvents,
+		spoorPostUrl,
+		userListsEndpoint,
+		authUser,
+		authPassword,
+		dataConsistencyPostUrl,
+		db
 };
