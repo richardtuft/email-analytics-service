@@ -124,15 +124,6 @@ describe('Queues service tests:', () => {
 			queues.startConsumingEvents();
 		});
 
-		it.skip('should requeue an event if processing fails', done => {
-			queues.once('requeuing', data => {
-				should.exist(data.deliveryTag);
-				queues.stopConsuming(queues.eventConsumer);
-				done();
-			});
-			queues.startConsumingEvents();
-		});
-
 		it('saves the event consumer tag on the instance', done => {
 			queues.once('processing-task', data => {
 				should.exist(queues.eventConsumer);
@@ -154,19 +145,6 @@ describe('Queues service tests:', () => {
 		it('throws an error if there is a problem processing event', done => {
 			queues.sendEvents({bad: 'event'}, {bad: 'task'})
 				.then(() => {})
-				.catch(err => {
-					should.exist(err);
-					done();
-				});
-		});
-
-		it.skip('suppresses user if hard bounce', done => {
-			let suppressionStub = sandbox.stub(queues, 'sendSuppressionUpdate')
-				.returns(Promise.resolve());
-			let ack = sandbox.stub(queues.connection, 'ack').returns(Promise.resolve());
-
-			queues.sendEvents(hardBounceParsed, {task: 'task'})
-				.then(() => done('should not be here'))
 				.catch(err => {
 					should.exist(err);
 					done();
@@ -328,13 +306,5 @@ describe('Queues service tests:', () => {
 			});
 		});
 
-		it.skip('returns true for isConnected if valid connection', done => {
-			let connector = new Connector(config.queueURL);
-			connector.once('ready', () => {
-				connector.isConnected().should.be.true();
-				connector.conn.close();
-				done();
-			});
-		});
 	});
 });
