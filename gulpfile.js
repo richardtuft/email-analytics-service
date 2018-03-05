@@ -20,8 +20,9 @@ const allJSFiles = files.appSrc
     .concat(files.server);
 
 // Set Test environment
-gulp.task('setTestEnv', function () {
+gulp.task('setTestEnvs', function () {
     process.env.NODE_ENV = 'test';
+    process.env.CONSOLE_LOG_LEVEL = 'warn';
 });
 
 // JSHint linting
@@ -58,4 +59,4 @@ gulp.task('istanbul', () => {
         });
 });
 
-gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);
+gulp.task('test', ['setTestEnvs', 'lint', 'istanbul']);

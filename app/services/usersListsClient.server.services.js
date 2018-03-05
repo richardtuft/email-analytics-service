@@ -1,14 +1,8 @@
 'use strict';
 
-// External modules
-
 const fetch = require('node-fetch');
-
-// Our modules
 const config = require('../../config/config');
 const logger = require('../../config/logger');
-
-const loggerId = 'SERVER:' + config.processId;
 
 const createUser = user => {
 	const body = JSON.stringify(user);
