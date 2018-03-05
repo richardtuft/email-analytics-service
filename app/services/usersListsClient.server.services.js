@@ -14,6 +14,7 @@ const createUser = user => {
 		method: 'post',
 		headers: {
 			'Accept': 'application/json',
+			'Authorization': `Bearer ${config.userListsAuthToken}`,
 			'Content-Type': 'application/json',
 			'Content-Length': contentLength
 		},
@@ -41,6 +42,7 @@ const editUser = (email, editedProperties) => {
 		method: 'post',
 		headers: {
 		'Accept': 'application/json',
+		'Authorization': `Bearer ${config.userListsAuthToken}`,
 		'Content-Type': 'application/json',
 		'Content-Length': contentLength
 		},
@@ -66,7 +68,8 @@ const unsubscribeUser = (uuid, listId) => {
 	return fetch(`${config.userListsEndpoint}/users/${uuid}/lists/${listId}`, {
 		method: 'delete',
 		headers: {
-			'Accept': 'application/json'
+			'Accept': 'application/json',
+			'Authorization': `Bearer ${config.userListsAuthToken}`,
 		}
 	})
 	.then(response => {
