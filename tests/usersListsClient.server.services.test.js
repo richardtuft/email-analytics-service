@@ -97,12 +97,11 @@ describe('The usersListsClient service', () =>{
 				.delete('/users/' + user.uuid + '/lists/' + listId)
 				.reply(200, responseBodies.successEdit);
 
-			let result = usersListsClient.unsubscribe(user.uuid, listId);
-
-			result.then((json) => {
-				json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
-				done();
-			}).catch(done);
+			usersListsClient.unsubscribe(user.uuid, listId)
+				.then(json => {
+					json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
+					done();
+				}).catch(done);
 		});
 
 		it('should not fail a promise if underlying service returns 404 user not found', (done) => {
@@ -111,10 +110,8 @@ describe('The usersListsClient service', () =>{
 				.delete('/users/' + user.uuid + '/lists/' + listId)
 				.reply(404, responseBodies.notFound);
 
-			let result = usersListsClient.unsubscribe(user.uuid, listId);
-
-			result
-				.then((json) => {
+			usersListsClient.unsubscribe(user.uuid, listId)
+				.then(json => {
 					json.should.exist;
 					done();
 				})
@@ -127,9 +124,7 @@ describe('The usersListsClient service', () =>{
 				.delete('/users/' + user.uuid + '/lists/' + listId)
 				.reply(400, responseBodies.notFound);
 
-			let result = usersListsClient.unsubscribe(user.uuid, listId);
-
-			result
+			usersListsClient.unsubscribe(user.uuid, listId)
 				.then(() => done(new Error('Call should not succeed.')))
 				.catch((err) => done());
 		});
