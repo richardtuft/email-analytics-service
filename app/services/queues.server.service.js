@@ -274,7 +274,7 @@ class QueueApp extends EventEmitter {
 		if (!inAllCategories && suppressionType === FIELDS.NEWSLETTER) {
 			const listId = event.context.listId;
 			if (listId) {
-				return usersListsClient.unsubscribe(uuid, listId);
+				return usersListsClient.unsubscribeUser(uuid, listId);
 			}
 			return Promise.resolve();
 		}

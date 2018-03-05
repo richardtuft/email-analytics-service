@@ -84,7 +84,7 @@ describe('The usersListsClient service', () =>{
 				.delete(`/users/${user.uuid}/lists/${listId}`)
 				.reply(200, responseBodies.successEdit);
 
-			usersListsClient.unsubscribe(user.uuid, listId)
+			usersListsClient.unsubscribeUser(user.uuid, listId)
 				.then(json => {
 					json.should.have.a.property('uuid', responseBodies.successEdit.uuid);
 					done();
@@ -98,7 +98,7 @@ describe('The usersListsClient service', () =>{
 				.delete(`/users/${user.uuid}/lists/${listId}`)
 				.reply(404, responseBodies.notFound);
 
-			usersListsClient.unsubscribe(user.uuid, listId)
+			usersListsClient.unsubscribeUser(user.uuid, listId)
 				.then(json => {
 					json.should.exist;
 					done();
@@ -113,7 +113,7 @@ describe('The usersListsClient service', () =>{
 				.delete(`/users/${user.uuid}/lists/${listId}`)
 				.reply(400, responseBodies.notFound);
 
-			usersListsClient.unsubscribe(user.uuid, listId)
+			usersListsClient.unsubscribeUser(user.uuid, listId)
 				.then(() => done(new Error('Call should not succeed.')))
 				.catch(() => done());
 		});

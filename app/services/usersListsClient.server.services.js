@@ -60,7 +60,7 @@ const editUser = (email, editedProperties) => {
 	});
 };
 
-const unsubscribe = (uuid, listId) => {
+const unsubscribeUser = (uuid, listId) => {
 	logger.debug('Unsubscribing user', { user: uuid, listId });
 
 	return fetch(`${config.userListsEndpoint}/users/${uuid}/lists/${listId}`, {
@@ -84,5 +84,5 @@ const unsubscribe = (uuid, listId) => {
 
 module.exports = {
 	editUser,
-	unsubscribe
+	unsubscribeUser
 }
