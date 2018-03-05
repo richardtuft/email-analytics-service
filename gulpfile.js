@@ -7,7 +7,7 @@ const jshint = require('gulp-jshint');
 const istanbul = require('gulp-istanbul');
 
 // Paths
-const files =  {
+const files = {
     server: ['server.js'],
     worker: ['worker.js'],
     mochaTests: ['./tests/**/*.js'],
@@ -20,8 +20,9 @@ const allJSFiles = files.appSrc
     .concat(files.server);
 
 // Set Test environment
-gulp.task('setTestEnv', function () {
+gulp.task('setTestEnvs', function () {
     process.env.NODE_ENV = 'test';
+    process.env.CONSOLE_LOG_LEVEL = 'nope';
 });
 
 // JSHint linting
@@ -58,4 +59,4 @@ gulp.task('istanbul', () => {
         });
 });
 
-gulp.task('test', ['setTestEnv', 'lint', 'istanbul']);
+gulp.task('test', ['setTestEnvs', 'lint', 'istanbul']);
