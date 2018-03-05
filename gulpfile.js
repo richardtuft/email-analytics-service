@@ -22,7 +22,7 @@ const allJSFiles = files.appSrc
 // Set Test environment
 gulp.task('setTestEnvs', function () {
     process.env.NODE_ENV = 'test';
-    process.env.CONSOLE_LOG_LEVEL = 'warn';
+    process.env.CONSOLE_LOG_LEVEL = 'nope';
 });
 
 // JSHint linting
