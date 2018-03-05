@@ -8,7 +8,11 @@ require('should');
 
 describe('The usersListsClient service', () =>{
 
-	const usersListsClientMock = nock(config.userListsEndpoint);
+	const usersListsClientMock = nock(config.userListsEndpoint, {
+		reqheaders: {
+			Authorization: `Bearer ${config.userListsAuthToken}`
+		}
+	});
 	const responseBodies = {
 		successEdit: { 'uuid': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', 'email': 'email@email.com', 'firstName': 'First', 'lastName': 'Last', 'lists': [], 'manuallySuppressed': true },
 		notFound: { 'message': 'User Not Found' },
